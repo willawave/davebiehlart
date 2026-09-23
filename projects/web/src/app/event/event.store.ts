@@ -1,0 +1,27 @@
+import { inject } from '@angular/core';
+import { signalStore, withMethods, withState } from '@ngrx/signals';
+import { EventDocument } from '../../../../core/src/lib/models/event.model';
+import { EventService } from './event.service';
+
+interface EventState {
+  visibleEvents: EventDocument[];
+  selectedEvent: EventDocument | null;
+  loading: boolean;
+  error: string | null;
+}
+
+const initialState: EventState = {
+  visibleEvents: [],
+  selectedEvent: null,
+  loading: false,
+  error: null,
+};
+
+export const GalleryStore = signalStore(
+  { providedIn: 'root' },
+  withState(initialState),
+  withMethods((store, service = inject(EventService)) => ({
+    // Load visible events from the service and update the state
+    // Load selected event from the service and update the state
+  })),
+);
