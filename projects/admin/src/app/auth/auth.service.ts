@@ -28,6 +28,10 @@ export class AuthService {
     return credential.user;
   }
 
+  currentUserId(): string | null {
+    return this.auth.currentUser?.uid ?? null;
+  }
+
   signOut(): Promise<void> {
     return signOut(this.auth);
   }

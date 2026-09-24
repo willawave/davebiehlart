@@ -46,7 +46,7 @@ export const AuthStore = signalStore(
     let current: { uid: string; result: Promise<Resolution> } | undefined;
 
     // Decides whether a signed-in account is an admin and writes the outcome. An account
-    // without a `users/{uid}` document is signed straight back out.
+    // without a `users/{uid}` document, or one whose check failed, is signed straight back out.
     async function check(user: User, id: number): Promise<Resolution> {
       let admin: boolean;
       try {
@@ -59,8 +59,11 @@ export const AuthStore = signalStore(
           error: 'Could not verify admin access. Please try again.',
         });
         // The toolbar offers Sign out only to a verified admin, so don't leave an unverified
-        // session signed in with no way to end it.
-        await service.signOut().catch(() => undefined);
+        // session signed in with no way to end it. Auth is shared across tabs, so only sign
+        // out this account, never one another tab signed in since.
+        if (service.currentUserId() === user.uid) {
+          await service.signOut().catch(() => undefined);
+        }
         return 'failed';
       }
       if (id !== latestCheck) return 'stale';
@@ -73,10 +76,10 @@ export const AuthStore = signalStore(
         await service.signOut();
       } catch {
         // Forget this denial so the next sign-in attempt retries the sign-out.
-        if (current?.uid === user.uid) current = undefined;
         if (id === latestCheck) {
+          if (current?.uid === user.uid) current = undefined;
           patchState(store, {
-            error: 'This account is not an admin, and signing it out failed. Please reload.',
+            error: 'This account is not an admin, and signing it out failed. Please try again.',
           });
         }
       }

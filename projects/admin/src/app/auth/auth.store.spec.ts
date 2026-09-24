@@ -17,6 +17,7 @@ describe('AuthStore', () => {
     signInWithGoogle: vi.fn<() => Promise<User>>(),
     signOut: vi.fn(() => Promise.resolve()),
     isAdmin: vi.fn((uid: string) => Promise.resolve(uid === ADMIN.uid)),
+    currentUserId: vi.fn<() => string | null>(() => ADMIN.uid),
   };
   const unsubscribe = vi.fn();
   // Auth state callbacks resolve asynchronously; let their promises settle.
@@ -99,6 +100,27 @@ describe('AuthStore', () => {
       expect(store.loading()).toBe(false);
       expect(store.error()).toContain('Could not verify admin access');
       expect(service.signOut).toHaveBeenCalledOnce();
+    });
+
+    it('should not sign out an account another tab signed in after a failed check', async () => {
+      service.isAdmin.mockRejectedValueOnce(new Error('offline'));
+      service.currentUserId.mockReturnValueOnce(OUTSIDER.uid);
+      emitAuthState(ADMIN);
+      await settle();
+      expect(store.error()).toContain('Could not verify admin access');
+      expect(service.signOut).not.toHaveBeenCalled();
+    });
+
+    it('should keep the failure when its sign-out reports a signed-out auth state', async () => {
+      service.isAdmin.mockRejectedValueOnce(new Error('offline'));
+      service.signOut.mockImplementationOnce(async () => emitAuthState(null));
+      service.signInWithGoogle.mockResolvedValueOnce(ADMIN).mockResolvedValueOnce(ADMIN);
+      await expect(store.signInWithGoogle()).resolves.toBe('failed');
+      expect(store.error()).toContain('Could not verify admin access');
+      expect(store.loading()).toBe(false);
+
+      await expect(store.signInWithGoogle()).resolves.toBe('authorized');
+      expect(service.isAdmin).toHaveBeenCalledTimes(2);
     });
 
     it('should keep the admin-check error when signing the account out also fails', async () => {

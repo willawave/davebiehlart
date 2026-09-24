@@ -9,6 +9,7 @@ import { AuthService } from './auth.service';
 describe('AuthService', () => {
   let service: AuthService;
   const fakeAuth = {
+    currentUser: null as { uid: string } | null,
     onAuthStateChanged: vi.fn(() => () => undefined),
     signOut: vi.fn(() => Promise.resolve()),
   };
@@ -31,6 +32,13 @@ describe('AuthService', () => {
 
     expect(service.authState(callback)).toBe(unsubscribe);
     expect(fakeAuth.onAuthStateChanged).toHaveBeenCalledWith(callback, undefined, undefined);
+  });
+
+  it("should report the current user's UID, or null when signed out", () => {
+    fakeAuth.currentUser = null;
+    expect(service.currentUserId()).toBeNull();
+    fakeAuth.currentUser = { uid: 'admin-uid' };
+    expect(service.currentUserId()).toBe('admin-uid');
   });
 
   it('should sign out of Firebase Auth', async () => {

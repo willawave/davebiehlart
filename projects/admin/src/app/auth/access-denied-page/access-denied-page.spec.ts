@@ -34,7 +34,7 @@ describe('AccessDeniedPage', () => {
   });
 
   it('should announce a store error such as a failed non-admin sign-out', async () => {
-    error.set('This account is not an admin, and signing it out failed. Please reload.');
+    error.set('This account is not an admin, and signing it out failed. Please try again.');
     await fixture.whenStable();
     expect(element.querySelector('[role="alert"]')?.textContent).toContain('signing it out failed');
   });
