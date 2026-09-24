@@ -12,6 +12,14 @@ Found on branch `feat-dev-tooling` (/ship adversarial review).
 
 ## Admin UI
 
+### Bring the admin initial bundle back under its budget
+
+**Priority:** P2
+
+`ng build admin` reports the initial bundle at about 821 kB raw (208 kB transfer), over the 500 kB warning budget and about 180 kB short of the 1 MB error budget. The app shell injects `AuthStore`, which pulls in `AuthService` and with it the full `firebase/firestore` and `firebase/auth` SDKs, just for one `getDoc(users/{uid})`. Load Firestore lazily for the admin check (for example a lazily resolved `FIRESTORE` token or `firebase/firestore/lite` for one-shot reads) and consider `initializeAuth` with explicit persistence in place of `getAuth`, keeping one SDK per core token file. Do it before the next Firebase-heavy admin feature pushes the build past 1 MB.
+
+Found on branch `feat-auth` (/ship performance review).
+
 ### Show the signed-in email on narrow screens
 
 **Priority:** P3
@@ -72,5 +80,5 @@ Found on branch `feat-dev-tooling` (/setup-deploy).
 
 ## Completed
 
-- **Implement the admin authGuard** (P1): `authGuard` now requires a signed-in account with a `users/{uid}` doc, looked up by UID. Completed on branch `feat-auth`.
-- **Run E2E under the emulators** (P2): `pnpm e2e` runs under the Auth and Firestore emulators with the `emulator-data/` seed. Completed on branch `feat-auth`.
+- **Implement the admin authGuard** (P1): `authGuard` now requires a signed-in account with a `users/{uid}` doc, looked up by UID. Completed on branch `feat-auth`. **Completed:** v0.2.0.0 (2026-09-24)
+- **Run E2E under the emulators** (P2): `pnpm e2e` runs under the Auth and Firestore emulators with the `emulator-data/` seed. Completed on branch `feat-auth`. **Completed:** v0.2.0.0 (2026-09-24)

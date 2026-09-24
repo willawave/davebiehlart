@@ -2,6 +2,27 @@
 
 All notable changes to this project are documented here.
 
+## [0.2.0.0] - 2026-09-24
+
+### Added
+
+- Admins can sign in to the admin app with Google. Only accounts that have a document in the Firestore `users` collection get in. Anyone else sees an Access Denied page and is signed straight back out. Google's account chooser always appears, so "Sign in with another account" lets you pick a different account.
+- Admin pages (dashboard, events, gallery, media, statues) require a signed-in admin. A signed-out visit goes to sign-in, and a signed-in admin who opens the sign-in page goes straight to the dashboard.
+- A toolbar showing the signed-in admin's email and a Sign out button. If the session ends while an admin page is open, for example after signing out in another tab, the app returns to sign-in. If a different account signs in from another tab, admin pages wait for that account's admin check before showing anything.
+- Clear messages when sign-in fails or admin access can't be verified, with a retry by signing in again.
+- `pnpm start`, `pnpm emulators` and `pnpm e2e` now load a committed seed of fake test accounts (`admin@test.com`, an admin, and `outsider@test.com`, not an admin), and `pnpm emulators:export` updates it. CI fails if the seed ever holds an email outside `@test.com`.
+- End-to-end tests for the sign-in flows, each with an accessibility check, running under the local Auth and Firestore emulators.
+
+### Changed
+
+- The admin app has its own look: a dark-green toolbar reading "Dave Biehl Art", IBM Plex Sans, 16px body text, a Google sign-in button with its icon centered, and a clear focus ring for keyboard users.
+- The admin app asks search engines not to index it.
+
+### Fixed
+
+- An unknown admin URL now goes to sign-in (or the dashboard for a signed-in admin) instead of showing a blank page.
+- `pnpm test <project> --coverage` runs again. The coverage plugin had been a major version ahead of the test runner.
+
 ## [0.1.0.3] - 2026-09-24
 
 ### Added
