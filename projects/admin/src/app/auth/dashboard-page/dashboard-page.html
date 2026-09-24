@@ -1,1 +1,9 @@
-<p>dashboard-page works!</p>
+<section class="panel" aria-labelledby="dashboard-heading">
+  <h1 id="dashboard-heading" #heading tabindex="-1">Dashboard</h1>
+  @if (store.error(); as error) {
+    <p class="error" role="alert">{{ error }}</p>
+  }
+  <p class="muted">
+    Signed in as <strong>{{ store.authorizedUser()?.email }}</strong>
+  </p>
+</section>

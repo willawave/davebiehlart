@@ -1,9 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
 
-// Both apps provide Firebase, but no store injects it yet, so the dev servers need no
-// backend. Once one does, wrap `pnpm e2e` in `firebase emulators:exec --project
-// demo-bronze-horse` — it must match EMULATOR_FIREBASE_ENVIRONMENT's projectId, because
-// firebase.json sets singleProjectMode.
+// Run through `pnpm e2e`, which wraps this in `firebase emulators:exec --project
+// demo-bronze-horse --import ./emulator-data`. The project must match
+// EMULATOR_FIREBASE_ENVIRONMENT's projectId, because firebase.json sets singleProjectMode.
 // ADMIN_PORT must match the admin serve port in angular.json.
 const WEB_PORT = 4200;
 const ADMIN_PORT = 4201;
@@ -15,7 +14,8 @@ export default defineConfig({
   testMatch: '**/*.e2e.ts',
   fullyParallel: true,
   forbidOnly: !!process.env['CI'],
-  retries: process.env['CI'] ? 1 : 0,
+  // The admin sign-in popup loads gapi from apis.google.com, which occasionally stalls.
+  retries: process.env['CI'] ? 2 : 0,
   reporter: process.env['CI'] ? [['list'], ['html', { open: 'never' }]] : 'list',
   use: {
     trace: 'on-first-retry',

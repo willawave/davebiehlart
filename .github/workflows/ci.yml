@@ -105,6 +105,16 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
+      # emulator-data/ is public: `pnpm emulators:export` must never commit a real email.
+      # Print only a count, so a leaked address doesn't also land in the public CI log.
+      - name: Emulator seed holds only @test.com emails
+        run: |
+          count=$(grep -rahoE '[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}' emulator-data \
+            | grep -vcE '@test\.com$' || true)
+          if [ "$count" != "0" ]; then
+            echo "::error::emulator-data/ holds $count email(s) outside @test.com"
+            exit 1
+          fi
 
   unit:
     name: Unit tests
@@ -164,6 +174,11 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: pnpm
+      # `pnpm e2e` runs under the Auth and Firestore emulators, which need Java.
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: '21'
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm e2e

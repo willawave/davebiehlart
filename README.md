@@ -7,7 +7,7 @@ It is an Angular monorepo with three projects: `web` (the public, server-rendere
 ## Prerequisites
 
 - Node.js 24 (see `.nvmrc`) and pnpm (`corepack enable`)
-- Java 21 or later, for the Firebase emulators (`pnpm start`, `pnpm test:rules`)
+- Java 21 or later, for the Firebase emulators (`pnpm start`, `pnpm test:rules`, `pnpm e2e`)
 
 Install dependencies:
 
@@ -23,9 +23,11 @@ To run both apps against local Firebase emulators, run:
 pnpm start
 ```
 
-This starts the web app at `http://localhost:4200/`, the admin app at `http://localhost:4201/`, and the emulator UI at `http://localhost:4010/`. Emulator data starts empty and is discarded when you stop it with Ctrl-C. Development builds only ever talk to the emulators, never the production Firebase project.
+This starts the web app at `http://localhost:4200/`, the admin app at `http://localhost:4201/`, and the emulator UI at `http://localhost:4010/`. The emulators start from the fake test data in `emulator-data/` (sign in to admin as `admin@test.com`; `outsider@test.com` is a non-admin), and changes are discarded when you stop them with Ctrl-C. Development builds only ever talk to the emulators, never the production Firebase project.
 
 To run the emulators alone, use `pnpm emulators`.
+
+To change the seed data on purpose, edit it while the emulators run, then run `pnpm emulators:export` and commit `emulator-data/`. The seed is public, so it must only ever hold fake data; CI fails if it contains an email outside `@test.com`.
 
 ## Code scaffolding
 
@@ -53,12 +55,12 @@ Use `core`, `web`, or `admin` as the project name. Build artifacts go to the `di
 
 ## Running tests
 
-| Command                                         | What it runs                                                        |
-| ----------------------------------------------- | ------------------------------------------------------------------- |
-| `pnpm ng test <web\|admin\|core> --watch=false` | [Vitest](https://vitest.dev/) unit tests for one project            |
-| `pnpm test:rules`                               | Firestore and Storage security rules tests against the emulators    |
-| `pnpm e2e`                                      | [Playwright](https://playwright.dev/) smoke tests for web and admin |
-| `pnpm lint`                                     | ESLint (angular-eslint)                                             |
+| Command                                         | What it runs                                                                       |
+| ----------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `pnpm ng test <web\|admin\|core> --watch=false` | [Vitest](https://vitest.dev/) unit tests for one project                           |
+| `pnpm test:rules`                               | Firestore and Storage security rules tests against the emulators                   |
+| `pnpm e2e`                                      | [Playwright](https://playwright.dev/) tests for web and admin, under the emulators |
+| `pnpm lint`                                     | ESLint (angular-eslint)                                                            |
 
 CI (`.github/workflows/ci.yml`) runs formatting, lint, unit tests, builds, rules tests, and E2E on every pull request.
 

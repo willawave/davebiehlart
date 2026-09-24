@@ -45,7 +45,8 @@ firebase-debug.log
 firestore-debug.log
 database-debug.log
 ui-debug.log
-# Emulator exports can hold copies of production data; never commit them.
+# Emulator exports can hold copies of production data; never commit them. The one exception
+# is emulator-data/, the hand-made seed of fake test accounts (see AGENTS.md).
 firebase-export-*/
 
 # Playwright

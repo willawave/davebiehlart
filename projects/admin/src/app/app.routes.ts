@@ -1,9 +1,11 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './auth/auth-guard';
+import { authGuard, signedInRedirectGuard } from './auth/auth-guard';
 
 export const routes: Routes = [
   {
     path: '',
+    pathMatch: 'full',
+    canActivate: [signedInRedirectGuard],
     loadComponent: () => import('./auth/sign-in-page/sign-in-page').then((c) => c.SignInPage),
     title: 'Sign In',
   },
@@ -93,4 +95,6 @@ export const routes: Routes = [
     loadComponent: () => import('./statue/statue-edit/statue-edit').then((c) => c.StatueEdit),
     title: 'Edit Statue',
   },
+  // Unknown URLs go to sign-in, which forwards a signed-in admin to the dashboard.
+  { path: '**', redirectTo: '' },
 ];
