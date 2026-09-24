@@ -1,0 +1,9 @@
+pnpm-lock.yaml
+/dist
+/coverage
+/.angular
+/playwright-report
+/test-results
+/blob-report
+/emulator-mock-data
+.claude/settings.local.json
