@@ -70,18 +70,18 @@ describe('Firebase providers', () => {
     // Mirrors the placeholder in the apps' environment.ts until the production config lands.
     const PLACEHOLDER: FirebaseEnvironment = { options: {}, useEmulators: false };
 
-    it('should allow the empty production placeholder in a production build', () => {
-      expect(() => assertSafeFirebaseEnvironment(PLACEHOLDER, false)).not.toThrow();
+    it('should refuse the empty production placeholder with a clear message', () => {
+      expect(() => assertSafeFirebaseEnvironment(PLACEHOLDER, false)).toThrow(/projectId is empty/);
     });
 
     it('should refuse a missing project ID in a development build', () => {
-      expect(() => assertSafeFirebaseEnvironment(PLACEHOLDER, true)).toThrow(/got ""/);
+      expect(() => assertSafeFirebaseEnvironment(PLACEHOLDER, true)).toThrow(/projectId is empty/);
     });
 
     it('should refuse emulators without a project ID', () => {
       expect(() =>
         assertSafeFirebaseEnvironment({ options: {}, useEmulators: true }, false),
-      ).toThrow(/demo- project ID/);
+      ).toThrow(/projectId is empty/);
     });
   });
 
@@ -95,6 +95,23 @@ describe('Firebase providers', () => {
       TestBed.runInInjectionContext(() => connectToEmulatorOnce(instance, connect));
       expect(connect).toHaveBeenCalledTimes(1);
       expect(connect).toHaveBeenCalledWith(instance);
+    });
+
+    it('should rethrow the original connect error instead of retrying', () => {
+      const instance = {};
+      const original = new Error('connect failed');
+      const connect = vi.fn(() => {
+        throw original;
+      });
+      configure(EMULATOR_FIREBASE_ENVIRONMENT);
+      expect(() =>
+        TestBed.runInInjectionContext(() => connectToEmulatorOnce(instance, connect)),
+      ).toThrow(original);
+      configure(EMULATOR_FIREBASE_ENVIRONMENT);
+      expect(() =>
+        TestBed.runInInjectionContext(() => connectToEmulatorOnce(instance, connect)),
+      ).toThrow(original);
+      expect(connect).toHaveBeenCalledTimes(1);
     });
 
     it('should never connect when emulators are off', () => {
@@ -115,6 +132,15 @@ describe('Firebase providers', () => {
       initializeApp({ projectId: 'demo-some-other-project' });
       configure(EMULATOR_FIREBASE_ENVIRONMENT);
       expect(() => TestBed.inject(FIREBASE_APP)).toThrow(/demo-some-other-project/);
+    });
+
+    it('should refuse to reuse a same-project app pointed at a different bucket', () => {
+      initializeApp({
+        ...EMULATOR_FIREBASE_ENVIRONMENT.options,
+        storageBucket: 'real-project.appspot.com',
+      });
+      configure(EMULATOR_FIREBASE_ENVIRONMENT);
+      expect(() => TestBed.inject(FIREBASE_APP)).toThrow(/storageBucket/);
     });
 
     it('should refuse a real project in this development-mode test run', () => {

@@ -54,6 +54,13 @@ export function assertSafeFirebaseEnvironment(
   devMode = isDevMode(),
 ): void {
   const projectId = environment.options.projectId ?? '';
+  // Fail loudly on the empty production placeholder instead of a cryptic SDK error later.
+  if (!projectId) {
+    throw new Error(
+      'Firebase is not configured: projectId is empty. Paste the production web config ' +
+        "into the app's environment.ts before shipping a feature that uses Firebase.",
+    );
+  }
   if ((environment.useEmulators || devMode) && !projectId.startsWith('demo-')) {
     throw new Error(
       `Development builds and the Firebase emulators require a demo- project ID, got ` +
@@ -73,8 +80,12 @@ export function assertSafeFirebaseEnvironment(
 // The marker lives on the SDK instance, not in module state, so it survives the dev
 // server re-evaluating this module (HMR) while the SDK singletons live on.
 const CONNECTED_TO_EMULATOR = Symbol.for('davebiehlart.firebase.connectedToEmulator');
+// A failed connect is remembered so later callers see the original cause, not the SDK's
+// misleading "already started" error from a retry.
+const EMULATOR_CONNECT_ERROR = Symbol.for('davebiehlart.firebase.emulatorConnectError');
 interface EmulatorMarked {
   [CONNECTED_TO_EMULATOR]?: true;
+  [EMULATOR_CONNECT_ERROR]?: unknown;
 }
 
 // Must be called from an injection context (a token factory).
@@ -83,9 +94,18 @@ export function connectToEmulatorOnce<T extends object>(
   connect: (instance: T) => void,
 ): T {
   const marked = instance as T & EmulatorMarked;
-  if (inject(FIREBASE_ENVIRONMENT).useEmulators && !marked[CONNECTED_TO_EMULATOR]) {
-    connect(instance);
-    marked[CONNECTED_TO_EMULATOR] = true;
+  if (!inject(FIREBASE_ENVIRONMENT).useEmulators || marked[CONNECTED_TO_EMULATOR]) {
+    return instance;
   }
+  if (EMULATOR_CONNECT_ERROR in marked) {
+    throw marked[EMULATOR_CONNECT_ERROR];
+  }
+  try {
+    connect(instance);
+  } catch (error) {
+    marked[EMULATOR_CONNECT_ERROR] = error;
+    throw error;
+  }
+  marked[CONNECTED_TO_EMULATOR] = true;
   return instance;
 }
