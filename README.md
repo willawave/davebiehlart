@@ -27,6 +27,8 @@ This starts the web app at `http://localhost:4200/`, the admin app at `http://lo
 
 To run the emulators alone, use `pnpm emulators`.
 
+To change the seed data on purpose, edit it while the emulators run, then run `pnpm emulators:export` and commit `emulator-data/`. The seed is public, so it must only ever hold fake data; CI fails if it contains an email outside `@test.com`.
+
 ## Code scaffolding
 
 Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
