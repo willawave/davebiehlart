@@ -17,7 +17,7 @@ const initialState: EventState = {
   error: null,
 };
 
-export const GalleryStore = signalStore(
+export const EventStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
   withMethods((_store, _service = inject(EventService)) => ({

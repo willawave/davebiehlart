@@ -6,14 +6,14 @@ import { MediaService } from './media.service';
 interface MediaState {
   visibleMediaItems: MediaDocument[];
   selectedMediaItem: MediaDocument | null;
-  isLoading: boolean;
+  loading: boolean;
   error: string | null;
 }
 
 const initialState: MediaState = {
   visibleMediaItems: [],
   selectedMediaItem: null,
-  isLoading: false,
+  loading: false,
   error: null,
 };
 
