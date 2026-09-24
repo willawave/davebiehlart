@@ -1,26 +1,26 @@
 import { inject } from '@angular/core';
 import { signalStore, withMethods, withState } from '@ngrx/signals';
-import { StatueDocument } from '../../../../core/src/lib/models/statue.model';
+import { StatueDocument } from 'core';
 import { StatueService } from './statue.service';
 
 interface StatueState {
-  AllStatueItems: StatueDocument[];
-  SelectedStatueItem: StatueDocument | null;
-  Loading: boolean;
-  Error: string | null;
+  allStatueItems: StatueDocument[];
+  selectedStatueItem: StatueDocument | null;
+  loading: boolean;
+  error: string | null;
 }
 
 const initialState: StatueState = {
-  AllStatueItems: [],
-  SelectedStatueItem: null,
-  Loading: false,
-  Error: null,
+  allStatueItems: [],
+  selectedStatueItem: null,
+  loading: false,
+  error: null,
 };
 
 export const StatueStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
-  withMethods((store, service = inject(StatueService)) => ({
+  withMethods((_store, _service = inject(StatueService)) => ({
     // Load all statue items from the service and update the state
     // Load selected statue item from the service and update the state
     // Add a statue item from the service and update the state

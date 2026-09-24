@@ -1,0 +1,46 @@
+rules_version = '2';
+
+// See the header of firestore.rules for how admins are provisioned.
+//
+// Every object is a public art image whose download URL is already public, so `get`
+// stays open across the whole bucket (a scoped rule risks blacking out a legacy object).
+// `list` is admin-only: forms upload on file-select, before the document is saved, so
+// listing would expose drafts, hidden items and abandoned uploads. Writes are closed
+// bucket-wide and reopened only on the two prefixes the admin app writes.
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isAdmin() {
+      return request.auth != null
+          && firestore.exists(/databases/(default)/documents/users/$(request.auth.uid));
+    }
+
+    // Deletes have no request.resource. Uploads must be raster images (no SVG, which can
+    // carry script) under 20 MB.
+    function isDeleteOrImageUpload() {
+      return request.resource == null
+          || (request.resource.size < 20 * 1024 * 1024
+              && request.resource.contentType.matches('image/(jpeg|png|webp|gif|avif)'));
+    }
+
+    match /{allPaths=**} {
+      allow get: if true;
+      allow list: if isAdmin();
+      allow write: if false;
+    }
+
+    // Uploads land at `${folder}/${storageKey}/${fileName}`, where folder is 'gallery'
+    // or 'statues' — plural, unlike the `statue` Firestore collection. Every existing
+    // production object matches this exact three-segment shape.
+    //
+    // These cannot validate against a parent Firestore document: forms upload on
+    // file-select, before the document is saved.
+    match /gallery/{storageKey}/{fileName} {
+      allow write: if isAdmin() && isDeleteOrImageUpload();
+    }
+    match /statues/{storageKey}/{fileName} {
+      allow write: if isAdmin() && isDeleteOrImageUpload();
+    }
+  }
+}

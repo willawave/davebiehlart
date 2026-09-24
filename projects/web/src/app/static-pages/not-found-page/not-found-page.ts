@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, RESPONSE_INIT, inject } from '@angular/core';
 
 @Component({
   imports: [],
@@ -6,4 +6,13 @@ import { Component } from '@angular/core';
   styleUrl: './not-found-page.scss',
   templateUrl: './not-found-page.html',
 })
-export class NotFoundPage {}
+export class NotFoundPage {
+  constructor() {
+    // Server rendering only (null in the browser): answer with a real 404, not a soft 404
+    // that search engines would index.
+    const responseInit = inject(RESPONSE_INIT, { optional: true });
+    if (responseInit) {
+      responseInit.status = 404;
+    }
+  }
+}

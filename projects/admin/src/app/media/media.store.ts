@@ -1,26 +1,26 @@
 import { inject } from '@angular/core';
 import { signalStore, withMethods, withState } from '@ngrx/signals';
-import { MediaDocument } from '../../../../core/src/lib/models/media.model';
+import { MediaDocument } from 'core';
 import { MediaService } from './media.service';
 
 interface MediaState {
-  AllMediaItems: MediaDocument[];
-  SelectedMediaItem: MediaDocument | null;
-  Loading: boolean;
-  Error: string | null;
+  allMediaItems: MediaDocument[];
+  selectedMediaItem: MediaDocument | null;
+  loading: boolean;
+  error: string | null;
 }
 
 const initialState: MediaState = {
-  AllMediaItems: [],
-  SelectedMediaItem: null,
-  Loading: false,
-  Error: null,
+  allMediaItems: [],
+  selectedMediaItem: null,
+  loading: false,
+  error: null,
 };
 
 export const MediaStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
-  withMethods((store, service = inject(MediaService)) => ({
+  withMethods((_store, _service = inject(MediaService)) => ({
     // Load all media items from the service and update the state
     // Load selected media item from the service and update the state
     // Add a media item from the service and update the state

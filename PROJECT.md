@@ -1,4 +1,4 @@
-This workspace is an Angular monorepo (web app + admin app + core library) built on top of an existing Firebase project "The Bronze Horse" with real, live production data. The public repository is hosted on GitHub under “[github.com/willawave/davebiehlart](https://github.com/willawave/davebiehlart)". Upon completion, web app will be pointed to https://davebiehlart.com and admin app will be pointed to https://admin.davebiehlart.com repspectively.
+This workspace is an Angular monorepo (web app + admin app + core library) built on top of an existing Firebase project "The Bronze Horse" with real, live production data. The public repository is hosted on GitHub under "[github.com/willawave/davebiehlart](https://github.com/willawave/davebiehlart)". Upon completion, web app will be pointed to https://davebiehlart.com and admin app will be pointed to https://admin.davebiehlart.com respectively.
 
 # Stack
 
@@ -18,27 +18,28 @@ This workspace is an Angular monorepo (web app + admin app + core library) built
 - Enforce Firestore and Storage Rules.
 - CI actions run on all pull requests and merges to main
 - Avoid firebase calls directly in components. Use this chain Component -> SignalStore -> service -> Firebase SDK
-- Users can only be manually created/updated/deleted via the existing Firestore ‘users’ collection.
+- Users can only be manually created/updated/deleted via the existing Firestore 'users' collection.
+- Apps import shared code from `core` via the path alias.
 
 ## Development process
 
 We will follow the following process: think -> plan -> design -> build -> review -> QA -> ship
 
 1. Plan Mode first.
-2. Cut feature branch “feat-<feature>
+2. Cut feature branch "feat-<feature>".
 3. /design-shotgun if touching UI.
-4. Auto mode, when building out the code, automatically choose Claude’s recommendations without requiring my approval.
-5. /review feature branch, automatically choose Claude’s recommendations without requiring my approval.
+4. Auto mode, when building out the code, automatically choose Claude's recommendations without requiring my approval (an approved plan counts as consent for the files/deps it names).
+5. /review feature branch, automatically choose Claude's recommendations without requiring my approval.
 6. /qa feature branch via local emulators.
-7. /ship When a PR passes all quality gates, merge it into ‘main’.
+7. /ship to open the PR; /land-and-deploy to merge into 'main' once all quality gates pass.
 
 # Must not
 
 - Claude must not add, edit, or delete to production Firestore or Storage.
-- Generate files without my consent.
-- Add dependencies without my consent.
+- Generate files without my consent (an approved plan counts as consent for the files it names).
+- Add dependencies without my consent (an approved plan counts as consent for the deps it names).
 - Merge unreviewed pull requests to main.
-- Alter existing data structures (because we’re using existing production data).
+- Alter existing data structures (because we're using existing production data).
 
 # Responsibilities
 
@@ -58,7 +59,7 @@ We will follow the following process: think -> plan -> design -> build -> review
 
 # Features
 
-[ ] Auth Feature: Admin app only. Auth and user sign-in/out. Users can only be manually created/updated/destroyed via the Firebase ‘users’ collection. Under no circumstance may someone be able to clone the public repo, create a user, and self-promote to admin status.
+[ ] Auth Feature: Admin app only. Auth and user sign-in/out. Users can only be manually created/updated/destroyed via the Firestore 'users' collection. Under no circumstance may someone be able to clone the public repo, create a user, and self-promote to admin status.
 [ ] Gallery Feature
 [ ] Statue Feature
 [ ] Event Feature

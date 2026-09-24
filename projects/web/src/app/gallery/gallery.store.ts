@@ -1,6 +1,6 @@
 import { inject } from '@angular/core';
 import { signalStore, withMethods, withState } from '@ngrx/signals';
-import { GalleryDocument } from '../../../../core/src/lib/models/gallery.model';
+import { GalleryDocument } from 'core';
 import { GalleryService } from './gallery.service';
 
 interface GalleryState {
@@ -20,7 +20,7 @@ const initialState: GalleryState = {
 export const GalleryStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
-  withMethods((store, service = inject(GalleryService)) => ({
+  withMethods((_store, _service = inject(GalleryService)) => ({
     // Load visible items from the service and update the state
     // Load selected item from the service and update the state
   })),
