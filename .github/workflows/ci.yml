@@ -1,4 +1,5 @@
-# CI for davebiehlart.com — runs on every pull request and every push to main.
+# CI for davebiehlart.com — runs on every pull request, every merge queue group, and every push
+# to main.
 #
 # This workflow never authenticates to Google Cloud and references no secrets. Nothing here can
 # reach the production Firebase project: the rules suite runs against the emulators under the
@@ -9,6 +10,8 @@ name: CI
 
 on:
   pull_request:
+  # The merge queue tests each PR on top of main plus the PRs queued ahead of it before merging.
+  merge_group:
   push:
     branches:
       - main
@@ -16,8 +19,8 @@ on:
 permissions:
   contents: read
 
-# Superseded PR runs are cancelled. Pushes are never cancelled, so every merge to main keeps
-# its own checks.
+# Superseded PR runs are cancelled. Merge queue and push runs are never cancelled, so every
+# queued group and every merge to main keeps its own checks.
 concurrency:
   group: ci-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
@@ -39,16 +42,20 @@ jobs:
       # Parts of the repo predate Prettier and are formatted as they are touched, so this checks
       # only the files a change adds or modifies.
       #   pull_request  everything since the merge base with the PR's base branch
+      #   merge_group   everything in the queued group, i.e. since the group's base commit
       #   push main     the pushed commits; if `before` is missing or unreachable (first push,
       #                 force-push), fall back to the tip commit
       - name: Prettier check on changed files
         env:
           EVENT: ${{ github.event_name }}
           BASE_REF: ${{ github.base_ref }}
+          GROUP_BASE: ${{ github.event.merge_group.base_sha }}
           BEFORE: ${{ github.event.before }}
         run: |
           if [ "$EVENT" = "pull_request" ]; then
             base=$(git merge-base "origin/$BASE_REF" HEAD)
+          elif [ "$EVENT" = "merge_group" ]; then
+            base="$GROUP_BASE"
           elif [ -n "$BEFORE" ] && git cat-file -e "$BEFORE^{commit}" 2>/dev/null; then
             base="$BEFORE"
           else
