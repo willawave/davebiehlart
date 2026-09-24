@@ -1,20 +1,20 @@
 import { inject } from '@angular/core';
 import { signalStore, withMethods, withState } from '@ngrx/signals';
-import { EventDocument } from '../../../../core/src/lib/models/event.model';
+import { EventDocument } from 'core';
 import { EventService } from './event.service';
 
 interface EventState {
-  AllEvents: EventDocument[];
-  SelectedEvent: EventDocument | null;
-  Loading: boolean;
-  Error: string | null;
+  allEvents: EventDocument[];
+  selectedEvent: EventDocument | null;
+  loading: boolean;
+  error: string | null;
 }
 
 const initialState: EventState = {
-  AllEvents: [],
-  SelectedEvent: null,
-  Loading: false,
-  Error: null,
+  allEvents: [],
+  selectedEvent: null,
+  loading: false,
+  error: null,
 };
 
 export const EventStore = signalStore(

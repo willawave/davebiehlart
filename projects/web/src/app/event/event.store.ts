@@ -1,6 +1,6 @@
 import { inject } from '@angular/core';
 import { signalStore, withMethods, withState } from '@ngrx/signals';
-import { EventDocument } from '../../../../core/src/lib/models/event.model';
+import { EventDocument } from 'core';
 import { EventService } from './event.service';
 
 interface EventState {

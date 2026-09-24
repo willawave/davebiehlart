@@ -1,6 +1,6 @@
 import { inject } from '@angular/core';
 import { signalStore, withMethods, withState } from '@ngrx/signals';
-import { StatueDocument } from '../../../../core/src/lib/models/statue.model';
+import { StatueDocument } from 'core';
 import { StatueService } from './statue.service';
 
 interface StatueState {

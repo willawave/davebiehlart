@@ -1,20 +1,20 @@
 import { inject } from '@angular/core';
 import { signalStore, withMethods, withState } from '@ngrx/signals';
-import { GalleryDocument } from '../../../../core/src/lib/models/gallery.model';
+import { GalleryDocument } from 'core';
 import { GalleryService } from './gallery.service';
 
 interface GalleryState {
-  AllGalleryItems: GalleryDocument[];
-  SelectedGalleryItem: GalleryDocument | null;
-  Loading: boolean;
-  Error: string | null;
+  allGalleryItems: GalleryDocument[];
+  selectedGalleryItem: GalleryDocument | null;
+  loading: boolean;
+  error: string | null;
 }
 
 const initialState: GalleryState = {
-  AllGalleryItems: [],
-  SelectedGalleryItem: null,
-  Loading: false,
-  Error: null,
+  allGalleryItems: [],
+  selectedGalleryItem: null,
+  loading: false,
+  error: null,
 };
 
 export const GalleryStore = signalStore(

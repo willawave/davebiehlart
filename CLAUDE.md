@@ -12,8 +12,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - `web`: public, SSR, SEO-optimized. `admin`: auth-protected routes, `noindex`, role/claim checks. `core`: shared library (models, constants).
 - Data flow is always Component → SignalStore (`@ngrx/signals`) → Service → Firebase SDK. Components never touch Firebase.
-- Import shared code via the `core` path alias (`import { StatueDocument } from 'core'`), never relative `../core/src/...` paths. The alias resolves to `dist/core`, so export new symbols from `projects/core/src/public-api.ts` and run `pnpm ng build core` before building/testing web or admin. Migrate relative imports when touching a file.
-- SignalStore state keys are camelCase (some admin stores use PascalCase — fix when touching them).
+- Import shared code via the `core` path alias (`import { StatueDocument } from 'core'`), never relative `../core/src/...` paths. The alias points at core's source (`projects/core/src/public-api.ts`), so there is no core build step — but every new shared symbol must be exported from `public-api.ts`.
+- SignalStore state keys are camelCase.
 
 ## Commands
 

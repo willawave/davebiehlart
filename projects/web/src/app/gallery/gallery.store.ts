@@ -1,6 +1,6 @@
 import { inject } from '@angular/core';
 import { signalStore, withMethods, withState } from '@ngrx/signals';
-import { GalleryDocument } from '../../../../core/src/lib/models/gallery.model';
+import { GalleryDocument } from 'core';
 import { GalleryService } from './gallery.service';
 
 interface GalleryState {

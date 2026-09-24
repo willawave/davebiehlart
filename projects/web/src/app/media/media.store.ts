@@ -1,6 +1,6 @@
 import { inject } from '@angular/core';
 import { signalStore, withMethods, withState } from '@ngrx/signals';
-import { MediaDocument } from '../../../../core/src/lib/models/media.model';
+import { MediaDocument } from 'core';
 import { MediaService } from './media.service';
 
 interface MediaState {
