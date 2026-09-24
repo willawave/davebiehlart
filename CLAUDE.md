@@ -18,7 +18,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 - Package manager is pnpm. Unit tests (Vitest via Angular builder), per project: `pnpm ng test <web|admin|core> --watch=false`
-- Format with Prettier (`.prettierrc`: 100 cols, single quotes).
+- `pnpm lint` (angular-eslint; `_`-prefixed params are allowed as unused placeholders in stubs).
+- `pnpm test:rules` — Firestore/Storage rules tests (`tests/rules/`, node:test) against emulators; needs Java. Any change to `firestore.rules` or `storage.rules` needs a matching test here.
+- `pnpm emulators` — local Auth/Firestore/Storage emulators under `demo-bronze-horse`.
+- `pnpm e2e` — Playwright smoke suites in `e2e/{web,admin}/*.e2e.ts` (Playwright only matches `*.e2e.ts`); starts both dev servers itself.
+- Prettier (100 cols, single quotes) runs automatically after every edit via a `.claude/settings.json` hook. CI checks formatting only on files a change touches, so don't run a repo-wide `pnpm format`.
 
 ## Workflow
 
