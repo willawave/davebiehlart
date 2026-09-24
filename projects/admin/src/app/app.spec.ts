@@ -1,24 +1,53 @@
-import { signal } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { App } from './app';
+import { authGuard } from './auth/auth-guard';
 import { AuthStore } from './auth/auth.store';
 import { AuthorizedUser } from './auth/authorized-user.model';
 
+@Component({ template: '' })
+class Blank {}
+
 describe('App', () => {
+  const loading = signal(false);
   const authorizedUser = signal<AuthorizedUser | null>(null);
   const store = {
+    loading,
     authorizedUser,
     signOut: vi.fn(async () => authorizedUser.set(null)),
   };
 
   beforeEach(async () => {
     vi.clearAllMocks();
+    loading.set(false);
     authorizedUser.set(null);
     await TestBed.configureTestingModule({
       imports: [App],
-      providers: [provideRouter([]), { provide: AuthStore, useValue: store }],
+      providers: [
+        provideRouter([
+          { path: '', component: Blank },
+          { path: 'dashboard', canActivate: [authGuard], component: Blank },
+        ]),
+        { provide: AuthStore, useValue: store },
+      ],
     }).compileComponents();
+  });
+
+  it('should return to sign-in when the session ends on a guarded page', async () => {
+    authorizedUser.set({ id: 'admin-uid', email: 'admin@test.com' });
+    const fixture = TestBed.createComponent(App);
+    const router = TestBed.inject(Router);
+    await router.navigateByUrl('/dashboard');
+    await fixture.whenStable();
+    expect(router.url).toBe('/dashboard');
+
+    // e.g. a sign-out in another tab
+    authorizedUser.set(null);
+    await vi.waitFor(async () => {
+      await fixture.whenStable();
+      expect(router.url).toBe('/');
+    });
   });
 
   async function render(): Promise<HTMLElement> {

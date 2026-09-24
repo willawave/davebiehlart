@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { CanActivateFn, Router, UrlTree } from '@angular/router';
-import { Observable, filter, map, take } from 'rxjs';
+import { Observable, filter, map, of, take } from 'rxjs';
 import { AuthStore } from './auth.store';
 
 // Waits for the first auth state, then decides. This is UX only: the Firestore and
@@ -10,6 +10,11 @@ function whenAuthKnown(
   decide: (authorized: boolean) => true | UrlTree,
 ): Observable<true | UrlTree> {
   const store = inject(AuthStore);
+  // toObservable's effect lives until the root injector is destroyed, so only create one
+  // while the first auth state is still loading, not on every navigation.
+  if (!store.loading()) {
+    return of(decide(store.authorizedUser() !== null));
+  }
   return toObservable(store.loading).pipe(
     filter((loading) => !loading),
     take(1),

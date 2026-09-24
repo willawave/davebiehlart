@@ -40,13 +40,16 @@ describe('SignInPage', () => {
     await vi.waitFor(() => expect(navigate).toHaveBeenCalledWith(url));
   });
 
-  it('should stay on the page when the popup is cancelled', async () => {
-    store.signInWithGoogle.mockResolvedValueOnce('cancelled');
-    button().click();
-    await fixture.whenStable();
-    expect(navigate).not.toHaveBeenCalled();
-    expect(button().textContent).toContain('Sign in with Google');
-  });
+  it.each(['cancelled', 'failed'] as const)(
+    'should stay on the page when sign-in is %s',
+    async (result) => {
+      store.signInWithGoogle.mockResolvedValueOnce(result);
+      button().click();
+      await fixture.whenStable();
+      expect(navigate).not.toHaveBeenCalled();
+      expect(button().textContent).toContain('Sign in with Google');
+    },
+  );
 
   it('should show a busy state and ignore repeat clicks while signing in', async () => {
     let finish!: (result: SignInResult) => void;

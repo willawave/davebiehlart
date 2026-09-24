@@ -40,6 +40,18 @@ Found on branch `feat-dev-tooling` (/ship adversarial review).
 
 Found on branch `feat-dev-tooling` (/ship adversarial review).
 
+### Add the admin production Firebase config before hosting
+
+**Priority:** P1
+
+`projects/admin/src/environments/environment.ts` still has `options: {}`. Since `feat-auth`, the admin app shell injects `AuthStore` on every page, which starts Firebase, so a production admin build throws `Firebase is not configured: projectId is empty` at startup and renders blank. Dev builds and E2E use the emulator config and can't catch it. Paste the production web config before the admin app is hosted, alongside the rules deploy in AGENTS.md. At the same time:
+
+- Add `admin.davebiehlart.com` to Firebase Auth's authorized domains, or popup sign-in fails with `auth/unauthorized-domain`.
+- Check popup sign-in still works once hosting sets headers: `Cross-Origin-Opener-Policy: same-origin` breaks `signInWithPopup` (use `same-origin-allow-popups`).
+- Add a Content Security Policy for the admin app (self, the Firebase/gapi origins, and Google Fonts, which `projects/admin/src/index.html` loads), or self-host the font.
+
+Found on branch `feat-auth` (/review, Codex).
+
 ### Re-run /setup-deploy when hosting goes live
 
 **Priority:** P2

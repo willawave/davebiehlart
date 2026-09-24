@@ -105,6 +105,16 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
+      # emulator-data/ is public: `pnpm emulators:export` must never commit a real email.
+      # Print only a count, so a leaked address doesn't also land in the public CI log.
+      - name: Emulator seed holds only @test.com emails
+        run: |
+          count=$(grep -rahoE '[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}' emulator-data \
+            | grep -vcE '@test\.com$' || true)
+          if [ "$count" != "0" ]; then
+            echo "::error::emulator-data/ holds $count email(s) outside @test.com"
+            exit 1
+          fi
 
   unit:
     name: Unit tests

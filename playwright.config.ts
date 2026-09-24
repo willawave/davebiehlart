@@ -14,7 +14,8 @@ export default defineConfig({
   testMatch: '**/*.e2e.ts',
   fullyParallel: true,
   forbidOnly: !!process.env['CI'],
-  retries: process.env['CI'] ? 1 : 0,
+  // The admin sign-in popup loads gapi from apis.google.com, which occasionally stalls.
+  retries: process.env['CI'] ? 2 : 0,
   reporter: process.env['CI'] ? [['list'], ['html', { open: 'never' }]] : 'list',
   use: {
     trace: 'on-first-retry',

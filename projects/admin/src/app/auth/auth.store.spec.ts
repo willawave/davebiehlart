@@ -106,8 +106,50 @@ describe('AuthStore', () => {
 
     it('should report any other failure', async () => {
       service.signInWithGoogle.mockRejectedValueOnce({ code: 'auth/network-request-failed' });
-      await expect(store.signInWithGoogle()).resolves.toBe('cancelled');
+      await expect(store.signInWithGoogle()).resolves.toBe('failed');
       expect(store.error()).toBe('Sign-in failed. Please try again.');
+    });
+
+    it('should share one admin check with the auth state listener', async () => {
+      service.signInWithGoogle.mockResolvedValueOnce(OUTSIDER);
+      const result = store.signInWithGoogle();
+      await Promise.resolve();
+      emitAuthState(OUTSIDER);
+      await expect(result).resolves.toBe('denied');
+      expect(service.isAdmin).toHaveBeenCalledOnce();
+      expect(service.signOut).toHaveBeenCalledOnce();
+    });
+
+    it('should drop a sign-in whose admin check finishes after a sign-out', async () => {
+      let resolveCheck!: (admin: boolean) => void;
+      service.isAdmin.mockReturnValueOnce(new Promise((resolve) => (resolveCheck = resolve)));
+      service.signInWithGoogle.mockResolvedValueOnce(ADMIN);
+      const result = store.signInWithGoogle();
+      await vi.waitFor(() => expect(service.isAdmin).toHaveBeenCalled());
+      emitAuthState(null);
+      resolveCheck(true);
+      await expect(result).resolves.toBe('cancelled');
+      expect(store.authorizedUser()).toBeNull();
+    });
+
+    it('should report a failed admin check and check again on the next sign-in', async () => {
+      service.isAdmin.mockRejectedValueOnce(new Error('offline'));
+      service.signInWithGoogle.mockResolvedValueOnce(ADMIN).mockResolvedValueOnce(ADMIN);
+      await expect(store.signInWithGoogle()).resolves.toBe('failed');
+      expect(store.authorizedUser()).toBeNull();
+      expect(store.error()).toContain('Could not verify admin access');
+
+      await expect(store.signInWithGoogle()).resolves.toBe('authorized');
+      expect(service.isAdmin).toHaveBeenCalledTimes(2);
+      expect(store.error()).toBeNull();
+    });
+
+    it('should report a non-admin that could not be signed out', async () => {
+      service.signInWithGoogle.mockResolvedValueOnce(OUTSIDER);
+      service.signOut.mockRejectedValueOnce(new Error('offline'));
+      await expect(store.signInWithGoogle()).resolves.toBe('denied');
+      expect(store.authorizedUser()).toBeNull();
+      expect(store.error()).toContain('signing it out failed');
     });
   });
 

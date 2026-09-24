@@ -10,7 +10,10 @@ interface AuthState {
   error: string | null;
 }
 
-export type SignInResult = 'authorized' | 'denied' | 'cancelled';
+export type SignInResult = 'authorized' | 'denied' | 'cancelled' | 'failed';
+
+// The outcome of one admin check; 'stale' means a newer auth state replaced it.
+type Resolution = 'authorized' | 'denied' | 'failed' | 'stale';
 
 const initialState: AuthState = {
   authorizedUser: null,
@@ -38,51 +41,79 @@ export const AuthStore = signalStore(
     // Auth state changes can overlap (e.g. a slow admin check, then a sign-out), so only
     // the latest one may write its result.
     let latestCheck = 0;
+    // A popup sign-in reports its account both through its own result and through the
+    // auth state listener. Both share this one check, so the store has a single writer.
+    let current: { uid: string; result: Promise<Resolution> } | undefined;
 
-    return {
-      // Resolves a Firebase auth state into an authorized admin or nobody. A signed-in
-      // account without a `users/{uid}` document is signed straight back out.
-      async _resolveUser(user: User | null): Promise<void> {
-        const check = ++latestCheck;
-        if (!user) {
-          patchState(store, { authorizedUser: null, loading: false });
-          return;
-        }
-        try {
-          const admin = await service.isAdmin(user.uid);
-          if (check !== latestCheck) return;
-          if (admin) {
-            patchState(store, { authorizedUser: toAuthorizedUser(user), loading: false });
-          } else {
-            patchState(store, { authorizedUser: null, loading: false });
-            await service.signOut();
-          }
-        } catch {
-          if (check !== latestCheck) return;
+    // Decides whether a signed-in account is an admin and writes the outcome. An account
+    // without a `users/{uid}` document is signed straight back out.
+    async function check(user: User, id: number): Promise<Resolution> {
+      let admin: boolean;
+      try {
+        admin = await service.isAdmin(user.uid);
+      } catch {
+        if (id !== latestCheck) return 'stale';
+        patchState(store, {
+          authorizedUser: null,
+          loading: false,
+          error: 'Could not verify admin access. Please try again.',
+        });
+        return 'failed';
+      }
+      if (id !== latestCheck) return 'stale';
+      if (admin) {
+        patchState(store, { authorizedUser: toAuthorizedUser(user), loading: false, error: null });
+        return 'authorized';
+      }
+      patchState(store, { authorizedUser: null, loading: false });
+      try {
+        await service.signOut();
+      } catch {
+        if (id === latestCheck) {
           patchState(store, {
-            authorizedUser: null,
-            loading: false,
-            error: 'Could not verify admin access. Please try again.',
+            error: 'This account is not an admin, and signing it out failed. Please reload.',
           });
         }
+      }
+      return 'denied';
+    }
+
+    function resolve(user: User): Promise<Resolution> {
+      if (current?.uid === user.uid) return current.result;
+      const entry = { uid: user.uid, result: check(user, ++latestCheck) };
+      current = entry;
+      // A failed check may be retried by signing in again.
+      void entry.result.then((resolution) => {
+        if (resolution === 'failed' && current === entry) current = undefined;
+      });
+      return entry.result;
+    }
+
+    return {
+      // Resolves a Firebase auth state into an authorized admin or nobody.
+      async _resolveUser(user: User | null): Promise<void> {
+        if (user) {
+          await resolve(user);
+          return;
+        }
+        ++latestCheck;
+        current = undefined;
+        patchState(store, { authorizedUser: null, loading: false });
       },
 
       async signInWithGoogle(): Promise<SignInResult> {
         patchState(store, { error: null });
+        let user: User;
         try {
-          const user = await service.signInWithGoogle();
-          if (await service.isAdmin(user.uid)) {
-            patchState(store, { authorizedUser: toAuthorizedUser(user) });
-            return 'authorized';
-          }
-          patchState(store, { authorizedUser: null });
-          await service.signOut();
-          return 'denied';
+          user = await service.signInWithGoogle();
         } catch (error) {
           if (CANCELLED_CODES.has(errorCode(error) ?? '')) return 'cancelled';
           patchState(store, { error: 'Sign-in failed. Please try again.' });
-          return 'cancelled';
+          return 'failed';
         }
+        const resolution = await resolve(user);
+        // A newer auth state, such as a sign-out, replaced this sign-in.
+        return resolution === 'stale' ? 'cancelled' : resolution;
       },
 
       async signOut(): Promise<void> {

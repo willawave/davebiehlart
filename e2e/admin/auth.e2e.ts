@@ -86,6 +86,23 @@ test('a signed-in admin skips the sign-in page', async ({ page }) => {
   await expect(page).toHaveURL('/dashboard');
 });
 
+test('signing out in another tab returns an open admin page to sign-in', async ({
+  page,
+  context,
+}) => {
+  await page.goto('/');
+  await signInWithGoogle(page, ADMIN);
+  await expect(page).toHaveURL('/dashboard');
+
+  const otherTab = await context.newPage();
+  await otherTab.goto('/dashboard');
+  await expect(otherTab).toHaveURL('/dashboard');
+  await otherTab.getByRole('button', { name: 'Sign out' }).click();
+  await expect(otherTab).toHaveURL('/');
+
+  await expect(page).toHaveURL('/');
+});
+
 test('a non-admin is denied and signed back out', async ({ page }) => {
   await page.goto('/');
   await signInWithGoogle(page, OUTSIDER);
