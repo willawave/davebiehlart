@@ -2,6 +2,14 @@
 
 All notable changes to this project are documented here.
 
+## [0.2.1.0] - 2026-09-24
+
+### Changed
+
+- The follow-up backlog is down to what blocks launch: one "before going live" checklist for hosting the admin app (production Firebase config, the authorized sign-in domain, a popup-safe cross-origin header, deploy setup). Six hardening items that don't fit a two-admin site were dropped.
+- A new project rule keeps the backlog lean: log a follow-up only if it breaks real use, risks production data, or blocks launch.
+- The admin app's production build warns above 1 MB and fails above 1.5 MB, up from 500 kB and 1 MB, so its current 830 kB build no longer warns.
+
 ## [0.2.0.0] - 2026-09-24
 
 ### Added
