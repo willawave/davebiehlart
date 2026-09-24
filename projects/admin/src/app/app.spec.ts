@@ -10,6 +10,7 @@ import { AuthorizedUser } from './auth/authorized-user.model';
 class Blank {}
 
 describe('App', () => {
+  let finishLoading: (component: typeof Blank) => void;
   const loading = signal(false);
   const authorizedUser = signal<AuthorizedUser | null>(null);
   const store = {
@@ -29,6 +30,11 @@ describe('App', () => {
           { path: '', component: Blank },
           { path: 'access-denied', component: Blank },
           { path: 'dashboard', canActivate: [authGuard], component: Blank },
+          {
+            path: 'lazy',
+            canActivate: [authGuard],
+            loadComponent: () => new Promise((resolve) => (finishLoading = resolve)),
+          },
           {
             path: 'section',
             children: [{ path: 'page', canActivate: [authGuard], component: Blank }],
@@ -62,6 +68,21 @@ describe('App', () => {
         });
       },
     );
+
+    it('should return to sign-in when the session ends while a guarded page is loading', async () => {
+      const { fixture, router } = await openAt('/access-denied');
+      const navigation = router.navigateByUrl('/lazy');
+      await vi.waitFor(() => expect(finishLoading).toBeDefined());
+      // The guard has passed; the session ends before the lazy page arrives.
+      authorizedUser.set(null);
+      TestBed.tick();
+      finishLoading(Blank);
+      await navigation;
+      await vi.waitFor(async () => {
+        await fixture.whenStable();
+        expect(router.url).toBe('/');
+      });
+    });
 
     it('should not redirect while the auth state is reloading', async () => {
       const { fixture, router } = await openAt('/dashboard');

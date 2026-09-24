@@ -70,6 +70,23 @@ describe('AuthStore', () => {
       expect(service.signOut).toHaveBeenCalledOnce();
     });
 
+    it('should drop the previous admin at once when another account takes over', async () => {
+      emitAuthState(ADMIN);
+      await settle();
+      expect(store.authorizedUser()).not.toBeNull();
+
+      let resolveCheck!: (admin: boolean) => void;
+      service.isAdmin.mockReturnValueOnce(new Promise((resolve) => (resolveCheck = resolve)));
+      emitAuthState(OUTSIDER);
+      expect(store.authorizedUser()).toBeNull();
+      expect(store.loading()).toBe(true);
+
+      resolveCheck(false);
+      await settle();
+      expect(store.authorizedUser()).toBeNull();
+      expect(store.loading()).toBe(false);
+    });
+
     it('should ignore an admin check that finishes after a newer auth state', async () => {
       let resolveCheck!: (admin: boolean) => void;
       service.isAdmin.mockReturnValueOnce(new Promise((resolve) => (resolveCheck = resolve)));

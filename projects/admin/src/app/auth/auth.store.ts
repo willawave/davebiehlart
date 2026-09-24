@@ -88,6 +88,12 @@ export const AuthStore = signalStore(
 
     function resolve(user: User): Promise<Resolution> {
       if (current?.uid === user.uid) return current.result;
+      // Another account took over (e.g. a sign-in in another tab). Drop the previous admin
+      // at once, so guards and the toolbar wait for this account's check instead.
+      const previous = store.authorizedUser();
+      if (previous && previous.id !== user.uid) {
+        patchState(store, { authorizedUser: null, loading: true });
+      }
       const entry = { uid: user.uid, result: check(user, ++latestCheck) };
       current = entry;
       // A failed check may be retried by signing in again.
