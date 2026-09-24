@@ -10,6 +10,16 @@
 
 Found on branch `feat-dev-tooling` (/ship adversarial review).
 
+## Admin UI
+
+### Show the signed-in email on narrow screens
+
+**Priority:** P3
+
+At 375px wide the admin toolbar truncates the signed-in email to "a…" beside the Sign out button. The dashboard still shows the full email, so nothing is lost; consider hiding the toolbar email below a breakpoint or moving it into a menu.
+
+Found on branch `feat-auth` (/qa, 2026-09-24).
+
 ## CI
 
 ### Guard prerender against live Firestore reads
