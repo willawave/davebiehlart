@@ -59,7 +59,7 @@ We will follow the following process: think -> plan -> design -> build -> review
 
 # Features
 
-[ ] Auth Feature: Admin app only. Auth and user sign-in/out. Users can only be manually created/updated/destroyed via the Firestore 'users' collection. Under no circumstance may someone be able to clone the public repo, create a user, and self-promote to admin status.
+[x] Auth Feature: Admin app only. Auth and user sign-in/out. Users can only be manually created/updated/destroyed via the Firestore 'users' collection. Under no circumstance may someone be able to clone the public repo, create a user, and self-promote to admin status.
 [ ] Gallery Feature
 [ ] Statue Feature
 [ ] Event Feature

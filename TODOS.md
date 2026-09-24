@@ -1,15 +1,5 @@
 # TODOS
 
-## Admin app
-
-### Implement the admin authGuard
-
-**Priority:** P1
-
-`projects/admin/src/app/auth/auth-guard.ts` returns `true` for every navigation. Before the admin app gets production Firebase config, require a signed-in user whose `users/{auth.uid}` document exists (`getDoc`, never an email query), and add a test that a non-admin is redirected. Firestore/Storage rules already enforce admin-only writes.
-
-Found on branch `feat-dev-tooling` (/ship pre-landing review).
-
 ## Core / Firebase
 
 ### Keep Firebase Auth off the server render
@@ -29,14 +19,6 @@ Found on branch `feat-dev-tooling` (/ship adversarial review).
 Once production config is added to `projects/web/src/environments/environment.ts`, `ng build web` prerenders contact/privacy/terms with it, so any app-shell component that injects `FIRESTORE` would read production from CI. Add a structural guard (e.g. a server-only provider that throws on `FIRESTORE` during prerender, or a test that prerendered routes never inject it).
 
 Found on branch `feat-dev-tooling` (/ship red-team review).
-
-### Run E2E under the emulators
-
-**Priority:** P2
-
-The CI e2e job starts no emulators. Before the first store reads Firestore, wrap `pnpm e2e` in `firebase emulators:exec --project demo-bronze-horse` (the ID must match `EMULATOR_FIREBASE_ENVIRONMENT`).
-
-Found on branch `feat-dev-tooling` (/ship adversarial review).
 
 ## Security rules
 
@@ -67,3 +49,6 @@ The "Deploy Configuration" in CLAUDE.md is merge-only (platform `none`), so `/la
 Found on branch `feat-dev-tooling` (/setup-deploy).
 
 ## Completed
+
+- **Implement the admin authGuard** (P1): `authGuard` now requires a signed-in account with a `users/{uid}` doc, looked up by UID. Completed on branch `feat-auth`.
+- **Run E2E under the emulators** (P2): `pnpm e2e` runs under the Auth and Firestore emulators with the `emulator-data/` seed. Completed on branch `feat-auth`.

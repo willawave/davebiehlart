@@ -23,9 +23,10 @@ This repo is wired to the live Firebase project "The Bronze Horse" with real pro
 - Package manager is pnpm. Unit tests (Vitest via Angular builder), per project: `pnpm ng test <web|admin|core> --watch=false`. Unit specs run in development mode with no emulators (CI starts none), so specs for stores/services must provide stub `FIRESTORE` / `FIREBASE_AUTH` / `FIREBASE_STORAGE` values; exercise real Firebase only in emulator-backed suites (`tests/rules/`, e2e under `firebase emulators:exec`).
 - `pnpm lint` (angular-eslint; `_`-prefixed params are allowed as unused placeholders in stubs).
 - `pnpm test:rules` — Firestore/Storage rules tests (`tests/rules/`, node:test) against emulators; needs Java.
-- `pnpm start` — manual testing: emulators (UI at http://localhost:4010) plus web (http://localhost:4200) and admin (http://localhost:4201) dev servers. Data starts empty and is discarded on exit (no import/export). Ctrl-C stops everything.
+- `pnpm start` — manual testing: emulators (UI at http://localhost:4010) plus web (http://localhost:4200) and admin (http://localhost:4201) dev servers. Ctrl-C stops everything.
+- Emulator data: `pnpm start`, `pnpm emulators` and `pnpm e2e` import the committed seed in `emulator-data/`. It holds fake test data only: the Google accounts `admin@test.com` (with a `users/{uid}` doc, so an admin) and `outsider@test.com` (no doc, so denied). Changes made during a run are discarded on exit. To change the seed deliberately, edit the data while the emulators run, then run `pnpm emulators:export` and commit `emulator-data/`. Never put production data or real emails in it.
 - `pnpm emulators` — emulators alone under `demo-bronze-horse`.
-- `pnpm e2e` — Playwright smoke suites in `e2e/{web,admin}/*.e2e.ts` (Playwright only matches `*.e2e.ts`); starts both dev servers itself.
+- `pnpm e2e` — Playwright suites in `e2e/{web,admin}/*.e2e.ts` (Playwright only matches `*.e2e.ts`), run under the Auth and Firestore emulators with the seed; starts both dev servers itself. Needs Java, and fails if `pnpm start` already holds the emulator ports.
 - Prettier (100 cols, single quotes). CI checks formatting only on files a change touches, so format only the files you change (`pnpm exec prettier --write <files>`) — never a repo-wide `prettier --write .`.
 
 ## Workflow

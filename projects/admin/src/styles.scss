@@ -1,1 +1,85 @@
-/* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
+
+// "Patina Utility": a verdigris app bar over a pale mint-gray page, IBM Plex Sans.
+$patina: #1f4d47;
+$page: #eef3f1;
+$ink: #13211f;
+$muted: #4a5c58;
+$line: #cfdcd8;
+
+html {
+  color-scheme: light;
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$cyan-palette,
+        theme-type: light,
+      ),
+      typography: 'IBM Plex Sans',
+      density: 0,
+    )
+  );
+
+  // Pin the brand colors over the generated palette (white on #1f4d47 is 9.6:1).
+  --mat-sys-primary: #{$patina};
+  --mat-sys-on-primary: #fff;
+
+  @include mat.toolbar-overrides(
+    (
+      container-background-color: $patina,
+      container-text-color: #fff,
+    )
+  );
+  @include mat.button-overrides(
+    (
+      filled-container-shape: 3px,
+      outlined-container-shape: 3px,
+    )
+  );
+}
+
+body {
+  margin: 0;
+  background: $page;
+  color: $ink;
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+}
+
+// The content panel every auth page sits in.
+.panel {
+  box-sizing: border-box;
+  max-width: 400px;
+  margin: 40px 16px;
+  padding: 24px;
+  background: #fff;
+  border: 1px solid $line;
+
+  @media (min-width: 600px) {
+    margin: 48px 32px;
+  }
+
+  h1 {
+    margin: 0 0 6px;
+    font-size: 1.375rem;
+    font-weight: 600;
+
+    &:focus {
+      outline: none;
+    }
+  }
+}
+
+.muted {
+  margin: 0 0 20px;
+  color: $muted;
+  font-size: 0.875rem;
+}
+
+.error {
+  margin: 0 0 16px;
+  padding: 8px 12px;
+  border: 1px solid #e3b4b4;
+  background: #fdf0f0;
+  color: #8a1c1c;
+  font-size: 0.875rem;
+}
