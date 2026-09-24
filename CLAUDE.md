@@ -42,13 +42,13 @@ Nothing deploys from `main` yet: no hosting target in `firebase.json`, no deploy
 - Production URL: none (planned: https://davebiehlart.com for web, https://admin.davebiehlart.com for admin)
 - Deploy workflow: none
 - Deploy status command: none
-- Merge method: squash
+- Merge method: squash, through the GitHub merge queue (the "Protect main" ruleset requires it; `gh pr merge --squash` enqueues the PR)
 - Project type: web app (SSR `web` + `admin` SPA)
 - Post-deploy health check: none (skip deploy verification)
 
 ### Custom deploy hooks
 
-- Pre-merge: none (CI in `.github/workflows/ci.yml` gates the PR)
+- Pre-merge: none (the merge queue runs `.github/workflows/ci.yml` on each PR on top of `main` before merging)
 - Deploy trigger: none
 - Deploy status: none
 - Health check: none

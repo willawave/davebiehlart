@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here.
 
+## [0.1.0.2] - 2026-09-24
+
+### Changed
+
+- CI now also runs for GitHub's merge queue, so PRs can be queued with "Merge when ready" and each one is tested on top of the latest `main` (plus anything queued ahead of it) before it merges. The formatting check covers every file changed by the PRs in the queued batch.
+
 ## [0.1.0.1] - 2026-09-24
 
 ### Changed
