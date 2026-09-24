@@ -6,4 +6,6 @@ pnpm-lock.yaml
 /test-results
 /blob-report
 /emulator-mock-data
+# Written by `pnpm emulators:export`; formatting it would be undone on the next export.
+/emulator-data
 .claude/settings.local.json
