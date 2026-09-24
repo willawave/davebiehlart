@@ -1,0 +1,48 @@
+rules_version = '2';
+
+// Admins are provisioned BY HAND in the Firebase console: create a document in `users`
+// whose ID is the account's Auth UID, holding that account's { email }. Nothing in either
+// app ever writes to `users`; there is no self-service sign-up.
+//
+// Why the UID has to be the document ID: rules cannot run a `where` query, only get()
+// or exists() against a known path.
+//
+// signInWithPopup completes a real Firebase sign-in for ANY Google account, so
+// `request.auth != null` is never an authorization check here. Use isAdmin().
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // get()/exists() inside a rule are not themselves subject to these rules, so this
+    // works even though /users below is otherwise readable only by its owner.
+    function isAdmin() {
+      return request.auth != null
+          && exists(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    // Public site content. Read by signed-out visitors and by SSR, which runs the web
+    // SDK unauthenticated — so these reads must stay open.
+    //
+    // Do NOT scope these reads on `visible`. List queries filter on it, but detail pages
+    // and admin edit forms fetch by ID with no visibility predicate; a `visible`-scoped
+    // read rule breaks both.
+    match /gallery/{docId}  { allow read: if true; allow write: if isAdmin(); }
+    match /statue/{docId}   { allow read: if true; allow write: if isAdmin(); }
+    match /event/{docId}    { allow read: if true; allow write: if isAdmin(); }
+    match /schedule/{docId} { allow read: if true; allow write: if isAdmin(); }
+    match /media/{docId}    { allow read: if true; allow write: if isAdmin(); }
+
+    // The admin allowlist. A signed-in user may read only their own entry, so a
+    // non-admin looking themselves up gets an empty result rather than another admin's
+    // record. Never client-writable.
+    match /users/{userId} {
+      allow read:  if request.auth != null
+                   && resource.data.email == request.auth.token.email;
+      allow write: if false;
+    }
+
+    // Anything not matched above is denied, including collections that do not exist
+    // yet. Add an explicit match when you add a collection — never a catch-all read,
+    // which would OR past the /users rule and publish the admin email list.
+  }
+}

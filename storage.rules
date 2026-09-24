@@ -1,0 +1,32 @@
+rules_version = '2';
+
+// See the header of firestore.rules for how admins are provisioned.
+//
+// Shape differs from firestore.rules on purpose. Reads stay open across the whole
+// bucket: every object is a public art image whose download URL is already public, and
+// a scoped read rule risks blacking out a legacy object for no security gain. Writes
+// are closed bucket-wide and reopened only on the two prefixes the admin app writes.
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isAdmin() {
+      return request.auth != null
+          && firestore.exists(/databases/(default)/documents/users/$(request.auth.uid));
+    }
+
+    match /{allPaths=**} {
+      allow read:  if true;
+      allow write: if false;
+    }
+
+    // Uploads land at `${folder}/${storageKey}/${fileName}`, where folder is 'gallery'
+    // or 'statues' — plural, unlike the `statue` Firestore collection. Every existing
+    // production object matches this exact three-segment shape.
+    //
+    // These cannot validate against a parent Firestore document: forms upload on
+    // file-select, before the document is saved.
+    match /gallery/{storageKey}/{fileName} { allow write: if isAdmin(); }
+    match /statues/{storageKey}/{fileName} { allow write: if isAdmin(); }
+  }
+}

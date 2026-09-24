@@ -39,6 +39,13 @@ testem.log
 /typings
 __screenshots__/
 
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+database-debug.log
+ui-debug.log
+
 # System files
 .DS_Store
 Thumbs.db
