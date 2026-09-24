@@ -5,6 +5,7 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 This repo is wired to the live Firebase project "The Bronze Horse" with real production data, and the repo is public.
 
 - Never add, edit, or delete production Firestore or Storage data. Anything that writes data runs against the emulators (`pnpm emulators`) under a `demo-*` project ID. Never add a `.firebaserc` or run `firebase deploy` / `--project <real id>` without explicit approval.
+- `firestore.rules` and `storage.rules` mirror the rules live on production. Change them only with explicit approval, and every change needs a matching test in `tests/rules/` (`pnpm test:rules`).
 - Do not change existing Firestore document shapes. Models in `projects/core/src/lib/models/` mirror the production schema.
 - Users are created/updated/deleted only manually in the Firestore `users` collection. No code path may create users or grant admin roles/claims; admin access must be enforced by Firestore/Storage rules, not just client-side guards — assume anyone can clone the repo.
 - `web` is read-only: no Firestore/Storage writes from `projects/web`.
