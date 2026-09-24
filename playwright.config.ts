@@ -4,8 +4,11 @@ import { defineConfig, devices } from '@playwright/test';
 // backend. Once one does, wrap `pnpm e2e` in `firebase emulators:exec --project
 // demo-bronze-horse` — it must match EMULATOR_FIREBASE_ENVIRONMENT's projectId, because
 // firebase.json sets singleProjectMode.
-const WEB_URL = 'http://localhost:4200';
-const ADMIN_URL = 'http://localhost:4201';
+// ADMIN_PORT must match the admin serve port in angular.json.
+const WEB_PORT = 4200;
+const ADMIN_PORT = 4201;
+const WEB_URL = `http://localhost:${WEB_PORT}`;
+const ADMIN_URL = `http://localhost:${ADMIN_PORT}`;
 
 export default defineConfig({
   testDir: 'e2e',
@@ -31,13 +34,13 @@ export default defineConfig({
   ],
   webServer: [
     {
-      command: 'pnpm ng serve web --port 4200',
+      command: `pnpm ng serve web --port ${WEB_PORT}`,
       url: WEB_URL,
       reuseExistingServer: !process.env['CI'],
       timeout: 180_000,
     },
     {
-      command: 'pnpm ng serve admin --port 4201',
+      command: `pnpm ng serve admin --port ${ADMIN_PORT}`,
       url: ADMIN_URL,
       reuseExistingServer: !process.env['CI'],
       timeout: 180_000,
