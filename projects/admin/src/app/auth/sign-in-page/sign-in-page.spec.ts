@@ -68,9 +68,29 @@ describe('SignInPage', () => {
     });
   });
 
-  it('should announce the store error', async () => {
+  it('should leave the busy state even if sign-in throws unexpectedly', async () => {
+    store.signInWithGoogle.mockRejectedValueOnce(new Error('unexpected'));
+    await expect(fixture.componentInstance['signIn']()).rejects.toThrow('unexpected');
+    await fixture.whenStable();
+    expect(button().textContent).toContain('Sign in with Google');
+    expect(button().getAttribute('aria-busy')).toBe('false');
+  });
+
+  it('should allow another attempt after a cancelled sign-in', async () => {
+    store.signInWithGoogle.mockResolvedValueOnce('cancelled').mockResolvedValueOnce('cancelled');
+    button().click();
+    await vi.waitFor(() => expect(store.signInWithGoogle).toHaveBeenCalledOnce());
+    await fixture.whenStable();
+    button().click();
+    await vi.waitFor(() => expect(store.signInWithGoogle).toHaveBeenCalledTimes(2));
+  });
+
+  it('should announce the store error and remove it once cleared', async () => {
     error.set('Sign-in failed. Please try again.');
     await fixture.whenStable();
     expect(element.querySelector('[role="alert"]')?.textContent).toContain('Sign-in failed');
+    error.set(null);
+    await fixture.whenStable();
+    expect(element.querySelector('[role="alert"]')).toBeNull();
   });
 });
