@@ -65,6 +65,34 @@ jobs:
           git diff --name-only --diff-filter=ACMR -z "$base" HEAD \
             | xargs -0 --no-run-if-empty pnpm exec prettier --check --ignore-unknown
 
+  # Every change to main must claim a new, higher VERSION with a matching CHANGELOG entry, so
+  # parallel branches can't land the same version. HEAD^1 is the commit this change lands on:
+  #   pull_request  the base branch tip (first parent of the PR merge commit)
+  #   merge_group   main plus the PRs queued ahead, so two queued PRs claiming the same
+  #                 VERSION fail here instead of both merging
+  #   push main     the previous main commit
+  version:
+    name: Version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 2
+      - name: VERSION is bumped and has a CHANGELOG entry
+        run: |
+          new=$(tr -d '[:space:]' < VERSION)
+          old=$(git show HEAD^1:VERSION | tr -d '[:space:]')
+          echo "VERSION: $old -> $new"
+          highest=$(printf '%s\n%s\n' "$old" "$new" | sort -V | tail -n 1)
+          if [ "$new" = "$old" ] || [ "$highest" != "$new" ]; then
+            echo "::error file=VERSION::VERSION must be higher than $old (got $new). Bump it, or re-run /ship if another PR already took $new."
+            exit 1
+          fi
+          if ! grep -qF "## [$new]" CHANGELOG.md; then
+            echo "::error file=CHANGELOG.md::CHANGELOG.md has no '## [$new]' entry."
+            exit 1
+          fi
+
   lint:
     name: Lint
     runs-on: ubuntu-latest

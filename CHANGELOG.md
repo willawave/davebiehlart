@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here.
 
+## [0.1.0.3] - 2026-09-24
+
+### Added
+
+- A Version check in CI: every PR must raise `VERSION` above `main`'s and add a matching CHANGELOG entry. In the merge queue it also fails a PR whose version was already claimed by a PR queued ahead of it, so parallel branches can't both land the same version.
+
 ## [0.1.0.2] - 2026-09-24
 
 ### Changed
