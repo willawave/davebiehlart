@@ -20,6 +20,10 @@ html {
     )
   );
 
+  // A visible ring on every keyboard-focused Material control (WCAG 2.4.7).
+  @include mat.strong-focus-indicators();
+  --mat-focus-indicator-border-color: #{$patina};
+
   // Pin the brand colors over the generated palette (white on #1f4d47 is 9.6:1).
   --mat-sys-primary: #{$patina};
   --mat-sys-on-primary: #fff;
@@ -63,8 +67,14 @@ body {
     font-size: 1.375rem;
     font-weight: 600;
 
-    &:focus {
+    // Headings take focus on every route change. Hide the ring for mouse users only.
+    &:focus:not(:focus-visible) {
       outline: none;
+    }
+
+    &:focus-visible {
+      outline: 2px solid currentColor;
+      outline-offset: 2px;
     }
   }
 }
@@ -72,7 +82,7 @@ body {
 .muted {
   margin: 0 0 20px;
   color: $muted;
-  font-size: 0.875rem;
+  font-size: 1rem;
 }
 
 .error {
@@ -81,5 +91,5 @@ body {
   border: 1px solid #e3b4b4;
   background: #fdf0f0;
   color: #8a1c1c;
-  font-size: 0.875rem;
+  font-size: 1rem;
 }

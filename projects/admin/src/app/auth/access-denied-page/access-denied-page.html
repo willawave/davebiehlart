@@ -1,5 +1,8 @@
 <section class="panel" aria-labelledby="access-denied-heading">
   <h1 id="access-denied-heading" #heading tabindex="-1">Access denied</h1>
+  @if (store.error(); as error) {
+    <p class="error" role="alert">{{ error }}</p>
+  }
   <p class="muted">This Google account isn't an admin.</p>
   <a matButton="filled" routerLink="/">Sign in with another account</a>
 </section>

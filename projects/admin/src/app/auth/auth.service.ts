@@ -20,7 +20,11 @@ export class AuthService {
   }
 
   async signInWithGoogle(): Promise<User> {
-    const credential = await signInWithPopup(this.auth, new GoogleAuthProvider());
+    const provider = new GoogleAuthProvider();
+    // Always show Google's account chooser, or "Sign in with another account" silently
+    // reuses the account that was just denied.
+    provider.setCustomParameters({ prompt: 'select_account' });
+    const credential = await signInWithPopup(this.auth, provider);
     return credential.user;
   }
 

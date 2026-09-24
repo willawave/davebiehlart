@@ -21,13 +21,12 @@ async function signInWithGoogle(page: Page, email: string): Promise<void> {
   await page.getByRole('button', { name: 'Sign in with Google' }).click();
   const popup = await popupPromise;
   await popup.waitForLoadState('load');
-  await expect
-    .poll(() => page.frames().find((frame) => frame.url().includes('/emulator/auth/iframe')))
-    .toBeDefined();
-  await page
-    .frames()
-    .find((frame) => frame.url().includes('/emulator/auth/iframe'))
-    ?.waitForLoadState('load');
+  const relayFrame = () =>
+    page.frames().find((frame) => frame.url().includes('/emulator/auth/iframe'));
+  await expect.poll(relayFrame).toBeDefined();
+  const relay = relayFrame();
+  if (!relay) throw new Error('Auth emulator relay iframe disappeared before it loaded');
+  await relay.waitForLoadState('load');
   const closed = popup.waitForEvent('close', { timeout: 10_000 });
   await popup.getByText(email).click();
   await closed.catch(async (error: unknown) => {

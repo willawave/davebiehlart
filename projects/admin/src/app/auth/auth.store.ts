@@ -58,6 +58,9 @@ export const AuthStore = signalStore(
           loading: false,
           error: 'Could not verify admin access. Please try again.',
         });
+        // The toolbar offers Sign out only to a verified admin, so don't leave an unverified
+        // session signed in with no way to end it.
+        await service.signOut().catch(() => undefined);
         return 'failed';
       }
       if (id !== latestCheck) return 'stale';
@@ -69,6 +72,8 @@ export const AuthStore = signalStore(
       try {
         await service.signOut();
       } catch {
+        // Forget this denial so the next sign-in attempt retries the sign-out.
+        if (current?.uid === user.uid) current = undefined;
         if (id === latestCheck) {
           patchState(store, {
             error: 'This account is not an admin, and signing it out failed. Please reload.',

@@ -23,11 +23,14 @@
 
 .sign-out {
   flex-shrink: 0;
+  // The default ring is patina, the toolbar's own color.
+  --mat-focus-indicator-border-color: #fff;
   @include mat.button-overrides(
     (
       outlined-label-text-color: #fff,
       outlined-outline-color: #fff,
       outlined-ripple-color: rgb(255 255 255 / 0.12),
+      outlined-state-layer-color: #fff,
     )
   );
 }

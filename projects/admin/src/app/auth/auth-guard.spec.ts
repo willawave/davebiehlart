@@ -62,6 +62,27 @@ describe('auth guards', () => {
       loading.set(false);
       expect(urlOf(await run(authGuard))).toBe('/');
     });
+
+    it('should send a visitor to sign-in once the auth state shows nobody', async () => {
+      const result = run(authGuard);
+      TestBed.tick();
+      loading.set(false);
+      TestBed.tick();
+      expect(urlOf(await result)).toBe('/');
+    });
+
+    // toObservable's effect lives until the root injector is destroyed, so once the auth
+    // state is known the guard must decide without creating one. It emits synchronously.
+    it('should decide synchronously once the auth state is known', () => {
+      authorizedUser.set({ id: 'admin-uid', email: 'admin@test.com' });
+      loading.set(false);
+      let value: boolean | UrlTree | undefined;
+      const result = TestBed.runInInjectionContext(() =>
+        authGuard({} as ActivatedRouteSnapshot, {} as RouterStateSnapshot),
+      ) as Observable<boolean | UrlTree>;
+      result.subscribe((emitted) => (value = emitted));
+      expect(value).toBe(true);
+    });
   });
 
   describe('signedInRedirectGuard', () => {
@@ -74,6 +95,23 @@ describe('auth guards', () => {
     it('should show sign-in to anyone else', async () => {
       loading.set(false);
       await expect(run(signedInRedirectGuard)).resolves.toBe(true);
+    });
+
+    it('should show sign-in once the auth state shows nobody', async () => {
+      const result = run(signedInRedirectGuard);
+      TestBed.tick();
+      loading.set(false);
+      TestBed.tick();
+      await expect(result).resolves.toBe(true);
+    });
+
+    it('should forward an admin once the auth state resolves', async () => {
+      const result = run(signedInRedirectGuard);
+      TestBed.tick();
+      authorizedUser.set({ id: 'admin-uid', email: 'admin@test.com' });
+      loading.set(false);
+      TestBed.tick();
+      expect(urlOf(await result)).toBe('/dashboard');
     });
   });
 });
