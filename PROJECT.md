@@ -1,4 +1,4 @@
-This workspace is an Angular monorepo (web app + admin app + core library) built on top of an existing Firebase project "The Bronze Horse" with real, live production data. The public repository is hosted on GitHub under “github.com/davebiehlart". Upon completion, web app will be pointed to https://davebiehlart.com and admin app will be pointed to https://admin.davebiehlart.com repspectively.
+This workspace is an Angular monorepo (web app + admin app + core library) built on top of an existing Firebase project "The Bronze Horse" with real, live production data. The public repository is hosted on GitHub under “[github.com/willawave/davebiehlart](https://github.com/willawave/davebiehlart)". Upon completion, web app will be pointed to https://davebiehlart.com and admin app will be pointed to https://admin.davebiehlart.com repspectively.
 
 # Stack
 
@@ -46,7 +46,7 @@ We will follow the following process: think -> plan -> design -> build -> review
 
 - Public-facing routes.
 - SEO optimization.
-- Data read only.
+- Data read-only.
 
 ## Admin app
 
