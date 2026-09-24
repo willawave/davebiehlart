@@ -1,3 +1,4 @@
+import assert from 'node:assert/strict';
 import { assertFails, assertSucceeds } from '@firebase/rules-unit-testing';
 import {
   collection,
@@ -113,6 +114,15 @@ describe('/users', () => {
     await assertSucceeds(getDoc(doc(ctx.admin.firestore(), 'users', ADMIN_UID)));
   });
 
+  // The admin app's authorization check: getDoc(users/{uid}) must resolve (not be denied)
+  // for a signed-in non-admin, so the app can read "no such document" and refuse access.
+  test('a non-admin can get their own missing entry and sees that it does not exist', async () => {
+    const snapshot = await assertSucceeds(
+      getDoc(doc(ctx.outsider.firestore(), 'users', OUTSIDER_UID)),
+    );
+    assert.equal(snapshot.exists(), false);
+  });
+
   test("an admin cannot get another admin's entry", async () => {
     await assertFails(getDoc(doc(ctx.admin.firestore(), 'users', SECOND_ADMIN_UID)));
   });
@@ -165,6 +175,14 @@ describe('unmatched collections', () => {
     for (const c of [ctx.anon, ctx.outsider, ctx.admin]) {
       await assertFails(getDoc(doc(c.firestore(), 'bronze', 'any')));
       await assertFails(setDoc(doc(c.firestore(), 'bronze', 'any'), { name: 'x' }));
+    }
+  });
+
+  test('include subcollections under public collections, admins included', async () => {
+    for (const c of [ctx.anon, ctx.outsider, ctx.admin]) {
+      const nested = doc(c.firestore(), 'gallery', 'published', 'notes', 'any');
+      await assertFails(getDoc(nested));
+      await assertFails(setDoc(nested, { name: 'x' }));
     }
   });
 });
