@@ -53,6 +53,9 @@ firebase-export-*/
 /test-results/
 /blob-report/
 
+# gstack local run reports (deploy, QA); per-machine, never committed
+/.gstack/
+
 # System files
 .DS_Store
 Thumbs.db
