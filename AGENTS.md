@@ -14,6 +14,7 @@ This repo is wired to the live Firebase project "The Bronze Horse" with real pro
 
 - `web`: public, SSR, SEO-optimized. `admin`: auth-protected routes, `noindex`, role/claim checks. `core`: shared library (models, constants).
 - Data flow is always Component → SignalStore (`@ngrx/signals`) → Service → Firebase SDK. Components never touch Firebase.
+- Services get Firebase through core's `FIRESTORE` / `FIREBASE_AUTH` / `FIREBASE_STORAGE` injection tokens (`projects/core/src/lib/firebase/`), never `getFirestore()` etc. directly. Each SDK is imported only by its own `*.token.ts` file so an app bundles just the SDKs it injects — keep SDK imports out of `firebase.providers.ts` (type-only imports there). Development builds (`environment.development.ts`) use `EMULATOR_FIREBASE_ENVIRONMENT` and connect to the emulators; the providers refuse to start if emulators are paired with a non-`demo-` project ID. Production config lives in each app's `environment.ts` (empty until the first Firebase feature ships).
 - Import shared code via the `core` path alias (`import { StatueDocument } from 'core'`), never relative `../core/src/...` paths. The alias points at core's source (`projects/core/src/public-api.ts`), so there is no core build step — but every new shared symbol must be exported from `public-api.ts`.
 - SignalStore state keys are camelCase.
 
@@ -22,7 +23,8 @@ This repo is wired to the live Firebase project "The Bronze Horse" with real pro
 - Package manager is pnpm. Unit tests (Vitest via Angular builder), per project: `pnpm ng test <web|admin|core> --watch=false`
 - `pnpm lint` (angular-eslint; `_`-prefixed params are allowed as unused placeholders in stubs).
 - `pnpm test:rules` — Firestore/Storage rules tests (`tests/rules/`, node:test) against emulators; needs Java.
-- `pnpm emulators` — local Auth/Firestore/Storage emulators under `demo-bronze-horse`.
+- `pnpm start` — manual testing: emulators (UI at http://localhost:4000) plus web (http://localhost:4200) and admin (http://localhost:4201) dev servers. Data starts empty and is discarded on exit (no import/export). Ctrl-C stops everything.
+- `pnpm emulators` — emulators alone under `demo-bronze-horse`.
 - `pnpm e2e` — Playwright smoke suites in `e2e/{web,admin}/*.e2e.ts` (Playwright only matches `*.e2e.ts`); starts both dev servers itself.
 - Prettier (100 cols, single quotes). CI checks formatting only on files a change touches, so format the files you change and never run a repo-wide `pnpm format`.
 

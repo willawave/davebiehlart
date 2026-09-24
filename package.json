@@ -3,7 +3,9 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "firebase emulators:exec --project demo-bronze-horse --ui \"pnpm run '/^dev:/'\"",
+    "dev:web": "ng serve web",
+    "dev:admin": "ng serve admin",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
