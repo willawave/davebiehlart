@@ -29,7 +29,8 @@ export const EMULATOR_FIREBASE_ENVIRONMENT: FirebaseEnvironment = {
   useEmulators: true,
 };
 
-// Must match the emulator ports in firebase.json.
+// Must match the emulator ports in firebase.json (enforced by
+// tests/rules/emulator-config.test.mjs).
 export const EMULATOR_HOST = '127.0.0.1';
 export const AUTH_EMULATOR_PORT = 9099;
 export const FIRESTORE_EMULATOR_PORT = 8080;
@@ -44,8 +45,10 @@ export function provideFirebase(environment: FirebaseEnvironment): EnvironmentPr
 }
 
 // Refuses to let a development build, or anything using the emulators, touch a real
-// project: e.g. production config pasted into environment.development.ts, or
-// useEmulators flipped off there. Only production builds may use a non-demo project ID.
+// project. Development builds must use the emulators: checking the project ID alone is
+// not enough, because a demo- ID with emulators off and a real storageBucket (or other
+// real option) would send SDK calls to production. Only production builds may use a
+// non-demo project ID or skip the emulators.
 export function assertSafeFirebaseEnvironment(
   environment: FirebaseEnvironment,
   devMode = isDevMode(),
@@ -55,6 +58,12 @@ export function assertSafeFirebaseEnvironment(
     throw new Error(
       `Development builds and the Firebase emulators require a demo- project ID, got ` +
         `"${projectId}". Never point a development build at a real Firebase project.`,
+    );
+  }
+  if (devMode && !environment.useEmulators) {
+    throw new Error(
+      'Development builds must use the Firebase emulators (useEmulators: true). ' +
+        'Only production builds may talk to real Firebase services.',
     );
   }
 }

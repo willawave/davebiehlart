@@ -45,10 +45,43 @@ describe('Firebase providers', () => {
       expect(() => assertSafeFirebaseEnvironment(REAL, false)).not.toThrow();
     });
 
+    it('should refuse a development build with emulators off, even with a demo- ID', () => {
+      const mixed: FirebaseEnvironment = {
+        options: { projectId: 'demo-bronze-horse', storageBucket: 'real-project.appspot.com' },
+        useEmulators: false,
+      };
+      expect(() => assertSafeFirebaseEnvironment(mixed, true)).toThrow(
+        /must use the Firebase emulators/,
+      );
+    });
+
     it('should allow the emulator environment in a development build', () => {
       expect(() =>
         assertSafeFirebaseEnvironment(EMULATOR_FIREBASE_ENVIRONMENT, true),
       ).not.toThrow();
+    });
+
+    it('should allow the emulator environment in a production build', () => {
+      expect(() =>
+        assertSafeFirebaseEnvironment(EMULATOR_FIREBASE_ENVIRONMENT, false),
+      ).not.toThrow();
+    });
+
+    // Mirrors the placeholder in the apps' environment.ts until the production config lands.
+    const PLACEHOLDER: FirebaseEnvironment = { options: {}, useEmulators: false };
+
+    it('should allow the empty production placeholder in a production build', () => {
+      expect(() => assertSafeFirebaseEnvironment(PLACEHOLDER, false)).not.toThrow();
+    });
+
+    it('should refuse a missing project ID in a development build', () => {
+      expect(() => assertSafeFirebaseEnvironment(PLACEHOLDER, true)).toThrow(/got ""/);
+    });
+
+    it('should refuse emulators without a project ID', () => {
+      expect(() =>
+        assertSafeFirebaseEnvironment({ options: {}, useEmulators: true }, false),
+      ).toThrow(/demo- project ID/);
     });
   });
 
