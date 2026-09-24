@@ -10,7 +10,8 @@
     "serve:ssr:web": "node dist/web/server/server.mjs",
     "emulators": "firebase emulators:start --project demo-bronze-horse",
     "test:rules": "firebase emulators:exec --project demo-bronze-horse-rules --only auth,firestore,storage \"node --test --test-concurrency=1 tests/rules/*.test.mjs\"",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "e2e": "playwright test"
   },
   "private": true,
   "packageManager": "pnpm@10.28.2",
@@ -39,6 +40,7 @@
     "@angular/compiler-cli": "^22.1.0",
     "@eslint/js": "^10.0.1",
     "@firebase/rules-unit-testing": "^5.0.2",
+    "@playwright/test": "1.63.0",
     "@types/express": "^5.0.1",
     "@types/node": "^20.17.19",
     "@vitest/browser-playwright": "^5.0.1",
