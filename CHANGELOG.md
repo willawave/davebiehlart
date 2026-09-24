@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here.
 
+## [0.1.0.1] - 2026-09-24
+
+### Changed
+
+- Local gstack run reports under `.gstack/` (deploy and QA reports) are now git-ignored, so they never show up as untracked files or get committed to the public repo.
+
 ## [0.1.0.0] - 2026-09-24
 
 ### Added
