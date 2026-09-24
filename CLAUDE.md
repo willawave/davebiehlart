@@ -4,32 +4,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 @AGENTS.md
 
-<!-- Shared TypeScript/Angular/accessibility conventions live in AGENTS.md (imported above)
-     so Codex and other agents get them too. Edit them there, not here.
+<!-- Project guardrails, architecture, commands, workflow, and Angular conventions live in
+     AGENTS.md (imported above) so Codex and other agents get them too. Edit them there, not here.
      Keep this file for Claude Code-specific instructions only. -->
 
-## Architecture
+## Claude Code specifics
 
-- `web`: public, SSR, SEO-optimized. `admin`: auth-protected routes, `noindex`, role/claim checks. `core`: shared library (models, constants).
-- Data flow is always Component → SignalStore (`@ngrx/signals`) → Service → Firebase SDK. Components never touch Firebase.
-- Import shared code via the `core` path alias (`import { StatueDocument } from 'core'`), never relative `../core/src/...` paths. The alias points at core's source (`projects/core/src/public-api.ts`), so there is no core build step — but every new shared symbol must be exported from `public-api.ts`.
-- SignalStore state keys are camelCase.
-
-## Commands
-
-- Package manager is pnpm. Unit tests (Vitest via Angular builder), per project: `pnpm ng test <web|admin|core> --watch=false`
-- `pnpm lint` (angular-eslint; `_`-prefixed params are allowed as unused placeholders in stubs).
-- `pnpm test:rules` — Firestore/Storage rules tests (`tests/rules/`, node:test) against emulators; needs Java. Any change to `firestore.rules` or `storage.rules` needs a matching test here.
-- `pnpm emulators` — local Auth/Firestore/Storage emulators under `demo-bronze-horse`.
-- `pnpm e2e` — Playwright smoke suites in `e2e/{web,admin}/*.e2e.ts` (Playwright only matches `*.e2e.ts`); starts both dev servers itself.
-- Prettier (100 cols, single quotes) runs automatically after every edit via a `.claude/settings.json` hook. CI checks formatting only on files a change touches, so don't run a repo-wide `pnpm format`.
-
-## Workflow
-
-- Plan mode first. Branch `feat-<feature>` off `main`. Run `/design-shotgun` before UI work.
-- An approved plan is consent to create the files and add the dependencies it names. Anything outside the approved plan — new files or new dependencies — needs explicit approval first.
-- New code ships with Vitest unit tests; user-facing flows also need Playwright E2E tests.
-- Never merge a PR to `main` that hasn't passed `/review`, `/qa`, and CI.
+- A `.claude/settings.json` PostToolUse hook runs Prettier on every file you Write/Edit, so don't format by hand.
+- Start in plan mode. Run `/design-shotgun` before UI work.
+- Review, QA, and merge go through `/review` → `/qa` (against local emulators) → `/ship` (opens the PR) → `/land-and-deploy` (merges once all gates pass).
 
 ## Skill routing
 

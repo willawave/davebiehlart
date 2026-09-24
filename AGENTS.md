@@ -10,6 +10,29 @@ This repo is wired to the live Firebase project "The Bronze Horse" with real pro
 - Users are created/updated/deleted only manually in the Firestore `users` collection. No code path may create users or grant admin roles/claims; admin access must be enforced by Firestore/Storage rules, not just client-side guards — assume anyone can clone the repo.
 - `web` is read-only: no Firestore/Storage writes from `projects/web`.
 
+## Architecture
+
+- `web`: public, SSR, SEO-optimized. `admin`: auth-protected routes, `noindex`, role/claim checks. `core`: shared library (models, constants).
+- Data flow is always Component → SignalStore (`@ngrx/signals`) → Service → Firebase SDK. Components never touch Firebase.
+- Import shared code via the `core` path alias (`import { StatueDocument } from 'core'`), never relative `../core/src/...` paths. The alias points at core's source (`projects/core/src/public-api.ts`), so there is no core build step — but every new shared symbol must be exported from `public-api.ts`.
+- SignalStore state keys are camelCase.
+
+## Commands
+
+- Package manager is pnpm. Unit tests (Vitest via Angular builder), per project: `pnpm ng test <web|admin|core> --watch=false`
+- `pnpm lint` (angular-eslint; `_`-prefixed params are allowed as unused placeholders in stubs).
+- `pnpm test:rules` — Firestore/Storage rules tests (`tests/rules/`, node:test) against emulators; needs Java.
+- `pnpm emulators` — local Auth/Firestore/Storage emulators under `demo-bronze-horse`.
+- `pnpm e2e` — Playwright smoke suites in `e2e/{web,admin}/*.e2e.ts` (Playwright only matches `*.e2e.ts`); starts both dev servers itself.
+- Prettier (100 cols, single quotes). CI checks formatting only on files a change touches, so format the files you change and never run a repo-wide `pnpm format`.
+
+## Workflow
+
+- Plan before building. Branch `feat-<feature>` off `main`.
+- An approved plan is consent to create the files and add the dependencies it names. Anything outside the approved plan — new files or new dependencies — needs explicit approval first.
+- New code ships with Vitest unit tests; user-facing flows also need Playwright E2E tests.
+- Never merge a PR to `main` that hasn't passed code review, QA, and CI.
+
 ## TypeScript Best Practices
 
 - Use strict type checking
