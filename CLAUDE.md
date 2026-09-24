@@ -36,7 +36,7 @@ Key routing rules:
 
 ## Deploy Configuration (configured by /setup-deploy)
 
-Nothing deploys from `main` yet: no hosting target in `firebase.json`, no deploy workflow. davebiehlart.com currently serves the legacy site, so health-checking it proves nothing about this repo. Re-run `/setup-deploy` when hosting goes live (see TODOS.md → "Re-run /setup-deploy when hosting goes live").
+Nothing deploys from `main` yet: no hosting target in `firebase.json`, no deploy workflow. davebiehlart.com currently serves the legacy site, so health-checking it proves nothing about this repo. Re-run `/setup-deploy` when hosting goes live (see TODOS.md → "Before going live").
 
 - Platform: none (not deployed yet)
 - Production URL: none (planned: https://davebiehlart.com for web, https://admin.davebiehlart.com for admin)

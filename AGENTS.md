@@ -35,6 +35,7 @@ This repo is wired to the live Firebase project "The Bronze Horse" with real pro
 - An approved plan is consent to create the files and add the dependencies it names. Anything outside the approved plan — new files or new dependencies — needs explicit approval first.
 - New code ships with Vitest unit tests; user-facing flows also need Playwright E2E tests.
 - Never merge a PR to `main` that hasn't passed code review, QA, and CI.
+- This is a personal site with two admins. Add a `TODOS.md` item only if it breaks real use, risks production data, or blocks launch. Don't log hardening against hypothetical threats, bundle-size or cosmetic nits, or guards for code paths nobody plans to write: fix it inline if it's cheap, otherwise drop it.
 - Every PR bumps `VERSION` above `main`'s and adds a matching `## [<version>]` entry to `CHANGELOG.md` (`/ship` does both). CI's Version check fails the PR otherwise, including in the merge queue when a PR queued ahead already claimed the same version.
 
 ## TypeScript Best Practices
