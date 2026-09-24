@@ -20,7 +20,7 @@ const initialState: StatueState = {
 export const StatueStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
-  withMethods((store, service = inject(StatueService)) => ({
+  withMethods((_store, _service = inject(StatueService)) => ({
     // Load visible items from the service and update the state
     // Load selected item from the service and update the state
   })),

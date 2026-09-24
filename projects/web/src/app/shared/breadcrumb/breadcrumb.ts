@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-export interface Breadcrumb {
+export interface BreadcrumbItem {
   label: string;
   url: string;
 }

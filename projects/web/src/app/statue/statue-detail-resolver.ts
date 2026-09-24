@@ -1,5 +1,5 @@
 import { ResolveFn } from '@angular/router';
 
-export const statueDetailResolver: ResolveFn<boolean> = (route, state) => {
+export const statueDetailResolver: ResolveFn<boolean> = () => {
   return true;
 };

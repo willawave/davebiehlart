@@ -20,7 +20,7 @@ const initialState: EventState = {
 export const GalleryStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
-  withMethods((store, service = inject(EventService)) => ({
+  withMethods((_store, _service = inject(EventService)) => ({
     // Load visible events from the service and update the state
     // Load selected event from the service and update the state
   })),

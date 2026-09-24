@@ -1,5 +1,5 @@
 import { ResolveFn } from '@angular/router';
 
-export const eventDetailResolver: ResolveFn<boolean> = (route, state) => {
+export const eventDetailResolver: ResolveFn<boolean> = () => {
   return true;
 };

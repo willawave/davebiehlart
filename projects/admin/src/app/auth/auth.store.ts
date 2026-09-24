@@ -18,7 +18,7 @@ const initialState: AuthState = {
 export const AuthStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
-  withMethods((store, service = inject(AuthService)) => ({
+  withMethods((_store, _service = inject(AuthService)) => ({
     // Check for existing authorized user and update the state accordingly
     // Sign in with Google and update the state accordingly
     // Sign out and update the state accordingly

@@ -1,5 +1,5 @@
 import { MediaMatcher } from '@angular/cdk/layout';
-import { Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 
 @Injectable({
   providedIn: 'root',
@@ -7,7 +7,8 @@ import { Injectable, signal } from '@angular/core';
 export class ColorSchemeService {
   public isLightMode = signal<boolean>(false);
 
-  constructor(mediaMatcher: MediaMatcher) {
+  constructor() {
+    const mediaMatcher = inject(MediaMatcher);
     if (mediaMatcher.matchMedia('(prefers-color-scheme: light)').matches) {
       this.isLightMode.set(true);
     } else {

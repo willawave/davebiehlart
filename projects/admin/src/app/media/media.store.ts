@@ -20,7 +20,7 @@ const initialState: MediaState = {
 export const MediaStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
-  withMethods((store, service = inject(MediaService)) => ({
+  withMethods((_store, _service = inject(MediaService)) => ({
     // Load all media items from the service and update the state
     // Load selected media item from the service and update the state
     // Add a media item from the service and update the state
