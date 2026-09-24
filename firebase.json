@@ -10,13 +10,13 @@
       "port": 9199
     },
     "ui": {
-      "enabled": true
+      "enabled": true,
+      "port": 4010
     },
     "singleProjectMode": true
   },
   "firestore": {
-    "rules": "firestore.rules",
-    "indexes": "firestore.indexes.json"
+    "rules": "firestore.rules"
   },
   "storage": {
     "rules": "storage.rules"

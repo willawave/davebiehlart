@@ -24,21 +24,27 @@ export const OUTSIDER_EMAIL = 'outsider@example.com';
 export const SECOND_ADMIN_UID = 'admin-uid-111111111111';
 export const SECOND_ADMIN_EMAIL = 'second-admin@example.com';
 
-export const CONTENT_COLLECTIONS = ['gallery', 'statue', 'event', 'schedule', 'media'];
+// Content collections with a `visible` flag: public get, list only when filtered on
+// visible == true. `schedule` has no flag and is fully public.
+export const VISIBLE_COLLECTIONS = ['gallery', 'statue', 'event', 'media'];
 
-// Ports come from firebase.json. The demo- prefix guarantees nothing reaches production.
+// Read from firebase.json so the suite can't drift from the emulators' ports.
+const { emulators } = JSON.parse(readFileSync('firebase.json', 'utf8'));
+
+// The demo- prefix guarantees nothing reaches production. Must match the `test:rules`
+// script's --project, because firebase.json sets singleProjectMode.
 export async function setupTestEnv() {
   const testEnv = await initializeTestEnvironment({
     projectId: 'demo-bronze-horse-rules',
     firestore: {
       rules: readFileSync('firestore.rules', 'utf8'),
       host: '127.0.0.1',
-      port: 8080,
+      port: emulators.firestore.port,
     },
     storage: {
       rules: readFileSync('storage.rules', 'utf8'),
       host: '127.0.0.1',
-      port: 9199,
+      port: emulators.storage.port,
     },
   });
 

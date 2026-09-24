@@ -4,8 +4,9 @@ rules_version = '2';
 // whose ID is the account's Auth UID, holding that account's { email }. Nothing in either
 // app ever writes to `users`; there is no self-service sign-up.
 //
-// Why the UID has to be the document ID: rules cannot run a `where` query, only get()
-// or exists() against a known path.
+// The UID is the only admin key, both here (isAdmin) and in the admin app, which must
+// check admin status with getDoc(users/{uid}) — never an email query. Emails are
+// hand-entered, may differ in case from the token, and are unverified for some providers.
 //
 // signInWithPopup completes a real Firebase sign-in for ANY Google account, so
 // `request.auth != null` is never an authorization check here. Use isAdmin().
@@ -21,24 +22,48 @@ service cloud.firestore {
     }
 
     // Public site content. Read by signed-out visitors and by SSR, which runs the web
-    // SDK unauthenticated — so these reads must stay open.
+    // SDK unauthenticated.
     //
-    // Do NOT scope these reads on `visible`. List queries filter on it, but detail pages
-    // and admin edit forms fetch by ID with no visibility predicate; a `visible`-scoped
-    // read rule breaks both.
-    match /gallery/{docId}  { allow read: if true; allow write: if isAdmin(); }
-    match /statue/{docId}   { allow read: if true; allow write: if isAdmin(); }
-    match /event/{docId}    { allow read: if true; allow write: if isAdmin(); }
-    match /schedule/{docId} { allow read: if true; allow write: if isAdmin(); }
-    match /media/{docId}    { allow read: if true; allow write: if isAdmin(); }
+    // `get` stays open and is NOT scoped on `visible`: detail pages and admin edit forms
+    // fetch by ID with no visibility predicate. `list` is scoped: public queries must
+    // filter on `visible == true` (the rule is checked against the query's constraints),
+    // so hidden drafts can't be enumerated. Admins may list everything.
+    function canList() {
+      return resource.data.visible == true || isAdmin();
+    }
 
-    // The admin allowlist. A signed-in user may read only their own entry, so a
-    // non-admin looking themselves up gets an empty result rather than another admin's
-    // record. Never client-writable.
+    match /gallery/{docId} {
+      allow get: if true;
+      allow list: if canList();
+      allow write: if isAdmin();
+    }
+    match /statue/{docId} {
+      allow get: if true;
+      allow list: if canList();
+      allow write: if isAdmin();
+    }
+    match /event/{docId} {
+      allow get: if true;
+      allow list: if canList();
+      allow write: if isAdmin();
+    }
+    match /media/{docId} {
+      allow get: if true;
+      allow list: if canList();
+      allow write: if isAdmin();
+    }
+
+    // The weekly schedule has no drafts or `visible` flag, so it is fully public.
+    match /schedule/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // The admin allowlist. A signed-in user may fetch only their own entry, by UID.
+    // No listing or querying, and never client-writable.
     match /users/{userId} {
-      allow read:  if request.auth != null
-                   && resource.data.email == request.auth.token.email;
-      allow write: if false;
+      allow get: if request.auth != null && request.auth.uid == userId;
+      allow list, write: if false;
     }
 
     // Anything not matched above is denied, including collections that do not exist

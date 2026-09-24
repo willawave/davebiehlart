@@ -1,3 +1,4 @@
+import { RESPONSE_INIT } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NotFoundPage } from './not-found-page';
 
@@ -17,5 +18,16 @@ describe('NotFoundPage', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should set a 404 status when server-rendered', () => {
+    const responseInit: ResponseInit = {};
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      imports: [NotFoundPage],
+      providers: [{ provide: RESPONSE_INIT, useValue: responseInit }],
+    });
+    TestBed.createComponent(NotFoundPage);
+    expect(responseInit.status).toBe(404);
   });
 });

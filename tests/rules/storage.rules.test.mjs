@@ -1,5 +1,5 @@
 import { assertFails, assertSucceeds } from '@firebase/rules-unit-testing';
-import { deleteObject, getMetadata, ref, uploadBytes } from 'firebase/storage';
+import { deleteObject, getMetadata, listAll, ref, uploadBytes } from 'firebase/storage';
 import { after, before, beforeEach, describe, test } from 'node:test';
 import { contexts, setupTestEnv } from './helpers.mjs';
 
@@ -17,6 +17,9 @@ const CLOSED = [
   'gallery/key123/nested/photo.jpg',
   'other/key123/photo.jpg',
 ];
+
+// Must match the size limit in storage.rules.
+const MAX_UPLOAD_BYTES = 20 * 1024 * 1024;
 
 let testEnv;
 let ctx;
@@ -39,18 +42,40 @@ beforeEach(async () => {
 });
 
 describe('reads', () => {
-  test('anyone can read any object', async () => {
+  test('anyone can get any object', async () => {
     for (const path of [...WRITABLE, ...CLOSED]) {
       await assertSucceeds(getMetadata(ref(ctx.anon.storage(), path)));
     }
+  });
+
+  test('signed-out visitors and non-admins cannot list the bucket', async () => {
+    for (const c of [ctx.anon, ctx.outsider]) {
+      await assertFails(listAll(ref(c.storage(), 'gallery')));
+      await assertFails(listAll(ref(c.storage(), 'gallery/key123')));
+    }
+  });
+
+  test('admins can list', async () => {
+    await assertSucceeds(listAll(ref(ctx.admin.storage(), 'gallery/key123')));
   });
 });
 
 describe('writable prefixes', () => {
   for (const path of WRITABLE) {
-    test(`admins can upload and delete ${path}`, async () => {
+    test(`admins can upload and delete an image at ${path}`, async () => {
       await assertSucceeds(uploadBytes(ref(ctx.admin.storage(), path), BYTES, JPEG));
       await assertSucceeds(deleteObject(ref(ctx.admin.storage(), path)));
+    });
+
+    test(`admins cannot upload non-images or SVG to ${path}`, async () => {
+      for (const contentType of ['text/html', 'image/svg+xml', 'application/octet-stream']) {
+        await assertFails(uploadBytes(ref(ctx.admin.storage(), path), BYTES, { contentType }));
+      }
+    });
+
+    test(`admins cannot upload an image of ${MAX_UPLOAD_BYTES} bytes or more to ${path}`, async () => {
+      const tooBig = new Uint8Array(MAX_UPLOAD_BYTES);
+      await assertFails(uploadBytes(ref(ctx.admin.storage(), path), tooBig, JPEG));
     });
 
     test(`signed-out visitors and non-admins cannot write ${path}`, async () => {

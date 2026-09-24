@@ -1,8 +1,9 @@
 import { defineConfig, devices } from '@playwright/test';
 
-// Neither app initializes Firebase yet, so the dev servers need no backend. Once they
-// do, wrap `pnpm e2e` in `firebase emulators:exec --project demo-bronze-horse-e2e` so
-// E2E runs can never reach the production project.
+// Both apps provide Firebase, but no store injects it yet, so the dev servers need no
+// backend. Once one does, wrap `pnpm e2e` in `firebase emulators:exec --project
+// demo-bronze-horse` — it must match EMULATOR_FIREBASE_ENVIRONMENT's projectId, because
+// firebase.json sets singleProjectMode.
 const WEB_URL = 'http://localhost:4200';
 const ADMIN_URL = 'http://localhost:4201';
 

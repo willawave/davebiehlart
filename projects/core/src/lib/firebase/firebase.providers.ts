@@ -2,6 +2,7 @@ import {
   EnvironmentProviders,
   InjectionToken,
   inject,
+  isDevMode,
   makeEnvironmentProviders,
 } from '@angular/core';
 import type { FirebaseOptions } from 'firebase/app';
@@ -42,30 +43,40 @@ export function provideFirebase(environment: FirebaseEnvironment): EnvironmentPr
   return makeEnvironmentProviders([{ provide: FIREBASE_ENVIRONMENT, useValue: environment }]);
 }
 
-// Refuses to mix emulators with a real project, e.g. if production config is pasted into
-// a development environment by mistake.
-export function assertSafeFirebaseEnvironment(environment: FirebaseEnvironment): void {
+// Refuses to let a development build, or anything using the emulators, touch a real
+// project: e.g. production config pasted into environment.development.ts, or
+// useEmulators flipped off there. Only production builds may use a non-demo project ID.
+export function assertSafeFirebaseEnvironment(
+  environment: FirebaseEnvironment,
+  devMode = isDevMode(),
+): void {
   const projectId = environment.options.projectId ?? '';
-  if (environment.useEmulators && !projectId.startsWith('demo-')) {
+  if ((environment.useEmulators || devMode) && !projectId.startsWith('demo-')) {
     throw new Error(
-      `Firebase emulators require a demo- project ID, got "${projectId}". ` +
-        'Never point a development build at a real Firebase project.',
+      `Development builds and the Firebase emulators require a demo- project ID, got ` +
+        `"${projectId}". Never point a development build at a real Firebase project.`,
     );
   }
 }
 
 // The SDK throws if an instance is connected to an emulator twice. Token factories re-run
 // per injector (per SSR request, per TestBed), but getX(app) returns the same instance.
-// Must be called from an injection context (a token factory).
-const connectedToEmulator = new WeakSet<object>();
+// The marker lives on the SDK instance, not in module state, so it survives the dev
+// server re-evaluating this module (HMR) while the SDK singletons live on.
+const CONNECTED_TO_EMULATOR = Symbol.for('davebiehlart.firebase.connectedToEmulator');
+interface EmulatorMarked {
+  [CONNECTED_TO_EMULATOR]?: true;
+}
 
+// Must be called from an injection context (a token factory).
 export function connectToEmulatorOnce<T extends object>(
   instance: T,
   connect: (instance: T) => void,
 ): T {
-  if (inject(FIREBASE_ENVIRONMENT).useEmulators && !connectedToEmulator.has(instance)) {
+  const marked = instance as T & EmulatorMarked;
+  if (inject(FIREBASE_ENVIRONMENT).useEmulators && !marked[CONNECTED_TO_EMULATOR]) {
     connect(instance);
-    connectedToEmulator.add(instance);
+    marked[CONNECTED_TO_EMULATOR] = true;
   }
   return instance;
 }
