@@ -2,57 +2,65 @@
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.1.8.
 
-## Development server
+It is an Angular monorepo with three projects: `web` (the public, server-rendered site), `admin` (the auth-protected admin app), and `core` (shared models, constants, and Firebase providers). See [PROJECT.md](PROJECT.md) for goals and scope, and [AGENTS.md](AGENTS.md) for architecture, production-data guardrails, and the full command reference.
 
-To start a local development server, run:
+## Prerequisites
+
+- Node.js 24 (see `.nvmrc`) and pnpm (`corepack enable`)
+- Java 21 or later, for the Firebase emulators (`pnpm start`, `pnpm test:rules`)
+
+Install dependencies:
 
 ```bash
-ng serve
+pnpm install
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Development server
+
+To run both apps against local Firebase emulators, run:
+
+```bash
+pnpm start
+```
+
+This starts the web app at `http://localhost:4200/`, the admin app at `http://localhost:4201/`, and the emulator UI at `http://localhost:4010/`. Emulator data starts empty and is discarded when you stop it with Ctrl-C. Development builds only ever talk to the emulators, never the production Firebase project.
+
+To run the emulators alone, use `pnpm emulators`.
 
 ## Code scaffolding
 
 Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
 
 ```bash
-ng generate component component-name
+pnpm ng generate component component-name --project web
 ```
 
 For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
 
 ```bash
-ng generate --help
+pnpm ng generate --help
 ```
 
 ## Building
 
-To build the project run:
+To build a project, run:
 
 ```bash
-ng build
+pnpm ng build web
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Use `core`, `web`, or `admin` as the project name. Build artifacts go to the `dist/` directory.
 
-## Running unit tests
+## Running tests
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+| Command                                         | What it runs                                                        |
+| ----------------------------------------------- | ------------------------------------------------------------------- |
+| `pnpm ng test <web\|admin\|core> --watch=false` | [Vitest](https://vitest.dev/) unit tests for one project            |
+| `pnpm test:rules`                               | Firestore and Storage security rules tests against the emulators    |
+| `pnpm e2e`                                      | [Playwright](https://playwright.dev/) smoke tests for web and admin |
+| `pnpm lint`                                     | ESLint (angular-eslint)                                             |
 
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+CI (`.github/workflows/ci.yml`) runs formatting, lint, unit tests, builds, rules tests, and E2E on every pull request.
 
 ## Additional Resources
 
