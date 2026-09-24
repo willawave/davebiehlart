@@ -58,4 +58,12 @@ Found on branch `feat-dev-tooling` (/ship adversarial review).
 
 Found on branch `feat-dev-tooling` (/ship adversarial review).
 
+### Re-run /setup-deploy when hosting goes live
+
+**Priority:** P2
+
+The "Deploy Configuration" in CLAUDE.md is merge-only (platform `none`), so `/land-and-deploy` merges and skips deploy verification. Once `web` and `admin` are actually served from this repo (davebiehlart.com and admin.davebiehlart.com, which today serve the legacy site), re-run `/setup-deploy` to record the platform, deploy trigger, status command, and health checks.
+
+Found on branch `feat-dev-tooling` (/setup-deploy).
+
 ## Completed

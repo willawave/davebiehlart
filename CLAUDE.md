@@ -33,3 +33,22 @@ Key routing rules:
 - Save progress → invoke /context-save
 - Resume context → invoke /context-restore
 - Author a backlog-ready spec/issue → invoke /spec
+
+## Deploy Configuration (configured by /setup-deploy)
+
+Nothing deploys from `main` yet: no hosting target in `firebase.json`, no deploy workflow. davebiehlart.com currently serves the legacy site, so health-checking it proves nothing about this repo. Re-run `/setup-deploy` when hosting goes live (see TODOS.md → "Re-run /setup-deploy when hosting goes live").
+
+- Platform: none (not deployed yet)
+- Production URL: none (planned: https://davebiehlart.com for web, https://admin.davebiehlart.com for admin)
+- Deploy workflow: none
+- Deploy status command: none
+- Merge method: squash
+- Project type: web app (SSR `web` + `admin` SPA)
+- Post-deploy health check: none (skip deploy verification)
+
+### Custom deploy hooks
+
+- Pre-merge: none (CI in `.github/workflows/ci.yml` gates the PR)
+- Deploy trigger: none
+- Deploy status: none
+- Health check: none
