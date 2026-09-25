@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here.
 
+## [0.2.1.1] - 2026-09-24
+
+### Changed
+
+- Local `/retro` snapshots in `.context/` are no longer picked up by git, so running a retro leaves the working tree clean.
+
 ## [0.2.1.0] - 2026-09-24
 
 ### Changed
