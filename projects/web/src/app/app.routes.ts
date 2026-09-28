@@ -28,6 +28,7 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./gallery/bronze-detail/bronze-detail').then((c) => c.BronzeDetail),
         resolve: { galleryDetailResolver },
+        title: `Bronzes | ${Site.TITLE}`,
         data: { breadcrumb: detailBreadcrumb },
       },
     ],
@@ -46,6 +47,7 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./statue/statue-detail/statue-detail').then((c) => c.StatueDetail),
         resolve: { statueDetailResolver },
+        title: `Statues | ${Site.TITLE}`,
         data: { breadcrumb: detailBreadcrumb },
       },
     ],
@@ -64,6 +66,7 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./gallery/glass-detail/glass-detail').then((c) => c.GlassDetail),
         resolve: { galleryDetailResolver },
+        title: `Kiln Glass | ${Site.TITLE}`,
         data: { breadcrumb: detailBreadcrumb },
       },
     ],
@@ -81,6 +84,7 @@ export const routes: Routes = [
         path: ':id',
         loadComponent: () => import('./event/event-detail/event-detail').then((c) => c.EventDetail),
         resolve: { eventDetailResolver },
+        title: `Events | ${Site.TITLE}`,
         data: { breadcrumb: detailBreadcrumb },
       },
     ],
@@ -97,6 +101,7 @@ export const routes: Routes = [
       {
         path: ':id',
         loadComponent: () => import('./media/media-detail/media-detail').then((c) => c.MediaDetail),
+        title: `Media | ${Site.TITLE}`,
         data: { breadcrumb: detailBreadcrumb },
       },
     ],
