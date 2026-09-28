@@ -94,6 +94,39 @@ test.describe('desktop', () => {
     await expect(page).toHaveURL('/contact');
     await expect(page.locator('main app-contact-page')).toBeAttached();
   });
+
+  test('the skip link pressed before hydration reaches the content without errors', async ({
+    page,
+  }) => {
+    const errors: string[] = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    page.on('console', (message) => {
+      if (message.type() === 'error') {
+        errors.push(message.text());
+      }
+    });
+    // Hold the app bundle so the press lands on the server-rendered page; event replay
+    // replays it into Angular during hydration.
+    let release!: () => void;
+    const held = new Promise<void>((resolve) => (release = resolve));
+    await page.route(/\/main[^/]*\.js$/, async (route) => {
+      await held;
+      await route.continue();
+    });
+
+    // A held module script also holds DOMContentLoaded, so wait only for the server's HTML.
+    await page.goto('/contact', { waitUntil: 'commit' });
+    const skip = page.getByRole('link', { name: 'Skip to content' });
+    await expect(skip).toBeAttached();
+    await page.keyboard.press('Tab');
+    await expect(skip).toBeFocused();
+    await page.keyboard.press('Enter');
+    release();
+    await page.waitForFunction(() => !document.querySelector('[ngh]'));
+
+    await expect(page.locator('main')).toBeFocused();
+    expect(errors).toEqual([]);
+  });
 });
 
 test.describe('hydration', () => {
