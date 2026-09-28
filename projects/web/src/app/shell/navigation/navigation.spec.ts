@@ -110,6 +110,12 @@ describe('Navigation', () => {
     expect(Array.from(current, (a) => a.textContent?.trim())).toEqual(['Bronzes']);
   });
 
+  it('should ignore query, matrix params, and fragment when marking the current page', async () => {
+    await harness.navigateByUrl('/bronzes;view=grid?sort=new#top');
+    const current = element().querySelectorAll('nav[aria-label="Main"] a[aria-current="page"]');
+    expect(Array.from(current, (a) => a.textContent?.trim())).toEqual(['Bronzes']);
+  });
+
   it('should mark the section, not the page, on a detail page', async () => {
     await harness.navigateByUrl('/bronzes/abc');
     const nav = element().querySelector('nav[aria-label="Main"]')!;

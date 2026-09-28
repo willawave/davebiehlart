@@ -20,7 +20,7 @@
           [routerLink]="link.path"
           routerLinkActive="active"
           [routerLinkActiveOptions]="{ exact: link.path === '/' }"
-          [attr.aria-current]="ariaCurrent()[link.path]"
+          [ariaCurrentWhenActive]="ariaCurrent()[link.path]"
           (click)="menuOpen.set(false)"
           >{{ link.label }}</a
         >
@@ -50,7 +50,7 @@
             [routerLink]="link.path"
             routerLinkActive="active"
             [routerLinkActiveOptions]="{ exact: link.path === '/' }"
-            [attr.aria-current]="ariaCurrent()[link.path]"
+            [ariaCurrentWhenActive]="ariaCurrent()[link.path]"
             >{{ link.label }}</a
           >
         }

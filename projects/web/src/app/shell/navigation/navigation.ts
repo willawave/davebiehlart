@@ -1,9 +1,17 @@
+import { Location } from '@angular/common';
 import { Component, computed, ElementRef, inject, signal, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatSidenav, MatSidenavContainer, MatSidenavContent } from '@angular/material/sidenav';
-import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import {
+  NavigationEnd,
+  PRIMARY_OUTLET,
+  Router,
+  RouterLink,
+  RouterLinkActive,
+  RouterOutlet,
+} from '@angular/router';
 import { filter } from 'rxjs';
 import { ColorScheme } from '../../color-scheme/color-scheme/color-scheme';
 import { Breadcrumb } from '../../shared/breadcrumb/breadcrumb';
@@ -35,20 +43,26 @@ export class Navigation {
   protected readonly menuOpen = signal(false);
   private readonly main = viewChild.required<ElementRef<HTMLElement>>('main');
   private readonly router = inject(Router);
-  private readonly url = signal(this.router.url);
+  // Seeded from Location, not router.url: the shell hydrates before the initial navigation
+  // ends, and until then router.url is "/".
+  private readonly url = signal(inject(Location).path(true) || '/');
+  // Path segments only, without query, matrix params, or fragment.
+  private readonly path = computed(() => {
+    const segments = this.router.parseUrl(this.url()).root.children[PRIMARY_OUTLET]?.segments;
+    return `/${(segments ?? []).map((segment) => segment.path).join('/')}`;
+  });
   // With <base href="/">, a bare "#main" resolves to "/#main" and would leave the current page,
   // so the href carries the current path, which also holds before hydration.
   protected readonly skipHref = computed(() => `${this.url().split('#')[0]}#main`);
-  // aria-current per link: "page" for the page shown, "true" for its section while a detail
-  // page is shown (the breadcrumb marks that page), so only one link claims to be the page.
+  // aria-current for each link while routerLinkActive marks it: "page" for the page shown, "true"
+  // for its section while a detail page is shown (the breadcrumb marks that page), so only one
+  // link claims to be the page. It goes through ariaCurrentWhenActive because routerLinkActive
+  // removes any other aria-current binding.
   protected readonly ariaCurrent = computed(() => {
-    const path = this.url().split(/[?#]/)[0];
+    const path = this.path();
     return Object.fromEntries(
-      this.links.map(({ path: link }) => {
-        const inSection = link !== '/' && path.startsWith(`${link}/`);
-        return [link, path === link ? 'page' : inSection ? 'true' : null];
-      }),
-    );
+      this.links.map(({ path: link }) => [link, path === link ? 'page' : true]),
+    ) as Record<string, 'page' | true>;
   });
 
   constructor() {
