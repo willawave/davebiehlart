@@ -1,0 +1,19 @@
+{
+  "name": "gallery/seed-glass-hidden-key/1-square.jpg",
+  "bucket": "demo-bronze-horse.appspot.com",
+  "metageneration": 1,
+  "generation": 1790637633746,
+  "contentType": "image/jpeg",
+  "storageClass": "STANDARD",
+  "contentDisposition": "inline",
+  "downloadTokens": [
+    "7e498b4c-02e2-4ef3-ad3f-936f98794fd2"
+  ],
+  "etag": "9giLaEID6jZ+YFf7qnYWCaKOehE",
+  "customMetadata": {},
+  "timeCreated": "2026-09-28T23:20:33.746Z",
+  "updated": "2026-09-28T23:20:33.746Z",
+  "size": 12852,
+  "md5Hash": "wjvhIAHQZsguNuGFsW43/w==",
+  "crc32c": "2897644926"
+}

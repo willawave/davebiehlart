@@ -1,0 +1,19 @@
+{
+  "name": "gallery/seed-bronze-hidden-key/1-portrait.jpg",
+  "bucket": "demo-bronze-horse.appspot.com",
+  "metageneration": 1,
+  "generation": 1790637633737,
+  "contentType": "image/jpeg",
+  "storageClass": "STANDARD",
+  "contentDisposition": "inline",
+  "downloadTokens": [
+    "5a42c954-60c0-43c0-84a5-db41b4d212b1"
+  ],
+  "etag": "r+MvDOexl14lqZzWQwhcLeGlPh8",
+  "customMetadata": {},
+  "timeCreated": "2026-09-28T23:20:33.737Z",
+  "updated": "2026-09-28T23:20:33.737Z",
+  "size": 11297,
+  "md5Hash": "R5gek5K967royROv+MCmwQ==",
+  "crc32c": "2247175682"
+}

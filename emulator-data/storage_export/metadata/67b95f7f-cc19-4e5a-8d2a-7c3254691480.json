@@ -1,0 +1,19 @@
+{
+  "name": "gallery/seed-glass-09-key/1-landscape.jpg",
+  "bucket": "demo-bronze-horse.appspot.com",
+  "metageneration": 1,
+  "generation": 1790637633716,
+  "contentType": "image/jpeg",
+  "storageClass": "STANDARD",
+  "contentDisposition": "inline",
+  "downloadTokens": [
+    "0250857b-5a7c-4898-8d03-abd4877a84e3"
+  ],
+  "etag": "U6V6vS8g78Eb3Svo2HNEZ9GzoH8",
+  "customMetadata": {},
+  "timeCreated": "2026-09-28T23:20:33.716Z",
+  "updated": "2026-09-28T23:20:33.716Z",
+  "size": 10387,
+  "md5Hash": "U0skodxrSHGsJ78+2AbBvA==",
+  "crc32c": "2575284705"
+}

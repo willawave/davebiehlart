@@ -1,0 +1,68 @@
+:host {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px;
+  background: var(--dba-page);
+  color: var(--dba-ink);
+}
+
+.full {
+  display: block;
+  max-width: calc(96vw - 24px);
+  max-height: calc(96vh - 88px);
+  object-fit: contain;
+}
+
+.close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: var(--dba-page);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.count {
+  min-width: 4ch;
+  color: var(--dba-muted);
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.arrow {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--dba-rule);
+  border-radius: 50%;
+  background: var(--dba-page);
+  color: var(--dba-ink);
+  cursor: pointer;
+
+  svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+  }
+
+  &:hover {
+    border-color: var(--dba-bronze);
+    color: var(--dba-bronze);
+  }
+
+  &:focus-visible {
+    outline: 3px solid var(--dba-bronze);
+    outline-offset: 2px;
+  }
+}

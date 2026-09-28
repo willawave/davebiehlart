@@ -1,0 +1,110 @@
+:host {
+  display: block;
+}
+
+fieldset {
+  display: flex;
+  flex-direction: column;
+  margin: 0 0 20px;
+  padding: 16px 20px 20px;
+  border: 1px solid var(--dba-rule);
+  background: #fffdf8;
+}
+
+legend {
+  padding: 0 6px;
+  font-weight: 600;
+}
+
+.specs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  column-gap: 16px;
+}
+
+.hint {
+  margin: 0 0 12px;
+  color: var(--dba-muted);
+  font-size: 0.875rem;
+}
+
+// Opened by the Upload photos button; hidden from everyone else.
+.file-input {
+  display: none;
+}
+
+#upload {
+  align-self: flex-start;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 24px;
+  margin: 8px 0;
+  font-size: 0.875rem;
+}
+
+.error {
+  margin: 4px 0;
+  color: #8a1c1c;
+  font-size: 0.875rem;
+}
+
+.photos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+figure {
+  margin: 0;
+  padding: 6px;
+  border: 1px solid var(--dba-rule);
+  background: #fff;
+
+  img {
+    display: block;
+    width: 128px;
+    height: 128px;
+    object-fit: cover;
+  }
+}
+
+figcaption {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+}
+
+.icon-button {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid var(--dba-rule);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--dba-ink);
+  font-size: 1.125rem;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--dba-bronze);
+    outline-offset: 2px;
+  }
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}

@@ -1,0 +1,19 @@
+{
+  "name": "gallery/seed-glass-03-key/1-tall.jpg",
+  "bucket": "demo-bronze-horse.appspot.com",
+  "metageneration": 1,
+  "generation": 1790637633646,
+  "contentType": "image/jpeg",
+  "storageClass": "STANDARD",
+  "contentDisposition": "inline",
+  "downloadTokens": [
+    "bea5bfd8-9b1d-4729-824d-5268626774fe"
+  ],
+  "etag": "jm55kDnzxkpaFSj9Pbqt14roeJg",
+  "customMetadata": {},
+  "timeCreated": "2026-09-28T23:20:33.646Z",
+  "updated": "2026-09-28T23:20:33.646Z",
+  "size": 7582,
+  "md5Hash": "GL+vmoTLy9XYJn6ULpelOA==",
+  "crc32c": "2861839961"
+}

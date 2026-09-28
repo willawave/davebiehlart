@@ -45,10 +45,14 @@ test.describe('desktop', () => {
     await page.goto('/');
     await expect(page.getByRole('navigation', { name: 'Breadcrumb' })).toHaveCount(0);
 
-    await page.goto('/bronzes/some-bronze');
+    await page.goto('/bronzes/seed-bronze-01');
     const breadcrumb = page.getByRole('navigation', { name: 'Breadcrumb' });
-    await expect(breadcrumb.getByRole('listitem')).toHaveText(['Home', 'Bronzes', 'Details']);
-    await expect(breadcrumb.locator('[aria-current="page"]')).toHaveText('Details');
+    await expect(breadcrumb.getByRole('listitem')).toHaveText([
+      'Home',
+      'Bronzes',
+      'Mustang at Dawn',
+    ]);
+    await expect(breadcrumb.locator('[aria-current="page"]')).toHaveText('Mustang at Dawn');
     // The header marks the section, leaving "page" to the breadcrumb.
     const bronzes = page
       .getByRole('navigation', { name: 'Main' })
@@ -130,7 +134,8 @@ test.describe('desktop', () => {
 });
 
 test.describe('hydration', () => {
-  for (const path of ['/', '/bronzes/some-bronze']) {
+  // The gallery pages render seeded Firestore data; hydration must keep the server's DOM.
+  for (const path of ['/', '/bronzes', '/bronzes/seed-bronze-01']) {
     test(`${path} keeps the server-rendered page and breadcrumb`, async ({ page }) => {
       const warnings: string[] = [];
       page.on('console', (message) => {
@@ -285,7 +290,7 @@ test.describe('color scheme', () => {
   });
 
   for (const colorScheme of ['light', 'dark'] as const) {
-    for (const path of ['/', '/bronzes/some-bronze']) {
+    for (const path of ['/', '/bronzes', '/bronzes/seed-bronze-01', '/glass']) {
       test(`${path} passes axe in ${colorScheme} mode`, async ({ page }) => {
         await page.emulateMedia({ colorScheme });
         await page.goto(path);

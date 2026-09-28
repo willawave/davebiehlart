@@ -1,0 +1,19 @@
+{
+  "name": "gallery/seed-glass-03-key/2-portrait.jpg",
+  "bucket": "demo-bronze-horse.appspot.com",
+  "metageneration": 1,
+  "generation": 1790637633651,
+  "contentType": "image/jpeg",
+  "storageClass": "STANDARD",
+  "contentDisposition": "inline",
+  "downloadTokens": [
+    "8fb56123-0df6-4615-b030-3df3407b0287"
+  ],
+  "etag": "8NpEGbG1vck7Q3jsUOuzXRDbqbQ",
+  "customMetadata": {},
+  "timeCreated": "2026-09-28T23:20:33.651Z",
+  "updated": "2026-09-28T23:20:33.651Z",
+  "size": 10688,
+  "md5Hash": "dEAtE6kShyNma+eIBQ1Ltg==",
+  "crc32c": "3472273071"
+}

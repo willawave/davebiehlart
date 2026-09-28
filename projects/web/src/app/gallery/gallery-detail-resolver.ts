@@ -1,5 +1,50 @@
-import { ResolveFn } from '@angular/router';
+import { inject } from '@angular/core';
+import { Meta } from '@angular/platform-browser';
+import { ActivatedRouteSnapshot, RedirectCommand, ResolveFn, Router } from '@angular/router';
+import { GalleryDocument, GalleryStyle } from 'core';
+import { setPageMeta, toMetaDescription } from '../shared/page-meta';
+import { Site } from '../shared/site.enum';
+import { GalleryStore } from './gallery.store';
 
-export const galleryDetailResolver: ResolveFn<boolean> = () => {
-  return true;
+// The section heading each style is listed under.
+export const GALLERY_SECTION_LABELS: Record<GalleryStyle, string> = {
+  [GalleryStyle.BRONZE]: 'Bronzes',
+  [GalleryStyle.GLASS]: 'Kiln Glass',
+};
+
+// The style comes from the section route's `data`.
+function section(route: ActivatedRouteSnapshot): { style: GalleryStyle; label: string } {
+  const style = route.data['style'] as GalleryStyle;
+  return { style, label: GALLERY_SECTION_LABELS[style] };
+}
+
+function load(route: ActivatedRouteSnapshot): Promise<GalleryDocument | null> {
+  return inject(GalleryStore).loadSelected(route.paramMap.get('id') ?? '', section(route).style);
+}
+
+// A missing, hidden, or wrong-section item (a glass ID under /bronzes) renders the not-found
+// page, which answers 404, while the address bar keeps the requested URL.
+export const galleryDetailResolver: ResolveFn<GalleryDocument> = async (route, state) => {
+  const router = inject(Router);
+  const meta = inject(Meta);
+  const item = await load(route);
+  if (!item) {
+    return new RedirectCommand(router.parseUrl('/not-found'), { skipLocationChange: true });
+  }
+  const { label } = section(route);
+  setPageMeta(meta, {
+    title: `${item.name} | ${label}`,
+    description: toMetaDescription(item.description) || `${item.name}, by Dave Biehl.`,
+    path: state.url,
+    image: item.imageUrls[0] ? { url: item.imageUrls[0], alt: item.name } : undefined,
+  });
+  return item;
+};
+
+// Every leaf route needs a title, or the previous page's title lingers. Shares the data
+// resolver's request through GalleryStore.loadSelected.
+export const galleryDetailTitle: ResolveFn<string> = async (route) => {
+  const item = await load(route);
+  const { label } = section(route);
+  return item ? `${item.name} | ${label} | ${Site.TITLE}` : `Not Found | ${Site.TITLE}`;
 };

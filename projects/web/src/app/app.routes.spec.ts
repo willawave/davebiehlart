@@ -1,7 +1,8 @@
-import { Route } from '@angular/router';
+import { Route, Routes } from '@angular/router';
+import { GalleryStyle } from 'core';
 import { routes } from './app.routes';
 import { eventDetailResolver } from './event/event-detail-resolver';
-import { galleryDetailResolver } from './gallery/gallery-detail-resolver';
+import { galleryDetailResolver, galleryDetailTitle } from './gallery/gallery-detail-resolver';
 import { detailBreadcrumb } from './shared/breadcrumb/breadcrumb';
 import { RouterLinks } from './shared/router-links.enum';
 import { Site } from './shared/site.enum';
@@ -16,32 +17,64 @@ function route(path: string): Route {
   return found;
 }
 
+// A route's children, whether inline or lazily loaded (none for a leaf page).
+async function childrenOf(section: Route): Promise<Routes> {
+  if (section.loadChildren) {
+    return (section.loadChildren as () => Promise<Routes>)();
+  }
+  return section.children ?? [];
+}
+
 describe('routes', () => {
   const sections = [
-    { path: RouterLinks.BRONZES, label: 'Bronzes', resolve: { galleryDetailResolver } },
-    { path: RouterLinks.STATUES, label: 'Statues', resolve: { statueDetailResolver } },
-    { path: RouterLinks.GLASS, label: 'Kiln Glass', resolve: { galleryDetailResolver } },
-    { path: RouterLinks.EVENTS, label: 'Events', resolve: { eventDetailResolver } },
-    { path: RouterLinks.MEDIA, label: 'Media', resolve: undefined },
+    {
+      path: RouterLinks.BRONZES,
+      label: 'Bronzes',
+      resolve: { galleryDetailResolver },
+      title: galleryDetailTitle,
+      style: GalleryStyle.BRONZE,
+    },
+    {
+      path: RouterLinks.STATUES,
+      label: 'Statues',
+      resolve: { statueDetailResolver },
+      title: `Statues | ${Site.TITLE}`,
+    },
+    {
+      path: RouterLinks.GLASS,
+      label: 'Kiln Glass',
+      resolve: { galleryDetailResolver },
+      title: galleryDetailTitle,
+      style: GalleryStyle.GLASS,
+    },
+    {
+      path: RouterLinks.EVENTS,
+      label: 'Events',
+      resolve: { eventDetailResolver },
+      title: `Events | ${Site.TITLE}`,
+    },
+    { path: RouterLinks.MEDIA, label: 'Media', resolve: undefined, title: `Media | ${Site.TITLE}` },
   ];
 
-  for (const { path, label, resolve } of sections) {
+  for (const { path, label, resolve, title, style } of sections) {
     describe(`/${path}`, () => {
       it(`should have the breadcrumb "${label}"`, () => {
         expect(route(path).data?.['breadcrumb']).toBe(label);
+        expect(route(path).data?.['style']).toBe(style);
       });
 
-      it('should title its list page', () => {
-        const list = route(path).children?.find((r) => r.path === '');
+      it('should title its list page', async () => {
+        const list = (await childrenOf(route(path))).find((r) => r.path === '');
         expect(list?.loadComponent).toBeDefined();
         expect(list?.title).toBe(`${label} | ${Site.TITLE}`);
       });
 
-      it('should name its detail page after the resolved document', () => {
-        const detail = route(path).children?.find((r) => r.path === ':id');
+      it('should name its detail page after the resolved document', async () => {
+        const detail = (await childrenOf(route(path))).find((r) => r.path === ':id');
         expect(detail?.loadComponent).toBeDefined();
         expect(detail?.data?.['breadcrumb']).toBe(detailBreadcrumb);
         expect(detail?.resolve).toEqual(resolve);
+        expect(detail?.title).toBe(title);
       });
     });
   }
@@ -63,8 +96,8 @@ describe('routes', () => {
   });
 
   it('should lazy-load every page', async () => {
-    const loaders = routes
-      .flatMap((r) => [r, ...(r.children ?? [])])
+    const children = await Promise.all(routes.map(childrenOf));
+    const loaders = [...routes, ...children.flat()]
       .map((r) => r.loadComponent)
       .filter((load): load is NonNullable<Route['loadComponent']> => !!load);
     expect(loaders.length).toBe(15);

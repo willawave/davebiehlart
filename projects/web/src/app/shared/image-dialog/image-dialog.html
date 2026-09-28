@@ -1,1 +1,15 @@
-<p>image-dialog works!</p>
+<img class="full" [src]="src()" [alt]="alt()" />
+<button type="button" class="close" matIconButton mat-dialog-close aria-label="Close">
+  <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">close</mat-icon>
+</button>
+@if (count > 1) {
+  <div class="nav">
+    <button type="button" class="arrow" aria-label="Previous photo" (click)="step(-1)">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6" /></svg>
+    </button>
+    <span class="count" aria-live="polite">{{ index() + 1 }} / {{ count }}</span>
+    <button type="button" class="arrow" aria-label="Next photo" (click)="step(1)">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
+    </button>
+  </div>
+}

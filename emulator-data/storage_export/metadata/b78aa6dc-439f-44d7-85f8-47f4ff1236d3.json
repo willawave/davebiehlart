@@ -1,0 +1,19 @@
+{
+  "name": "gallery/seed-glass-09-key/3-square.jpg",
+  "bucket": "demo-bronze-horse.appspot.com",
+  "metageneration": 1,
+  "generation": 1790637633727,
+  "contentType": "image/jpeg",
+  "storageClass": "STANDARD",
+  "contentDisposition": "inline",
+  "downloadTokens": [
+    "df729c0b-a791-4d77-9bd0-c5d2c261f609"
+  ],
+  "etag": "pF4+by9EOg9vXY4/Hxcfslf86mA",
+  "customMetadata": {},
+  "timeCreated": "2026-09-28T23:20:33.727Z",
+  "updated": "2026-09-28T23:20:33.727Z",
+  "size": 11413,
+  "md5Hash": "4VaaZzsUuI4AKIFMXBDp2Q==",
+  "crc32c": "4058457178"
+}

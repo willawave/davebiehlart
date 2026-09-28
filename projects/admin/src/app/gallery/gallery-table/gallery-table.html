@@ -1,1 +1,74 @@
-<p>gallery-table works!</p>
+<section class="panel wide" aria-labelledby="gallery-heading">
+  <p class="back"><a routerLink="/dashboard">‹ Dashboard</a></p>
+  <div class="head">
+    <h1 id="gallery-heading" #heading tabindex="-1">Gallery</h1>
+    <a matButton="filled" routerLink="/gallery-add">Add item</a>
+  </div>
+  @if (store.error(); as error) {
+    <p class="error" role="alert">{{ error }}</p>
+  }
+
+  @if (store.allGalleryItems().length) {
+    <div class="scroll">
+      <table mat-table [dataSource]="store.allGalleryItems()">
+        <caption class="caption">
+          Bronze and kiln glass items, newest first
+        </caption>
+        <ng-container matColumnDef="cover">
+          <th mat-header-cell *matHeaderCellDef><span class="hidden">Cover</span></th>
+          <td mat-cell *matCellDef="let item">
+            @if (item.imageUrls[0]; as src) {
+              <img class="thumb" [src]="src" alt="" />
+            }
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let item">{{ item.name }}</td>
+        </ng-container>
+        <ng-container matColumnDef="style">
+          <th mat-header-cell *matHeaderCellDef>Style</th>
+          <td mat-cell *matCellDef="let item">{{ item.style }}</td>
+        </ng-container>
+        <ng-container matColumnDef="visible">
+          <th mat-header-cell *matHeaderCellDef>On website</th>
+          <td mat-cell *matCellDef="let item">
+            <span class="chip" [class.hidden-chip]="!item.visible">{{
+              item.visible ? 'Visible' : 'Hidden'
+            }}</span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="created">
+          <th mat-header-cell *matHeaderCellDef>Created</th>
+          <td mat-cell *matCellDef="let item">{{ item.created.toDate() | date: 'mediumDate' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef><span class="hidden">Actions</span></th>
+          <td mat-cell *matCellDef="let item" class="actions">
+            <a
+              matButton="outlined"
+              [routerLink]="['/gallery-edit', item.id]"
+              [attr.aria-label]="'Edit ' + item.name"
+              >Edit</a
+            >
+            <button
+              type="button"
+              matButton="outlined"
+              [attr.aria-label]="'Delete ' + item.name"
+              [disabled]="store.loading()"
+              (click)="confirmDelete(item)"
+            >
+              Delete
+            </button>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="columns"></tr>
+        <tr mat-row *matRowDef="let row; columns: columns"></tr>
+      </table>
+    </div>
+  } @else if (store.loading()) {
+    <p class="muted" role="status">Loading…</p>
+  } @else if (!store.error()) {
+    <p class="muted">No gallery items yet. Add the first one.</p>
+  }
+</section>

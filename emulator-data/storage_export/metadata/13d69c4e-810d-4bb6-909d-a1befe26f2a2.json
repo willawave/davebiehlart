@@ -1,0 +1,19 @@
+{
+  "name": "gallery/seed-glass-06-key/1-wide.jpg",
+  "bucket": "demo-bronze-horse.appspot.com",
+  "metageneration": 1,
+  "generation": 1790637633684,
+  "contentType": "image/jpeg",
+  "storageClass": "STANDARD",
+  "contentDisposition": "inline",
+  "downloadTokens": [
+    "be697c6c-4d98-498f-9720-1cec58aed93c"
+  ],
+  "etag": "uGHQPNyCMIwovoKLdbzAJMuIcvs",
+  "customMetadata": {},
+  "timeCreated": "2026-09-28T23:20:33.684Z",
+  "updated": "2026-09-28T23:20:33.684Z",
+  "size": 7864,
+  "md5Hash": "xFngTSXa5a5cEgIydIS1dQ==",
+  "crc32c": "3090889885"
+}

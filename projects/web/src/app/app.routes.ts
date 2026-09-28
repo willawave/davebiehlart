@@ -1,13 +1,14 @@
 import { Routes } from '@angular/router';
+import { GalleryStyle } from 'core';
 import { eventDetailResolver } from './event/event-detail-resolver';
-import { galleryDetailResolver } from './gallery/gallery-detail-resolver';
 import { detailBreadcrumb } from './shared/breadcrumb/breadcrumb';
 import { RouterLinks } from './shared/router-links.enum';
 import { Site } from './shared/site.enum';
 import { statueDetailResolver } from './statue/statue-detail-resolver';
 
 // Each section nests its list and detail pages, so the route tree matches the breadcrumb:
-// Home › Bronzes › <item>.
+// Home › Bronzes › <item>. Sections that read Firestore load their children lazily
+// (e.g. gallery/gallery.routes.ts), keeping the SDK out of the initial bundle.
 export const routes: Routes = [
   {
     path: '',
@@ -16,22 +17,8 @@ export const routes: Routes = [
   },
   {
     path: RouterLinks.BRONZES,
-    data: { breadcrumb: 'Bronzes' },
-    children: [
-      {
-        path: '',
-        loadComponent: () => import('./gallery/bronze-list/bronze-list').then((c) => c.BronzeList),
-        title: `Bronzes | ${Site.TITLE}`,
-      },
-      {
-        path: ':id',
-        loadComponent: () =>
-          import('./gallery/bronze-detail/bronze-detail').then((c) => c.BronzeDetail),
-        resolve: { galleryDetailResolver },
-        title: `Bronzes | ${Site.TITLE}`,
-        data: { breadcrumb: detailBreadcrumb },
-      },
-    ],
+    data: { breadcrumb: 'Bronzes', style: GalleryStyle.BRONZE },
+    loadChildren: () => import('./gallery/gallery.routes').then((m) => m.bronzeRoutes),
   },
   {
     path: RouterLinks.STATUES,
@@ -54,22 +41,8 @@ export const routes: Routes = [
   },
   {
     path: RouterLinks.GLASS,
-    data: { breadcrumb: 'Kiln Glass' },
-    children: [
-      {
-        path: '',
-        loadComponent: () => import('./gallery/glass-list/glass-list').then((c) => c.GlassList),
-        title: `Kiln Glass | ${Site.TITLE}`,
-      },
-      {
-        path: ':id',
-        loadComponent: () =>
-          import('./gallery/glass-detail/glass-detail').then((c) => c.GlassDetail),
-        resolve: { galleryDetailResolver },
-        title: `Kiln Glass | ${Site.TITLE}`,
-        data: { breadcrumb: detailBreadcrumb },
-      },
-    ],
+    data: { breadcrumb: 'Kiln Glass', style: GalleryStyle.GLASS },
+    loadChildren: () => import('./gallery/gallery.routes').then((m) => m.glassRoutes),
   },
   {
     path: RouterLinks.EVENTS,

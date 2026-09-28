@@ -1,1 +1,44 @@
-<p>image-track works!</p>
+<div class="track" #track (scroll)="updateEnds()">
+  <ul>
+    @for (src of images(); track $index; let i = $index) {
+      <li>
+        <button
+          type="button"
+          class="photo"
+          aria-haspopup="dialog"
+          [attr.aria-label]="altTexts()[i] + ', view full size'"
+          (click)="open(i)"
+        >
+          <img
+            [src]="src"
+            [alt]="altTexts()[i]"
+            [attr.loading]="i === 0 ? null : 'lazy'"
+            decoding="async"
+          />
+        </button>
+      </li>
+    }
+  </ul>
+</div>
+@if (images().length > 1) {
+  <div class="controls">
+    <button
+      type="button"
+      class="arrow"
+      aria-label="Scroll photos back"
+      [disabled]="atStart()"
+      (click)="scroll(-1)"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6" /></svg>
+    </button>
+    <button
+      type="button"
+      class="arrow"
+      aria-label="Scroll photos forward"
+      [disabled]="atEnd()"
+      (click)="scroll(1)"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
+    </button>
+  </div>
+}

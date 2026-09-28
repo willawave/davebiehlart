@@ -1,1 +1,14 @@
-<p>gallery-add works!</p>
+<section class="panel wide" aria-labelledby="add-heading">
+  <p class="back"><a routerLink="/gallery">‹ Gallery</a></p>
+  <h1 id="add-heading" #heading tabindex="-1">Add gallery item</h1>
+  @if (store.error(); as error) {
+    <p class="error" role="alert">{{ error }}</p>
+  }
+  <app-gallery-form
+    [storageKey]="storageKey"
+    [saving]="store.loading()"
+    (uploaded)="onUploaded($event)"
+    (saved)="onSave($event)"
+    (cancelled)="cancel()"
+  />
+</section>
