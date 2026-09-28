@@ -87,6 +87,20 @@ describe('Navigation', () => {
     }
   });
 
+  it('should focus the main content after moving to another page, not on a fragment change', async () => {
+    document.body.appendChild(element());
+    try {
+      await harness.navigateByUrl('/bronzes');
+      expect(document.activeElement).toBe(element().querySelector('main'));
+
+      element().querySelector<HTMLElement>('.skip-link')!.focus();
+      await harness.navigateByUrl('/bronzes#top');
+      expect(document.activeElement).toBe(element().querySelector('.skip-link'));
+    } finally {
+      element().remove();
+    }
+  });
+
   it('should replace any fragment in the current URL with #main in the skip link', async () => {
     await harness.navigateByUrl('/bronzes#top');
     expect(element().querySelector('.skip-link')?.getAttribute('href')).toBe('/bronzes#main');

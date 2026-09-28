@@ -41,6 +41,8 @@ footer {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  // Baseline, not stretch: the links' block padding would otherwise drop them below the ©.
+  align-items: baseline;
   gap: 4px 16px;
   margin: 0;
 

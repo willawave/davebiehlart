@@ -18,7 +18,7 @@ export const detailBreadcrumb: BreadcrumbLabel = (data) => {
   for (const value of Object.values(data)) {
     if (value && typeof value === 'object') {
       const doc = value as { name?: unknown; title?: unknown };
-      const label = doc.name ?? doc.title;
+      const label = (typeof doc.name === 'string' && doc.name) || doc.title;
       if (typeof label === 'string' && label) {
         return label;
       }

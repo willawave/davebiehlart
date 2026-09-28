@@ -50,5 +50,7 @@ describe('Footer', () => {
     );
     expect(credit?.getAttribute('href')).toBe('https://willawave.ai');
     expect(credit?.getAttribute('rel')).toBe('noopener');
+    expect(credit?.getAttribute('target')).toBe('_blank');
+    expect(credit?.getAttribute('aria-label')).toBe('Site by Willawave (opens in a new tab)');
   });
 });

@@ -67,10 +67,18 @@ test.describe('desktop', () => {
     await expect(page).toHaveURL('/privacy-policy');
     await footer.getByRole('link', { name: 'Terms of Use' }).click();
     await expect(page).toHaveURL('/terms-of-use');
-    await expect(footer.getByRole('link', { name: 'Site by Willawave' })).toHaveAttribute(
-      'href',
-      'https://willawave.ai',
-    );
+    const credit = footer.getByRole('link', { name: 'Site by Willawave' });
+    await expect(credit).toHaveAttribute('href', 'https://willawave.ai');
+    await expect(credit).toHaveAttribute('target', '_blank');
+  });
+
+  test('keyboard navigation moves focus to the new page', async ({ page }) => {
+    await page.goto('/');
+    const footer = page.getByRole('contentinfo');
+    await footer.getByRole('link', { name: 'Privacy Policy' }).focus();
+    await page.keyboard.press('Enter');
+    await expect(page).toHaveURL('/privacy-policy');
+    await expect(page.locator('main')).toBeFocused();
   });
 
   test('the skip link moves focus to the main content', async ({ page }) => {

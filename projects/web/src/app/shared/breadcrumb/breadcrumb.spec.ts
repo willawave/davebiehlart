@@ -112,4 +112,8 @@ describe('detailBreadcrumb', () => {
   it('should fall back when the name is empty', () => {
     expect(label({ doc: { name: '' } })).toBe('Details');
   });
+
+  it('should use the title when the name is empty', () => {
+    expect(label({ doc: { name: '', title: 'Studio Tour' } })).toBe('Studio Tour');
+  });
 });
