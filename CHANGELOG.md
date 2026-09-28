@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here.
 
+## [0.4.0.1] - 2026-09-28
+
+### Fixed
+
+- Pressing "Skip to content" before the page finishes loading no longer logs an error in the browser console. It still takes you to the content, as before. A new test presses it before the page loads and checks for errors.
+
 ## [0.4.0.0] - 2026-09-28
 
 ### Added
