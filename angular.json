@@ -27,9 +27,17 @@
               {
                 "glob": "**/*",
                 "input": "projects/web/public"
+              },
+              {
+                "glob": "**/*",
+                "input": "brand/dist/icons",
+                "output": "/"
               }
             ],
             "styles": ["projects/web/src/styles.scss"],
+            "stylePreprocessorOptions": {
+              "includePaths": ["projects/core/src/styles"]
+            },
             "server": "projects/web/src/main.server.ts",
             "outputMode": "server",
             "security": {
@@ -114,9 +122,17 @@
               {
                 "glob": "**/*",
                 "input": "projects/admin/public"
+              },
+              {
+                "glob": "**/*",
+                "input": "brand/dist/icons",
+                "output": "/"
               }
             ],
-            "styles": ["projects/admin/src/styles.scss"]
+            "styles": ["projects/admin/src/styles.scss"],
+            "stylePreprocessorOptions": {
+              "includePaths": ["projects/core/src/styles"]
+            }
           },
           "configurations": {
             "production": {

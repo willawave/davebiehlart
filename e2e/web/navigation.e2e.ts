@@ -83,6 +83,9 @@ test.describe('desktop', () => {
 
   test('the skip link moves focus to the main content', async ({ page }) => {
     await page.goto('/contact');
+    // Before hydration, Enter follows the native #main href and event replay can't cancel it.
+    // Self-hosted fonts let `load` fire sooner, so wait until Angular has claimed the DOM.
+    await page.waitForFunction(() => !document.querySelector('[ngh]'));
     await page.keyboard.press('Tab');
     const skip = page.getByRole('link', { name: 'Skip to content' });
     await expect(skip).toBeFocused();

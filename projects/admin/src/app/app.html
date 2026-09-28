@@ -1,6 +1,9 @@
 <header>
   <mat-toolbar class="app-bar">
-    <span class="brand">Dave Biehl Art</span>
+    <span class="brand dba-lockup"
+      ><span class="dba-mark" aria-hidden="true"></span
+      ><span class="dba-wordmark">Dave Biehl Art</span></span
+    >
     @if (store.authorizedUser(); as user) {
       <span class="spacer"></span>
       <span class="user">{{ user.email }}</span>

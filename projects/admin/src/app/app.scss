@@ -1,12 +1,11 @@
-@use '@angular/material' as mat;
-
 .app-bar {
   gap: 12px;
   font-size: 1rem;
+  border-bottom: 1px solid var(--dba-rule);
 }
 
 .brand {
-  font-weight: 600;
+  font-size: 1.375rem;
 }
 
 .spacer {
@@ -17,20 +16,11 @@
   overflow: hidden;
   font-size: 0.875rem;
   font-weight: 400;
+  color: var(--dba-muted);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .sign-out {
   flex-shrink: 0;
-  // The default ring is patina, the toolbar's own color.
-  --mat-focus-indicator-border-color: #fff;
-  @include mat.button-overrides(
-    (
-      outlined-label-text-color: #fff,
-      outlined-outline-color: #fff,
-      outlined-ripple-color: rgb(255 255 255 / 0.12),
-      outlined-state-layer-color: #fff,
-    )
-  );
 }

@@ -111,7 +111,8 @@ describe('App', () => {
 
     it('should show the site name without account controls when signed out', async () => {
       const element = await render();
-      expect(element.querySelector('header')?.textContent).toContain('Dave Biehl Art');
+      expect(element.querySelector('header .dba-wordmark')?.textContent).toBe('Dave Biehl Art');
+      expect(element.querySelector('header .dba-mark')?.getAttribute('aria-hidden')).toBe('true');
       expect(element.querySelector('button')).toBeNull();
     });
 
