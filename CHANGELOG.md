@@ -2,6 +2,27 @@
 
 All notable changes to this project are documented here.
 
+## [0.4.0.0] - 2026-09-28
+
+### Added
+
+- Dave Biehl Art now has a brand kit. The site header and the admin bar show the bronze mare-and-foal mark next to the name.
+- Browser tabs, bookmarks, and phone home screens show the mark as the site icon. In dark browser tabs it switches to a lighter bronze.
+- Both sites can be installed as an app, with their own names and icons.
+- Links to the site shared on social media and in chat apps show a preview card with the mark, the name, and "Bronze sculptures, statues, & kiln glass".
+- The mark, lockups, and share image live in `brand/`. `pnpm brand` regenerates them from the master mark, so a change to the mark or colors updates every size at once.
+
+### Changed
+
+- The admin site now uses the same bronze-on-parchment look as the public site, in light mode only.
+- Fonts and icons load from the site itself instead of Google Fonts, so pages make no requests to Google.
+- The site description now reads "Bronze sculptures, statues, and kiln glass".
+
+### Fixed
+
+- A shared link to any page now previews that page. Before, every page told social sites it was the homepage.
+- The browser console no longer warns about how the page loads during development (NG05001). A new test confirms the browser still reuses the page the server sent.
+
 ## [0.3.0.0] - 2026-09-28
 
 ### Added
