@@ -9,6 +9,7 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
+import { EventPhase } from '@angular/core/primitives/event-dispatch';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
@@ -53,7 +54,7 @@ export class Navigation {
   private readonly main = viewChild.required<ElementRef<HTMLElement>>('main');
   private readonly router = inject(Router);
   // Seeded from Location, not router.url: the shell hydrates before the router commits the
-  // first URL, even with blocking initial navigation, and until then router.url is "/".
+  // first URL, and until then router.url is "/".
   private readonly url = signal(inject(Location).path(true) || '/');
   private readonly injector = inject(Injector);
   // Path segments only, without query, matrix params, or fragment.
@@ -98,6 +99,11 @@ export class Navigation {
   }
 
   protected skipToMain(event: Event): void {
+    // A press before hydration is replayed after the browser already followed the #main href,
+    // which also moved focus, so there's nothing left to cancel (Angular errors if we try).
+    if (event.eventPhase === EventPhase.REPLAY) {
+      return;
+    }
     event.preventDefault();
     this.main().nativeElement.focus();
   }
