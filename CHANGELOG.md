@@ -2,6 +2,23 @@
 
 All notable changes to this project are documented here.
 
+## [0.3.0.0] - 2026-09-28
+
+### Added
+
+- The public site can now be browsed. A header links Home, Bronzes, Statues, Kiln Glass, Events, Media and Contact, and marks the section you're in. On a phone, the links move into a menu that slides in from the right and closes on Escape, on the close button, or when you pick a page, including the page you're already on.
+- Every section and detail page has its own URL and browser tab title (for example "Bronzes | Dave Biehl Art"), and unknown addresses show a Not Found page with a real 404 status.
+- A breadcrumb (Home › Bronzes › item) shows where you are and links back up.
+- Light and dark mode. The site follows your system setting, including when it changes, until you pick a scheme with the toggle; your choice is remembered and applied before the page first paints.
+- A footer with the section links, the copyright, Privacy Policy, Terms of Use, and a "Site by Willawave" credit that opens in a new tab.
+- Keyboard and screen reader support: a "Skip to content" link that keeps you on the current page, focus that moves to the new page after you navigate, and accessibility checks (axe) in light and dark mode, including the open phone menu.
+- The site's look: bronze on parchment in light mode, with Cormorant Garamond headings and Inter text.
+
+### Changed
+
+- Pages load without flicker: the browser reuses the page the server sent instead of rebuilding it.
+- The site's title and search description now read "Dave Biehl Art".
+
 ## [0.2.1.1] - 2026-09-24
 
 ### Changed
