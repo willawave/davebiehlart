@@ -96,6 +96,55 @@ test.describe('desktop', () => {
   });
 });
 
+test.describe('hydration', () => {
+  for (const path of ['/', '/bronzes/some-bronze']) {
+    test(`${path} keeps the server-rendered page and breadcrumb`, async ({ page }) => {
+      const warnings: string[] = [];
+      page.on('console', (message) => {
+        if (['warning', 'error'].includes(message.type())) {
+          warnings.push(message.text());
+        }
+      });
+      // Record the first routed page and breadcrumb the HTML parser inserts, before Angular runs.
+      await page.addInitScript(() => {
+        const ssr: Record<string, Element> = {};
+        (window as unknown as { ssr: typeof ssr }).ssr = ssr;
+        const selectors = {
+          page: '#main > router-outlet + *',
+          breadcrumb: 'nav[aria-label="Breadcrumb"]',
+        };
+        new MutationObserver((_records, observer) => {
+          for (const [key, selector] of Object.entries(selectors)) {
+            const element = document.querySelector(selector);
+            if (!ssr[key] && element) {
+              ssr[key] = element;
+            }
+          }
+          if (document.readyState !== 'loading') {
+            observer.disconnect();
+          }
+        }).observe(document, { childList: true, subtree: true });
+      });
+
+      await page.goto(path);
+      await page.waitForFunction(() => !document.querySelector('[ngh]'));
+      const same = await page.evaluate(() => {
+        const ssr = (window as unknown as { ssr: Record<string, Element | undefined> }).ssr;
+        const live = {
+          page: document.querySelector('#main > router-outlet + *'),
+          breadcrumb: document.querySelector('nav[aria-label="Breadcrumb"]'),
+        };
+        return {
+          page: !!ssr.page && ssr.page === live.page,
+          breadcrumb: ssr.breadcrumb === (live.breadcrumb ?? undefined),
+        };
+      });
+      expect(same).toEqual({ page: true, breadcrumb: true });
+      expect(warnings).toEqual([]);
+    });
+  }
+});
+
 test.describe('phone', () => {
   test.use({ viewport: { width: 390, height: 844 } });
 
