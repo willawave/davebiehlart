@@ -44,10 +44,7 @@ $wide: 760px;
 }
 
 .brand {
-  font: 600 1.75rem/1 var(--dba-serif);
-  letter-spacing: 0.02em;
-  color: var(--dba-ink);
-  text-decoration: none;
+  font-size: 1.75rem;
 
   @media (min-width: $wide) {
     font-size: 2.25rem;

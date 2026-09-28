@@ -64,6 +64,12 @@ describe('Navigation', () => {
     expect(element().querySelector('.brand')?.getAttribute('href')).toBe('/');
   });
 
+  it('should name the brand link by its wordmark and hide the mark', () => {
+    const brand = element().querySelector('.brand');
+    expect(brand?.textContent?.trim()).toBe('Dave Biehl Art');
+    expect(brand?.querySelector('.dba-mark')?.getAttribute('aria-hidden')).toBe('true');
+  });
+
   it('should offer a skip link to the main content', () => {
     const skip = element().querySelector('.skip-link');
     expect(skip?.getAttribute('href')).toBe('/#main');

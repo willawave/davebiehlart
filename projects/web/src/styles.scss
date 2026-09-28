@@ -1,59 +1,32 @@
-@use '@angular/material' as mat;
+@use 'foundry';
 
-// "Foundry": bronze on parchment (light) and on ink (dark). Cormorant Garamond for the
-// wordmark and headings, Inter for everything else. Every token pairs a light and a dark value
-// with light-dark(), so the page follows the system scheme with no JS; ColorSchemeService
-// overrides it by setting `color-scheme` on <html>.
-html {
-  color-scheme: light dark;
-  @include mat.theme(
-    (
-      color: mat.$orange-palette,
-      typography: 'Inter',
-      density: 0,
-    )
-  );
+// Web follows the system light/dark scheme; see projects/core/src/styles/_foundry.scss.
+@include foundry.theme(auto);
 
-  // A visible ring on every keyboard-focused Material control (WCAG 2.4.7).
-  @include mat.strong-focus-indicators();
-
-  // Contrast on the page background: ink 15:1 / 14:1, muted 7:1 / 7:1, bronze 7.3:1 / 8.6:1.
-  --dba-page: light-dark(#f5efe4, #15120f);
-  --dba-surface: light-dark(#f5efe4, #1d1915);
-  --dba-ink: light-dark(#1f1a14, #ece3d3);
-  --dba-muted: light-dark(#5c5147, #a89a88);
-  --dba-bronze: light-dark(#7a4a1e, #d9a066);
-  --dba-rule: light-dark(#cdbfa8, #3a322a);
-  --dba-serif: 'Cormorant Garamond', Georgia, serif;
-  --dba-sans: 'Inter', system-ui, sans-serif;
-
-  // Pin Material's generated palette to the brand colors.
-  --mat-sys-primary: var(--dba-bronze);
-  --mat-sys-on-primary: light-dark(#fff, #1f1a14);
-  --mat-sys-surface: var(--dba-surface);
-  --mat-sys-on-surface: var(--dba-ink);
-  --mat-sys-on-surface-variant: var(--dba-muted);
-  --mat-focus-indicator-border-color: var(--dba-bronze);
-}
-
-body {
-  margin: 0;
-  background: var(--dba-page);
-  color: var(--dba-ink);
-  font-family: var(--dba-sans);
-}
-
-a {
-  color: var(--dba-bronze);
-}
-
-h1,
-h2,
-h3 {
-  font-family: var(--dba-serif);
-  font-weight: 600;
+// Self-hosted subset of Material Symbols Outlined holding only the icons the app uses. To add
+// an icon, download the woff2 that this CSS points at, with the new name added to icon_names:
+// https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=close,dark_mode,light_mode,menu&display=block
+@font-face {
+  font-family: 'Material Symbols Outlined';
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url('/fonts/material-symbols-subset.woff2') format('woff2');
 }
 
 .material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
   font-variation-settings: 'wght' 400;
 }

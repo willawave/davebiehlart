@@ -1,0 +1,144 @@
+@use '@angular/material' as mat;
+@use '@fontsource/inter/latin-400' as inter-400;
+@use '@fontsource/inter/latin-500' as inter-500;
+@use '@fontsource/inter/latin-600' as inter-600;
+@use '@fontsource/cormorant-garamond/latin-500' as cormorant-500;
+@use '@fontsource/cormorant-garamond/latin-600' as cormorant-600;
+
+// "Foundry": bronze on parchment (light) and on ink (dark). Cormorant Garamond for the
+// wordmark and headings, Inter for everything else, both self-hosted so no visitor request
+// goes to Google. Each token pairs a light and a dark value.
+//
+// Contrast on the page background: ink 15:1 / 14:1, muted 7:1 / 7:1, bronze 7.3:1 / 8.6:1.
+$tokens: (
+  page: (
+    #f5efe4,
+    #15120f,
+  ),
+  surface: (
+    #f5efe4,
+    #1d1915,
+  ),
+  ink: (
+    #1f1a14,
+    #ece3d3,
+  ),
+  muted: (
+    #5c5147,
+    #a89a88,
+  ),
+  bronze: (
+    #7a4a1e,
+    #d9a066,
+  ),
+  rule: (
+    #cdbfa8,
+    #3a322a,
+  ),
+  on-bronze: (
+    #fff,
+    #1f1a14,
+  ),
+);
+
+@function _value($pair, $mode) {
+  @if $mode == light {
+    @return nth($pair, 1);
+  }
+  @return light-dark(#{nth($pair, 1)}, #{nth($pair, 2)});
+}
+
+// Emits the Foundry theme. `auto` follows the system scheme with light-dark(), and
+// ColorSchemeService overrides it by setting `color-scheme` on <html>. `light` pins light.
+@mixin theme($mode: auto) {
+  html {
+    @if $mode == light {
+      color-scheme: light;
+      @include mat.theme(
+        (
+          color: (
+            primary: mat.$orange-palette,
+            theme-type: light,
+          ),
+          typography: 'Inter',
+          density: 0,
+        )
+      );
+    } @else {
+      color-scheme: light dark;
+      @include mat.theme(
+        (
+          color: mat.$orange-palette,
+          typography: 'Inter',
+          density: 0,
+        )
+      );
+    }
+
+    // A visible ring on every keyboard-focused Material control (WCAG 2.4.7).
+    @include mat.strong-focus-indicators();
+
+    @each $name, $pair in $tokens {
+      --dba-#{$name}: #{_value($pair, $mode)};
+    }
+    --dba-serif: 'Cormorant Garamond', Georgia, serif;
+    --dba-sans: 'Inter', system-ui, sans-serif;
+
+    // Pin Material's generated palette to the brand colors.
+    --mat-sys-primary: var(--dba-bronze);
+    --mat-sys-on-primary: var(--dba-on-bronze);
+    --mat-sys-surface: var(--dba-surface);
+    --mat-sys-on-surface: var(--dba-ink);
+    --mat-sys-on-surface-variant: var(--dba-muted);
+    --mat-focus-indicator-border-color: var(--dba-bronze);
+  }
+
+  body {
+    margin: 0;
+    background: var(--dba-page);
+    color: var(--dba-ink);
+    font-family: var(--dba-sans);
+  }
+
+  a {
+    color: var(--dba-bronze);
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--dba-serif);
+    font-weight: 600;
+  }
+
+  // The lockup: the horse mark at 1.5x the wordmark's size, then the wordmark. Set font-size
+  // on .dba-lockup to scale both. The mark is a mask over the bronze token, so it follows
+  // the color scheme; the wordmark carries the accessible name.
+  .dba-lockup {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+    color: var(--dba-ink);
+    text-decoration: none;
+  }
+
+  .dba-mark {
+    display: block;
+    flex: none;
+    height: 1.5em;
+    aspect-ratio: 700 / 595;
+    background-color: var(--dba-bronze);
+    mask: url('/mark.svg') center / contain no-repeat;
+
+    @media (forced-colors: active) {
+      forced-color-adjust: none;
+      background-color: CanvasText;
+    }
+  }
+
+  .dba-wordmark {
+    font: 600 1em/1 var(--dba-serif);
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+}
