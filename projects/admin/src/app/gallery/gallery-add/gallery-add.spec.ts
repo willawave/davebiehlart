@@ -28,6 +28,8 @@ describe('GalleryAdd', () => {
   };
   const snackBar = { open: vi.fn() };
   const value = { name: ' Mustang ', imageUrls: ['kept.jpg'] } as GalleryFormValue;
+  // Page cleanup waits on the save's outcome, so it lands a tick after destroy.
+  const settle = () => new Promise((resolve) => setTimeout(resolve));
 
   function create() {
     TestBed.configureTestingModule({
@@ -74,6 +76,7 @@ describe('GalleryAdd', () => {
     expect(navigate).toHaveBeenCalledWith(['/gallery']);
 
     fixture.destroy();
+    await settle();
     expect(store.discardImages).toHaveBeenCalledOnce();
   });
 
@@ -89,6 +92,40 @@ describe('GalleryAdd', () => {
     expect(store.discardImages).not.toHaveBeenCalled();
   });
 
+  describe('leaving while a save is in flight', () => {
+    let finishSave: (saved: boolean) => void;
+
+    function leaveMidSave() {
+      store.add.mockReturnValue(new Promise<boolean>((resolve) => (finishSave = resolve)));
+      const { fixture, form } = create();
+      const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+      form().uploaded.emit(['kept.jpg', 'dropped.jpg']);
+      form().saved.emit(value);
+      fixture.destroy();
+      return navigate;
+    }
+
+    it('should keep the photos a landed save uses, without pulling the admin back', async () => {
+      const navigate = leaveMidSave();
+      await settle();
+      expect(store.discardImages).not.toHaveBeenCalled();
+
+      finishSave(true);
+      await settle();
+      expect(store.discardImages).toHaveBeenCalledOnce();
+      expect(store.discardImages).toHaveBeenCalledWith(['dropped.jpg'], 'new-key');
+      expect(navigate).not.toHaveBeenCalled();
+    });
+
+    it('should delete every upload once the save fails', async () => {
+      leaveMidSave();
+      finishSave(false);
+      await settle();
+      expect(store.discardImages).toHaveBeenCalledOnce();
+      expect(store.discardImages).toHaveBeenCalledWith(['kept.jpg', 'dropped.jpg'], 'new-key');
+    });
+  });
+
   it('should delete every upload when the admin leaves without saving', async () => {
     const { fixture, form } = create();
     vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
@@ -97,6 +134,7 @@ describe('GalleryAdd', () => {
     form().cancelled.emit();
 
     fixture.destroy();
+    await settle();
     expect(store.discardImages).toHaveBeenCalledWith(['a.jpg', 'b.jpg'], 'new-key');
   });
 });

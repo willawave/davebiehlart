@@ -137,7 +137,9 @@
   </fieldset>
 
   <div class="actions">
-    <button type="button" matButton="outlined" (click)="cancelled.emit()">Cancel</button>
+    <button type="button" matButton="outlined" [disabled]="saving()" (click)="cancelled.emit()">
+      Cancel
+    </button>
     <button type="submit" matButton="filled" [disabled]="saving() || uploading() > 0">
       {{ saving() ? 'Saving…' : 'Save' }}
     </button>

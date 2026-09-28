@@ -1,5 +1,6 @@
 import {
   Component,
+  DestroyRef,
   Injector,
   afterNextRender,
   computed,
@@ -83,6 +84,10 @@ export class GalleryForm {
     required(item.description, { message: 'Enter a description.' });
     required(item.style, { message: 'Choose a style.' });
     required(item.created, { message: 'Enter the date it was created.' });
+    // A cleared number input is null; the production schema needs a number.
+    required(item.height, { message: 'Enter a height.' });
+    required(item.width, { message: 'Enter a width.' });
+    required(item.depth, { message: 'Enter a depth.' });
     validate(item.height, positive('Enter a height greater than 0.'));
     validate(item.width, positive('Enter a width greater than 0.'));
     validate(item.depth, positive('Enter a depth greater than 0.'));
@@ -92,6 +97,11 @@ export class GalleryForm {
   protected readonly images = computed(() => this.model().imageUrls);
   protected readonly uploading = signal(0);
   protected readonly fileProblems = signal<string[]>([]);
+  private destroyed = false;
+
+  constructor() {
+    inject(DestroyRef).onDestroy(() => (this.destroyed = true));
+  }
 
   protected firstError(field: FieldTree<unknown>): string {
     return field().errors()[0]?.message ?? '';
@@ -107,7 +117,14 @@ export class GalleryForm {
     if (!accepted.length) return;
 
     this.uploading.set(accepted.length);
-    const urls = await this.store.uploadImages(accepted, this.storageKey());
+    const storageKey = this.storageKey();
+    const urls = await this.store.uploadImages(accepted, storageKey);
+    // The page closed mid-upload (Save is disabled while uploading, so nothing saved
+    // these): nobody is left to report them to, so delete them here.
+    if (this.destroyed) {
+      if (urls) void this.store.discardImages(urls, storageKey);
+      return;
+    }
     this.uploading.set(0);
     if (urls) {
       this.uploaded.emit(urls);

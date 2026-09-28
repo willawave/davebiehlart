@@ -53,21 +53,30 @@ export function objectName(fileName: string, type: string, now = Date.now()): st
 export class FileService {
   private readonly storage = inject(FIREBASE_STORAGE);
 
-  // Uploads in order and returns the download URLs in the same order.
+  // Uploads in order and returns the download URLs in the same order. All or nothing: if
+  // any file fails, the ones already stored (and the failed one, if it got stored before
+  // its URL could be read) are deleted before the error is rethrown, since the caller never
+  // learns their URLs and so could never clean them up.
   async uploadImages(
     files: readonly File[],
     folder: StorageFolder,
     storageKey: string,
   ): Promise<string[]> {
     const urls: string[] = [];
-    for (const file of files) {
-      const blob = await resizeImage(file);
-      const type = blob.type || file.type;
-      const target = ref(this.storage, `${folder}/${storageKey}/${objectName(file.name, type)}`);
-      await uploadBytes(target, blob, { contentType: type });
-      urls.push(await getDownloadURL(target));
+    const stored: string[] = [];
+    try {
+      for (const file of files) {
+        const blob = await resizeImage(file);
+        const type = blob.type || file.type;
+        const path = `${folder}/${storageKey}/${objectName(file.name, type)}`;
+        stored.push(path);
+        urls.push(await this.uploadOne(path, blob, type));
+      }
+      return urls;
+    } catch (error) {
+      await Promise.all(stored.map((path) => this.deletePath(path).catch(() => undefined)));
+      throw error;
     }
-    return urls;
   }
 
   // True if the URL points inside this item's own folder.
@@ -88,12 +97,24 @@ export class FileService {
     storageKey: string,
   ): Promise<void> {
     const owned = urls.filter((url) => this.isOwned(url, folder, storageKey));
-    await Promise.all(
-      owned.map((url) =>
-        deleteObject(ref(this.storage, url)).catch((error: unknown) => {
-          if ((error as { code?: string }).code !== 'storage/object-not-found') throw error;
-        }),
-      ),
-    );
+    await Promise.all(owned.map((url) => this.deletePath(url)));
+  }
+
+  // The two Storage SDK calls, kept apart so specs can stand in for them.
+
+  // Stores one object and returns its download URL.
+  protected async uploadOne(path: string, blob: Blob, contentType: string): Promise<string> {
+    const target = ref(this.storage, path);
+    await uploadBytes(target, blob, { contentType });
+    return getDownloadURL(target);
+  }
+
+  // Deletes one object, by path or download URL. Already gone counts as deleted.
+  protected async deletePath(pathOrUrl: string): Promise<void> {
+    try {
+      await deleteObject(ref(this.storage, pathOrUrl));
+    } catch (error) {
+      if ((error as { code?: string }).code !== 'storage/object-not-found') throw error;
+    }
   }
 }

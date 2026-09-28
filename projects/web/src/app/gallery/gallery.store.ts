@@ -25,6 +25,8 @@ export const GalleryStore = signalStore(
     let pendingItem: { key: string; result: Promise<GalleryDocument | null> } | undefined;
     // Leaving /bronzes for /glass mid-load must not let the bronzes land under Kiln Glass.
     let latestList = 0;
+    // Likewise, a detail page left mid-load must not replace the next item's selection.
+    let latestItem = 0;
 
     return {
       // Server rendering waits for the pending task. A transfer-state hit is applied
@@ -60,14 +62,17 @@ export const GalleryStore = signalStore(
         if (pendingItem?.key === key) {
           return pendingItem.result;
         }
+        const request = ++latestItem;
         const result = (async () => {
           try {
             const item = await service.getVisibleById(id);
             const selected = item?.style === style ? item : null;
-            patchState(store, { selectedGalleryItem: selected, error: null });
+            if (request === latestItem) {
+              patchState(store, { selectedGalleryItem: selected, error: null });
+            }
             return selected;
           } catch {
-            patchState(store, { selectedGalleryItem: null });
+            if (request === latestItem) patchState(store, { selectedGalleryItem: null });
             return null;
           } finally {
             if (pendingItem?.key === key) pendingItem = undefined;

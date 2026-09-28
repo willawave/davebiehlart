@@ -21,7 +21,10 @@ const VALID: GalleryFormValue = {
 describe('GalleryForm', () => {
   let fixture: ComponentFixture<GalleryForm>;
   let element: HTMLElement;
-  const store = { uploadImages: vi.fn<(files: File[], key: string) => Promise<string[] | null>>() };
+  const store = {
+    uploadImages: vi.fn<(files: File[], key: string) => Promise<string[] | null>>(),
+    discardImages: vi.fn(() => Promise.resolve()),
+  };
   const saved = vi.fn();
   const uploaded = vi.fn();
   const cancelled = vi.fn();
@@ -132,7 +135,7 @@ describe('GalleryForm', () => {
     expect(photos()).toEqual(['a.jpg', 'b.jpg', 'c.jpg']);
   });
 
-  it('should cancel, and disable saving while a save is running', async () => {
+  it('should cancel, and disable saving and cancelling while a save is running', async () => {
     await create(VALID);
     button('Cancel').click();
     expect(cancelled).toHaveBeenCalled();
@@ -140,5 +143,46 @@ describe('GalleryForm', () => {
     fixture.componentRef.setInput('saving', true);
     await fixture.whenStable();
     expect(button('Saving…').disabled).toBe(true);
+    expect(button('Cancel').disabled).toBe(true);
+  });
+
+  it('should require height, width and depth once they are cleared', async () => {
+    await create(VALID);
+    // In template order: weight, height, width, depth.
+    const [weight, ...dimensions] = Array.from(
+      element.querySelectorAll<HTMLInputElement>('input[type="number"]'),
+    );
+    for (const input of [weight, ...dimensions]) {
+      input.value = '';
+      input.dispatchEvent(new Event('input'));
+    }
+    await submit();
+
+    expect(saved).not.toHaveBeenCalled();
+    const text = element.textContent ?? '';
+    expect(text).toContain('Enter a height.');
+    expect(text).toContain('Enter a width.');
+    expect(text).toContain('Enter a depth.');
+    // Weight stays optional.
+    expect(text).not.toContain('Enter a weight');
+  });
+
+  it('should delete photos that finish uploading after the form is gone', async () => {
+    let finish!: (urls: string[]) => void;
+    store.uploadImages.mockReturnValue(new Promise((resolve) => (finish = resolve)));
+    await create(VALID);
+    const input = element.querySelector<HTMLInputElement>('input[type="file"]');
+    if (!input) throw new Error('no file input');
+    Object.defineProperty(input, 'files', {
+      value: [new File(['x'], 'late.jpg', { type: 'image/jpeg' })],
+    });
+    input.dispatchEvent(new Event('change'));
+
+    fixture.destroy();
+    finish(['late.jpg']);
+    await new Promise((resolve) => setTimeout(resolve));
+
+    expect(store.discardImages).toHaveBeenCalledWith(['late.jpg'], 'key-1');
+    expect(uploaded).not.toHaveBeenCalled();
   });
 });

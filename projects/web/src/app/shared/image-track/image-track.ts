@@ -18,6 +18,9 @@ import { ImageDialog, ImageDialogData } from '../image-dialog/image-dialog';
   selector: 'app-image-track',
   styleUrl: './image-track.scss',
   templateUrl: './image-track.html',
+  // Photo widths follow their proportions, so the strip's length changes as photos load
+  // (see the (load) binding) and as the window resizes.
+  host: { '(window:resize)': 'updateEnds()' },
 })
 export class ImageTrack {
   private readonly dialog = inject(MatDialog);

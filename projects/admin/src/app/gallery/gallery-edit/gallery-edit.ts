@@ -37,15 +37,22 @@ export class GalleryEdit {
     return key || (this.fallbackKey ??= this.store.newStorageKey());
   });
   private readonly uploads: string[] = [];
-  private saved = false;
+  // The latest save; resolves true once the item is written.
+  private pendingSave?: Promise<boolean>;
+  private destroyed = false;
 
   constructor() {
     this.store.clearError();
     void this.store.loadOne(this.id);
     afterNextRender(() => this.heading().nativeElement.focus());
-    // Leaving without saving deletes only the photos uploaded on this page.
+    // Leaving without saving deletes only the photos uploaded on this page. A save still in
+    // flight decides: if it lands, the item may use those photos.
     inject(DestroyRef).onDestroy(() => {
-      if (!this.saved) void this.store.discardImages(this.uploads, this.storageKey());
+      this.destroyed = true;
+      const key = this.storageKey();
+      void (this.pendingSave ?? Promise.resolve(false)).then((saved) => {
+        if (!saved) void this.store.discardImages(this.uploads, key);
+      });
     });
   }
 
@@ -56,15 +63,18 @@ export class GalleryEdit {
   protected async onSave(value: GalleryFormValue): Promise<void> {
     const item = this.loaded();
     if (!item) return;
-    if (!(await this.store.update(this.id, value, this.storageKey()))) return;
-    this.saved = true;
+    const key = this.storageKey();
+    const save = this.store.update(this.id, value, key);
+    this.pendingSave = save;
+    if (!(await save)) return;
     // Photos removed from the item, old or new. Only ones in its own folder get deleted.
     const dropped = [...item.imageUrls, ...this.uploads].filter(
       (url) => !value.imageUrls.includes(url),
     );
-    void this.store.discardImages(dropped, this.storageKey());
+    void this.store.discardImages(dropped, key);
     this.snackBar.open(`Saved "${value.name.trim()}".`, 'Dismiss', { duration: 5000 });
-    await this.router.navigate(['/gallery']);
+    // The admin may have left mid-save; don't pull them back.
+    if (!this.destroyed) await this.router.navigate(['/gallery']);
   }
 
   protected cancel(): void {

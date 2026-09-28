@@ -62,6 +62,71 @@ describe('FileService', () => {
     expect(service.isOwned('not a url', 'gallery', 'key-1')).toBe(false);
   });
 
+  describe('uploadImages', () => {
+    // Stand-ins for the two SDK calls, so no request leaves the test.
+    const internals = () =>
+      service as unknown as {
+        uploadOne: (path: string, blob: Blob, type: string) => Promise<string>;
+        deletePath: (path: string) => Promise<void>;
+      };
+    const photos = ['a.jpg', 'b.jpg', 'c.jpg'].map(
+      (name) => new File(['x'], name, { type: 'image/gif' }), // GIF: uploaded as-is
+    );
+
+    it('should upload each photo into the item folder and return the URLs in order', async () => {
+      const upload = vi
+        .spyOn(internals(), 'uploadOne')
+        .mockImplementation((path) => Promise.resolve(`url:${path}`));
+
+      const urls = await service.uploadImages(photos, 'gallery', 'key-1');
+
+      expect(urls).toHaveLength(3);
+      expect(upload.mock.calls.map(([path]) => path)).toEqual([
+        expect.stringMatching(/^gallery\/key-1\/\d+-a\.gif$/),
+        expect.stringMatching(/^gallery\/key-1\/\d+-b\.gif$/),
+        expect.stringMatching(/^gallery\/key-1\/\d+-c\.gif$/),
+      ]);
+      expect(urls[0]).toBe(`url:${upload.mock.calls[0][0]}`);
+    });
+
+    it('should delete what the batch stored, including the failed photo, and rethrow', async () => {
+      const failure = new Error('getDownloadURL failed');
+      const upload = vi
+        .spyOn(internals(), 'uploadOne')
+        .mockResolvedValueOnce('url-a')
+        .mockRejectedValueOnce(failure);
+      const remove = vi.spyOn(internals(), 'deletePath').mockResolvedValue();
+
+      await expect(service.uploadImages(photos, 'gallery', 'key-1')).rejects.toBe(failure);
+
+      expect(upload).toHaveBeenCalledTimes(2);
+      expect(remove.mock.calls.map(([path]) => path)).toEqual([
+        upload.mock.calls[0][0],
+        upload.mock.calls[1][0],
+      ]);
+    });
+
+    it('should still rethrow the upload error when a cleanup delete fails', async () => {
+      const failure = new Error('quota');
+      vi.spyOn(internals(), 'uploadOne').mockRejectedValue(failure);
+      vi.spyOn(internals(), 'deletePath').mockRejectedValue(new Error('offline'));
+
+      await expect(service.uploadImages(photos, 'gallery', 'key-1')).rejects.toBe(failure);
+    });
+  });
+
+  it('should delete only owned URLs', async () => {
+    const remove = vi
+      .spyOn(service as unknown as { deletePath: (p: string) => Promise<void> }, 'deletePath')
+      .mockResolvedValue();
+    const own = url('gallery/key-1/1-a.jpg');
+
+    await service.deleteOwnedImages([own, url('statues/key-1/a.jpg')], 'gallery', 'key-1');
+
+    expect(remove).toHaveBeenCalledOnce();
+    expect(remove).toHaveBeenCalledWith(own);
+  });
+
   it('should never touch a URL outside the folder when deleting', async () => {
     // Nothing is owned, so no request is made.
     await expect(

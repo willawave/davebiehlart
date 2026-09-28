@@ -47,6 +47,8 @@ describe('GalleryEdit', () => {
     discardImages: vi.fn(() => Promise.resolve()),
   };
   const snackBar = { open: vi.fn() };
+  // Page cleanup waits on the save's outcome, so it lands a tick after destroy.
+  const settle = () => new Promise((resolve) => setTimeout(resolve));
 
   function create() {
     TestBed.configureTestingModule({
@@ -108,6 +110,7 @@ describe('GalleryEdit', () => {
     expect(store.discardImages).toHaveBeenCalledWith(['old-1.jpg', 'new-2.jpg'], 'key-abc');
     expect(navigate).toHaveBeenCalledWith(['/gallery']);
     fixture.destroy();
+    await settle();
     expect(store.discardImages).toHaveBeenCalledOnce();
   });
 
@@ -116,7 +119,44 @@ describe('GalleryEdit', () => {
     await fixture.whenStable();
     form().uploaded.emit(['new-1.jpg']);
     fixture.destroy();
+    await settle();
     expect(store.discardImages).toHaveBeenCalledWith(['new-1.jpg'], 'key-abc');
+  });
+
+  describe('leaving while a save is in flight', () => {
+    let finishSave: (saved: boolean) => void;
+    const value = { name: 'Mustang', imageUrls: ['old-2.jpg', 'new-1.jpg'] } as GalleryFormValue;
+
+    async function leaveMidSave() {
+      store.update.mockReturnValue(new Promise<boolean>((resolve) => (finishSave = resolve)));
+      const { fixture, form } = create();
+      const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+      await fixture.whenStable();
+      form().uploaded.emit(['new-1.jpg', 'new-2.jpg']);
+      form().saved.emit(value);
+      fixture.destroy();
+      return navigate;
+    }
+
+    it('should wait, then delete only what the landed save dropped', async () => {
+      const navigate = await leaveMidSave();
+      await settle();
+      expect(store.discardImages).not.toHaveBeenCalled();
+
+      finishSave(true);
+      await settle();
+      expect(store.discardImages).toHaveBeenCalledOnce();
+      expect(store.discardImages).toHaveBeenCalledWith(['old-1.jpg', 'new-2.jpg'], 'key-abc');
+      expect(navigate).not.toHaveBeenCalled();
+    });
+
+    it("should delete this page's uploads, never the saved photos, once the save fails", async () => {
+      await leaveMidSave();
+      finishSave(false);
+      await settle();
+      expect(store.discardImages).toHaveBeenCalledOnce();
+      expect(store.discardImages).toHaveBeenCalledWith(['new-1.jpg', 'new-2.jpg'], 'key-abc');
+    });
   });
 
   it('should say so when the item does not exist', async () => {

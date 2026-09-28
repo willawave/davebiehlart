@@ -137,6 +137,37 @@ describe('GalleryStore', () => {
       expect(store.selectedGalleryItem()).toBeNull();
     });
 
+    it('should keep the newest selection when an older read finishes last', async () => {
+      const first = deferred<GalleryDocument | null>();
+      const second = galleryItem({ id: 'heron', name: 'Heron' });
+      service.getVisibleById
+        .mockReturnValueOnce(first.promise)
+        .mockReturnValueOnce(Promise.resolve(second));
+
+      const a = store.loadSelected('mustang', GalleryStyle.BRONZE);
+      await store.loadSelected('heron', GalleryStyle.BRONZE);
+      first.resolve(galleryItem());
+
+      // The superseded navigation still gets its own answer.
+      await expect(a).resolves.toEqual(galleryItem());
+      expect(store.selectedGalleryItem()).toBe(second);
+    });
+
+    it('should not blank the newest selection when an older read fails last', async () => {
+      const first = deferred<GalleryDocument | null>();
+      const second = galleryItem({ id: 'heron' });
+      service.getVisibleById
+        .mockReturnValueOnce(first.promise)
+        .mockReturnValueOnce(Promise.resolve(second));
+
+      const a = store.loadSelected('mustang', GalleryStyle.BRONZE);
+      await store.loadSelected('heron', GalleryStyle.BRONZE);
+      first.reject(new Error('offline'));
+
+      await expect(a).resolves.toBeNull();
+      expect(store.selectedGalleryItem()).toBe(second);
+    });
+
     it('should share one read between concurrent callers, then read again', async () => {
       service.getVisibleById.mockImplementation(() => Promise.resolve(galleryItem()));
 

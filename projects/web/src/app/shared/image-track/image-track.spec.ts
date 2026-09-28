@@ -73,6 +73,33 @@ describe('ImageTrack', () => {
     expect(track.scrollBy).toHaveBeenCalledWith({ left: 320, behavior: 'smooth' });
   });
 
+  it('should re-check the ends as photos load and the window resizes', async () => {
+    await render(['a.jpg', 'b.jpg']);
+    const track = element.querySelector<HTMLElement>('.track');
+    if (!track) throw new Error('no track');
+    const forward = () =>
+      element.querySelector<HTMLButtonElement>('[aria-label="Scroll photos forward"]');
+    // Before any photo loads the strip fits its window, so there is nowhere to scroll.
+    let scrollWidth = 400;
+    Object.defineProperty(track, 'scrollWidth', { get: () => scrollWidth });
+    Object.defineProperty(track, 'clientWidth', { get: () => 400 });
+    window.dispatchEvent(new Event('resize'));
+    await fixture.whenStable();
+    expect(forward()?.disabled).toBe(true);
+
+    // A photo loads and the strip overflows.
+    scrollWidth = 900;
+    element.querySelector('img')?.dispatchEvent(new Event('load'));
+    await fixture.whenStable();
+    expect(forward()?.disabled).toBe(false);
+
+    // The window grows wide enough to fit it all again.
+    scrollWidth = 400;
+    window.dispatchEvent(new Event('resize'));
+    await fixture.whenStable();
+    expect(forward()?.disabled).toBe(true);
+  });
+
   it('should show one photo by its name alone, without arrows', async () => {
     await render(['a.jpg']);
     expect(element.querySelector('img')?.alt).toBe('Mustang');
