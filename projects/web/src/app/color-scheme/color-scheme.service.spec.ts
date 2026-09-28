@@ -119,6 +119,29 @@ describe('ColorSchemeService', () => {
     expect(matchMedia).not.toHaveBeenCalled();
   });
 
+  it('should restore a saved light choice over a dark system preference', () => {
+    localStorage.setItem(COLOR_SCHEME_STORAGE_KEY, 'light');
+    const matchMedia = vi.fn(() => ({ matches: false }) as MediaQueryList);
+    TestBed.configureTestingModule({
+      providers: [{ provide: MediaMatcher, useValue: { matchMedia } }],
+    });
+    const service = TestBed.inject(ColorSchemeService);
+    expect(service.isLightMode()).toBe(true);
+    expect(root.style.colorScheme).toBe('light');
+  });
+
+  it('should follow the system when storage cannot be read', () => {
+    const getItem = vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+      throw new Error('blocked');
+    });
+    try {
+      expect(createWithPreference(true).isLightMode()).toBe(true);
+      expect(root.style.colorScheme).toBe('');
+    } finally {
+      getItem.mockRestore();
+    }
+  });
+
   it('should ignore an invalid saved value', () => {
     localStorage.setItem(COLOR_SCHEME_STORAGE_KEY, 'sepia');
     expect(createWithPreference(true).isLightMode()).toBe(true);

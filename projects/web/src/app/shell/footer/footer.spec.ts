@@ -25,6 +25,12 @@ describe('Footer', () => {
     );
   });
 
+  it('should link the brand home', () => {
+    const brand = element.querySelector('a.brand');
+    expect(brand?.textContent?.trim()).toBe('Dave Biehl Art');
+    expect(brand?.getAttribute('href')).toBe('/');
+  });
+
   it('should show the copyright for the current year', () => {
     expect(element.querySelector('.legal')?.textContent).toContain(
       `© ${new Date().getFullYear()} Dave Biehl Art`,

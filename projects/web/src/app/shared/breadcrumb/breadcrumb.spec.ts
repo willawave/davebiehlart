@@ -105,6 +105,10 @@ describe('detailBreadcrumb', () => {
     expect(label({ resolver: true, doc: { name: 'Bison' } })).toBe('Bison');
   });
 
+  it('should skip null values and documents whose name is not a string', () => {
+    expect(label({ missing: null, bad: { name: 42 }, doc: { name: 'Bison' } })).toBe('Bison');
+  });
+
   it('should fall back when the name is empty', () => {
     expect(label({ doc: { name: '' } })).toBe('Details');
   });
