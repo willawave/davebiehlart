@@ -39,6 +39,11 @@ function positive(message: string) {
   };
 }
 
+function notBlank(message: string) {
+  return ({ value }: { value: () => string }) =>
+    value().trim() ? null : { kind: 'required', message };
+}
+
 // The add/edit form. Photos upload as soon as they are picked (into `storageKey`'s
 // folder), and every upload is reported through `uploaded` so the page can delete the
 // ones that are never saved.
@@ -80,8 +85,9 @@ export class GalleryForm {
     () => this.initial() ?? new GalleryFormModel().galleryForm(),
   );
   protected readonly galleryForm = form(this.model, (item) => {
-    required(item.name, { message: 'Enter a name.' });
-    required(item.description, { message: 'Enter a description.' });
+    // Saved trimmed (toGalleryDocument), so spaces alone count as empty.
+    validate(item.name, notBlank('Enter a name.'));
+    validate(item.description, notBlank('Enter a description.'));
     required(item.style, { message: 'Choose a style.' });
     required(item.created, { message: 'Enter the date it was created.' });
     // A cleared number input is null; the production schema needs a number.

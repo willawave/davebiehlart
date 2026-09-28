@@ -78,6 +78,15 @@ describe('GalleryForm', () => {
     );
   });
 
+  it('should treat a name or description of only spaces as missing', async () => {
+    await create({ ...VALID, name: '   ', description: ' \n ' });
+    await submit();
+
+    expect(saved).not.toHaveBeenCalled();
+    expect(element.textContent).toContain('Enter a name.');
+    expect(element.textContent).toContain('Enter a description.');
+  });
+
   it('should save a complete item', async () => {
     await create(VALID);
     await submit();
