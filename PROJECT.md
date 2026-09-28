@@ -65,5 +65,5 @@ We will follow the following process: think -> plan -> design -> build -> review
 [ ] Event Feature
 [ ] Media Feature
 [ ] Schedule Feature: admin must be able to set weekly schedule, web app must be able to display schedule.
-[ ] Breadcrumbs Feature
+[x] Breadcrumbs Feature
 [ ] Static pages: Web app only. Contact, Privacy Policy, Terms of Use, Not Found.

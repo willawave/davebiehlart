@@ -1,0 +1,27 @@
+:host {
+  display: block;
+}
+
+ol {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 12px 0 0;
+  list-style: none;
+  font-size: 0.875rem;
+  color: var(--dba-muted);
+}
+
+li + li::before {
+  // Empty alt text keeps screen readers from announcing the separator.
+  content: '›' / '';
+  padding: 0 8px;
+}
+
+a {
+  color: var(--dba-bronze);
+}
+
+[aria-current='page'] {
+  color: var(--dba-ink);
+}

@@ -1,0 +1,150 @@
+// Phones get the menu button and the drawer; wider screens get the link row.
+$wide: 760px;
+
+// Let the window scroll, not mat-sidenav-content, so scroll restoration and anchors work.
+.container,
+.page {
+  overflow: visible;
+  background: transparent;
+  color: inherit;
+}
+
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.skip-link {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 10;
+  padding: 8px 12px;
+  background: var(--dba-page);
+  transform: translateY(-200%);
+
+  &:focus {
+    transform: none;
+  }
+}
+
+.masthead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 12px 8px 12px 16px;
+  border-bottom: 1px solid var(--dba-rule);
+
+  @media (min-width: $wide) {
+    position: relative;
+    justify-content: center;
+    padding: 24px 16px 0;
+  }
+}
+
+.brand {
+  font: 600 1.75rem/1 var(--dba-serif);
+  letter-spacing: 0.02em;
+  color: var(--dba-ink);
+  text-decoration: none;
+
+  @media (min-width: $wide) {
+    font-size: 2.25rem;
+  }
+}
+
+.actions {
+  display: flex;
+  margin-left: auto;
+
+  @media (min-width: $wide) {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+  }
+}
+
+.menu-button {
+  @media (min-width: $wide) {
+    display: none;
+  }
+}
+
+.links {
+  display: none;
+
+  @media (min-width: $wide) {
+    display: flex;
+    flex-basis: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 4px 28px;
+    padding: 16px 0 12px;
+  }
+
+  a {
+    padding: 6px 0 4px;
+    font-size: 0.75rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--dba-ink);
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+
+    &:hover,
+    &.active {
+      color: var(--dba-bronze);
+    }
+
+    &.active {
+      border-bottom-color: var(--dba-bronze);
+    }
+  }
+}
+
+.content {
+  flex: 1;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px 32px;
+  box-sizing: border-box;
+
+  @media (min-width: $wide) {
+    padding: 0 32px 48px;
+  }
+}
+
+main:focus {
+  outline: none;
+}
+
+.drawer {
+  width: min(80vw, 320px);
+  background: var(--dba-surface);
+
+  nav {
+    display: flex;
+    flex-direction: column;
+  }
+
+  a {
+    padding: 14px 24px;
+    font-size: 1rem;
+    color: var(--dba-ink);
+    text-decoration: none;
+
+    &.active {
+      color: var(--dba-bronze);
+      font-weight: 600;
+      box-shadow: inset 3px 0 0 var(--dba-bronze);
+    }
+  }
+}
+
+.drawer-head {
+  display: flex;
+  justify-content: flex-end;
+  padding: 8px;
+}

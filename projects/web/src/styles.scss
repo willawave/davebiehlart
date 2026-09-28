@@ -1,1 +1,59 @@
-/* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
+
+// "Foundry": bronze on parchment (light) and on ink (dark). Cormorant Garamond for the
+// wordmark and headings, Inter for everything else. Every token pairs a light and a dark value
+// with light-dark(), so the page follows the system scheme with no JS; ColorSchemeService
+// overrides it by setting `color-scheme` on <html>.
+html {
+  color-scheme: light dark;
+  @include mat.theme(
+    (
+      color: mat.$orange-palette,
+      typography: 'Inter',
+      density: 0,
+    )
+  );
+
+  // A visible ring on every keyboard-focused Material control (WCAG 2.4.7).
+  @include mat.strong-focus-indicators();
+
+  // Contrast on the page background: ink 15:1 / 14:1, muted 7:1 / 7:1, bronze 7.3:1 / 8.6:1.
+  --dba-page: light-dark(#f5efe4, #15120f);
+  --dba-surface: light-dark(#f5efe4, #1d1915);
+  --dba-ink: light-dark(#1f1a14, #ece3d3);
+  --dba-muted: light-dark(#5c5147, #a89a88);
+  --dba-bronze: light-dark(#7a4a1e, #d9a066);
+  --dba-rule: light-dark(#cdbfa8, #3a322a);
+  --dba-serif: 'Cormorant Garamond', Georgia, serif;
+  --dba-sans: 'Inter', system-ui, sans-serif;
+
+  // Pin Material's generated palette to the brand colors.
+  --mat-sys-primary: var(--dba-bronze);
+  --mat-sys-on-primary: light-dark(#fff, #1f1a14);
+  --mat-sys-surface: var(--dba-surface);
+  --mat-sys-on-surface: var(--dba-ink);
+  --mat-sys-on-surface-variant: var(--dba-muted);
+  --mat-focus-indicator-border-color: var(--dba-bronze);
+}
+
+body {
+  margin: 0;
+  background: var(--dba-page);
+  color: var(--dba-ink);
+  font-family: var(--dba-sans);
+}
+
+a {
+  color: var(--dba-bronze);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--dba-serif);
+  font-weight: 600;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'wght' 400;
+}
