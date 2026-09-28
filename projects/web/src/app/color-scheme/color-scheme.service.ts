@@ -1,6 +1,6 @@
 import { MediaMatcher } from '@angular/cdk/layout';
 import { isPlatformBrowser } from '@angular/common';
-import { DOCUMENT, PLATFORM_ID, Service, inject, signal } from '@angular/core';
+import { DOCUMENT, DestroyRef, PLATFORM_ID, Service, inject, signal } from '@angular/core';
 
 export type Scheme = 'light' | 'dark';
 
@@ -15,6 +15,8 @@ export class ColorSchemeService {
   // The server can't know the visitor's scheme; CSS follows the system until the browser takes over.
   readonly isLightMode = signal(false);
 
+  private stopFollowingSystem = (): void => undefined;
+
   constructor() {
     if (!this.isBrowser) {
       return;
@@ -23,12 +25,20 @@ export class ColorSchemeService {
     if (saved) {
       this.apply(saved);
     } else {
-      const mediaMatcher = inject(MediaMatcher);
-      this.isLightMode.set(mediaMatcher.matchMedia('(prefers-color-scheme: light)').matches);
+      // Until the visitor picks a scheme, CSS follows the system live, so the toggle must too.
+      const query = inject(MediaMatcher).matchMedia('(prefers-color-scheme: light)');
+      this.isLightMode.set(query.matches);
+      const follow = (event: MediaQueryListEvent) => this.isLightMode.set(event.matches);
+      // addListener, not addEventListener: MediaMatcher's fallback query (no matchMedia) only
+      // implements the older API, as CDK's own BreakpointObserver relies on.
+      query.addListener(follow);
+      this.stopFollowingSystem = () => query.removeListener(follow);
+      inject(DestroyRef).onDestroy(() => this.stopFollowingSystem());
     }
   }
 
   toggle(): void {
+    this.stopFollowingSystem();
     const next: Scheme = this.isLightMode() ? 'dark' : 'light';
     this.apply(next);
     try {

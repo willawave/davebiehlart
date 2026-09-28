@@ -148,6 +148,25 @@ test.describe('color scheme', () => {
     await expect(page.getByRole('button', { name: 'Switch to light mode' })).toBeVisible();
   });
 
+  test('the toggle tracks a system change until the visitor picks a scheme', async ({ page }) => {
+    await page.emulateMedia({ colorScheme: 'light' });
+    await page.goto('/');
+    await expect(page.getByRole('button', { name: 'Switch to dark mode' })).toBeVisible();
+
+    await page.emulateMedia({ colorScheme: 'dark' });
+    const toLight = page.getByRole('button', { name: 'Switch to light mode' });
+    await expect(toLight).toBeVisible();
+
+    await toLight.click();
+    const toDark = page.getByRole('button', { name: 'Switch to dark mode' });
+    await expect(toDark).toBeVisible();
+    // The visitor's choice now wins over the system.
+    await page.emulateMedia({ colorScheme: 'light' });
+    await page.emulateMedia({ colorScheme: 'dark' });
+    await expect(toDark).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.style.colorScheme)).toBe('light');
+  });
+
   for (const colorScheme of ['light', 'dark'] as const) {
     for (const path of ['/', '/bronzes/some-bronze']) {
       test(`${path} passes axe in ${colorScheme} mode`, async ({ page }) => {

@@ -3,8 +3,31 @@ import { DOCUMENT, PLATFORM_ID } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { COLOR_SCHEME_STORAGE_KEY, ColorSchemeService } from './color-scheme.service';
 
+// A media query whose system preference the test can change.
+class FakeQuery {
+  readonly listeners = new Set<(event: MediaQueryListEvent) => void>();
+
+  constructor(public matches: boolean) {}
+
+  addListener(listener: (event: MediaQueryListEvent) => void): void {
+    this.listeners.add(listener);
+  }
+
+  removeListener(listener: (event: MediaQueryListEvent) => void): void {
+    this.listeners.delete(listener);
+  }
+
+  systemPrefers(light: boolean): void {
+    this.matches = light;
+    this.listeners.forEach((listener) => listener({ matches: light } as MediaQueryListEvent));
+  }
+}
+
+let query: FakeQuery;
+
 function createWithPreference(prefersLight: boolean): ColorSchemeService {
-  const matchMedia = vi.fn(() => ({ matches: prefersLight }) as MediaQueryList);
+  query = new FakeQuery(prefersLight);
+  const matchMedia = vi.fn(() => query as unknown as MediaQueryList);
   TestBed.configureTestingModule({
     providers: [{ provide: MediaMatcher, useValue: { matchMedia } }],
   });
@@ -58,6 +81,30 @@ describe('ColorSchemeService', () => {
     expect(service.isLightMode()).toBe(true);
     expect(root.style.colorScheme).toBe('light');
     expect(localStorage.getItem(COLOR_SCHEME_STORAGE_KEY)).toBe('light');
+  });
+
+  it('should follow system changes until the visitor toggles', () => {
+    const service = createWithPreference(true);
+
+    query.systemPrefers(false);
+    expect(service.isLightMode()).toBe(false);
+    expect(root.style.colorScheme).toBe('');
+
+    // The first click switches away from what the visitor sees now.
+    service.toggle();
+    expect(service.isLightMode()).toBe(true);
+    expect(localStorage.getItem(COLOR_SCHEME_STORAGE_KEY)).toBe('light');
+
+    query.systemPrefers(false);
+    expect(service.isLightMode()).toBe(true);
+    expect(query.listeners.size).toBe(0);
+  });
+
+  it('should stop following the system when destroyed', () => {
+    createWithPreference(true);
+    expect(query.listeners.size).toBe(1);
+    TestBed.resetTestingModule();
+    expect(query.listeners.size).toBe(0);
   });
 
   it('should restore a saved choice over the system preference', () => {
