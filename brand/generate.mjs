@@ -93,7 +93,7 @@ const ogHtml = `<style>
 <div class="frame"></div>
 <div class="lockup">${markSvg({ fill: light.bronze })}<span>Dave Biehl Art</span></div>
 <div class="rule"></div>
-<div class="tagline">Bronze sculpture, statues &amp; kiln glass</div>`;
+<div class="tagline">Bronze sculptures, statues, &amp; kiln glass</div>`;
 
 /** Packs PNGs into an .ico: a 6-byte header, one 16-byte entry per image, then the PNGs. */
 function ico(images) {
