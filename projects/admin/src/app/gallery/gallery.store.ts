@@ -30,6 +30,8 @@ export const GalleryStore = signalStore(
     }),
   })),
   withMethods((store, service = inject(GalleryService)) => {
+    let latestItem = 0;
+
     async function run(failure: string, work: () => Promise<void>): Promise<boolean> {
       patchState(store, { loading: true, error: null });
       try {
@@ -49,11 +51,25 @@ export const GalleryStore = signalStore(
         });
       },
 
-      loadOne(id: string): Promise<boolean> {
-        patchState(store, { selectedGalleryItem: null });
-        return run('This gallery item could not be loaded. Please try again.', async () => {
-          patchState(store, { selectedGalleryItem: await service.getById(id) });
-        });
+      // Only the latest load may write: an admin who leaves item A mid-load for item B must
+      // not have A's late answer (or failure) replace B and tear down B's edit form.
+      async loadOne(id: string): Promise<boolean> {
+        const request = ++latestItem;
+        patchState(store, { selectedGalleryItem: null, loading: true, error: null });
+        try {
+          const item = await service.getById(id);
+          if (request === latestItem)
+            patchState(store, { selectedGalleryItem: item, loading: false });
+          return true;
+        } catch {
+          if (request === latestItem) {
+            patchState(store, {
+              loading: false,
+              error: 'This gallery item could not be loaded. Please try again.',
+            });
+          }
+          return false;
+        }
       },
 
       newStorageKey(): string {

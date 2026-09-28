@@ -72,7 +72,8 @@ describe('galleryDetailResolver', () => {
     expect(result).toBeInstanceOf(RedirectCommand);
     const redirect = result as RedirectCommand;
     expect(redirect.redirectTo.toString()).toBe('/not-found');
-    expect(redirect.navigationBehaviorOptions?.skipLocationChange).toBe(true);
+    expect(redirect.navigationBehaviorOptions?.browserUrl).toBe('/bronzes/mustang');
+    expect(redirect.navigationBehaviorOptions?.skipLocationChange).toBeUndefined();
     expect(store.loadSelected).toHaveBeenCalledWith('hidden', GalleryStyle.GLASS);
   });
 

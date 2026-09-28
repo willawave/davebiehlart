@@ -71,6 +71,43 @@ describe('GalleryStore', () => {
     expect(store.selectedGalleryItem()).toBeNull();
   });
 
+  it('should keep the newest item when an older load finishes last', async () => {
+    let finishOld!: (item: GalleryDocument | null) => void;
+    service.getById
+      .mockReturnValueOnce(new Promise((resolve) => (finishOld = resolve)))
+      .mockReturnValueOnce(Promise.resolve(item('b')));
+
+    const old = store.loadOne('a');
+    await store.loadOne('b');
+    finishOld(item('a'));
+    await old;
+
+    expect(store.selectedGalleryItem()?.id).toBe('b');
+    expect(store.loading()).toBe(false);
+  });
+
+  it("should not report an older load's failure over the newest item", async () => {
+    let failOld!: (error: Error) => void;
+    service.getById
+      .mockReturnValueOnce(new Promise((_, reject) => (failOld = reject)))
+      .mockReturnValueOnce(Promise.resolve(item('b')));
+
+    const old = store.loadOne('a');
+    await store.loadOne('b');
+    failOld(new Error('offline'));
+
+    await expect(old).resolves.toBe(false);
+    expect(store.selectedGalleryItem()?.id).toBe('b');
+    expect(store.error()).toBeNull();
+  });
+
+  it('should report a failed item load', async () => {
+    service.getById.mockRejectedValueOnce(new Error('offline'));
+    await expect(store.loadOne('a')).resolves.toBe(false);
+    expect(store.error()).toMatch(/could not be loaded/);
+    expect(store.loading()).toBe(false);
+  });
+
   it('should add and update through the service', async () => {
     await expect(store.add(value, 'k')).resolves.toBe(true);
     expect(service.add).toHaveBeenCalledWith(value, 'k');

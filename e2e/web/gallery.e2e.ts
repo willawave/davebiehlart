@@ -133,4 +133,26 @@ test.describe('detail', () => {
       await expect(page).toHaveTitle(/^Not Found/);
     });
   }
+
+  test('a client-side visit to a missing item keeps its URL and history entry', async ({
+    page,
+  }) => {
+    await page.goto('/bronzes');
+    await page.waitForFunction(() => !document.querySelector('[ngh]'));
+    // Like clicking a stale card: route in-app, through the app's own router (dev mode
+    // exposes components via the `ng` global; the breadcrumb holds the Router).
+    await page.evaluate(() => {
+      const ng = (window as unknown as { ng: { getComponent(el: Element): unknown } }).ng;
+      const breadcrumb = ng.getComponent(document.querySelector('app-breadcrumb') as Element) as {
+        router: { navigateByUrl(url: string): Promise<boolean> };
+      };
+      return breadcrumb.router.navigateByUrl('/bronzes/no-such-item');
+    });
+
+    await expect(page).toHaveURL('/bronzes/no-such-item');
+    await expect(page).toHaveTitle(/^Not Found/);
+    await page.goBack();
+    await expect(page).toHaveURL('/bronzes');
+    await expect(page.locator('main a.card')).toHaveCount(12);
+  });
 });

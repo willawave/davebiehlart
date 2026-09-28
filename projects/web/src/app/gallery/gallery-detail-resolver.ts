@@ -29,7 +29,9 @@ export const galleryDetailResolver: ResolveFn<GalleryDocument> = async (route, s
   const meta = inject(Meta);
   const item = await load(route);
   if (!item) {
-    return new RedirectCommand(router.parseUrl('/not-found'), { skipLocationChange: true });
+    // browserUrl, not skipLocationChange: on a client-side click from a list, the latter
+    // would leave the list's URL in the address bar.
+    return new RedirectCommand(router.parseUrl('/not-found'), { browserUrl: state.url });
   }
   const { label } = section(route);
   setPageMeta(meta, {
