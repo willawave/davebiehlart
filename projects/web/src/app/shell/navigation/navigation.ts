@@ -1,4 +1,14 @@
-import { Component, computed, ElementRef, inject, signal, viewChild } from '@angular/core';
+import { Location } from '@angular/common';
+import {
+  afterNextRender,
+  Component,
+  computed,
+  ElementRef,
+  inject,
+  Injector,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
@@ -42,7 +52,10 @@ export class Navigation {
   protected readonly menuOpen = signal(false);
   private readonly main = viewChild.required<ElementRef<HTMLElement>>('main');
   private readonly router = inject(Router);
-  private readonly url = signal(this.router.url);
+  // Seeded from Location, not router.url: the shell hydrates before the router commits the
+  // first URL, even with blocking initial navigation, and until then router.url is "/".
+  private readonly url = signal(inject(Location).path(true) || '/');
+  private readonly injector = inject(Injector);
   // Path segments only, without query, matrix params, or fragment.
   private readonly path = computed(() => {
     const segments = this.router.parseUrl(this.url()).root.children[PRIMARY_OUTLET]?.segments;
@@ -73,10 +86,13 @@ export class Navigation {
         this.url.set(this.router.url);
         this.menuOpen.set(false);
         // After moving to another page (not the first load, not a fragment or query change),
-        // start keyboard and screen reader users at the new content. Focus leaves the drawer
-        // first, so the drawer doesn't hand it back to the menu button as it closes.
+        // start keyboard and screen reader users at the new content. It waits for the next
+        // render: an open drawer keeps <main> inert until that render closes it, and closing
+        // hands focus back to the menu button.
         if (event.id > 1 && this.path() !== previousPath) {
-          this.main().nativeElement.focus({ preventScroll: true });
+          afterNextRender(() => this.main().nativeElement.focus({ preventScroll: true }), {
+            injector: this.injector,
+          });
         }
       });
   }

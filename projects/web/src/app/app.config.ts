@@ -6,7 +6,7 @@ import {
   withInMemoryScrolling,
 } from '@angular/router';
 import { routes } from './app.routes';
-import { provideClientHydration } from '@angular/platform-browser';
+import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideFirebase } from 'core';
 import { environment } from '../environments/environment';
 
@@ -21,7 +21,8 @@ export const appConfig: ApplicationConfig = {
       withEnabledBlockingInitialNavigation(),
       withInMemoryScrolling({ scrollPositionRestoration: 'enabled', anchorScrolling: 'enabled' }),
     ),
-    provideClientHydration(),
+    // Replays clicks made while blocking initial navigation holds hydration.
+    provideClientHydration(withEventReplay()),
     provideFirebase(environment.firebase),
   ],
 };

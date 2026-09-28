@@ -125,6 +125,25 @@ test.describe('phone', () => {
     await expect(page).toHaveURL('/statues');
   });
 
+  test('navigating from the menu moves focus to the new page, even one already loaded', async ({
+    page,
+  }) => {
+    await page.goto('/');
+    const menuButton = page.getByRole('button', { name: 'Open menu' });
+    const menu = page.getByRole('navigation', { name: 'Menu' });
+    for (const [label, path] of [
+      ['Statues', '/statues'],
+      ['Home', '/'],
+    ]) {
+      await menuButton.click();
+      await expect(page.getByRole('button', { name: 'Close menu' })).toBeFocused();
+      await menu.getByRole('link', { name: label, exact: true }).press('Enter');
+      await expect(page).toHaveURL(path);
+      await expect(menu).toBeHidden();
+      await expect(page.locator('main')).toBeFocused();
+    }
+  });
+
   test('Escape closes the menu', async ({ page }) => {
     await page.goto('/');
     await page.getByRole('button', { name: 'Open menu' }).click();
