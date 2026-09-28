@@ -20,7 +20,7 @@
           [routerLink]="link.path"
           routerLinkActive="active"
           [routerLinkActiveOptions]="{ exact: link.path === '/' }"
-          ariaCurrentWhenActive="page"
+          [attr.aria-current]="ariaCurrent()[link.path]"
           (click)="menuOpen.set(false)"
           >{{ link.label }}</a
         >
@@ -30,7 +30,7 @@
 
   <mat-sidenav-content class="page">
     <header class="masthead">
-      <a class="brand" routerLink="/">Dave Biehl Art</a>
+      <a class="brand" routerLink="/">{{ siteTitle }}</a>
       <div class="actions">
         <app-color-scheme />
         <button
@@ -50,7 +50,7 @@
             [routerLink]="link.path"
             routerLinkActive="active"
             [routerLinkActiveOptions]="{ exact: link.path === '/' }"
-            ariaCurrentWhenActive="page"
+            [attr.aria-current]="ariaCurrent()[link.path]"
             >{{ link.label }}</a
           >
         }

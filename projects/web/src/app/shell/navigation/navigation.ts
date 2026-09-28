@@ -8,6 +8,7 @@ import { filter } from 'rxjs';
 import { ColorScheme } from '../../color-scheme/color-scheme/color-scheme';
 import { Breadcrumb } from '../../shared/breadcrumb/breadcrumb';
 import { NAV_LINKS } from '../../shared/nav-links';
+import { Site } from '../../shared/site.enum';
 import { Footer } from '../footer/footer';
 
 @Component({
@@ -30,6 +31,7 @@ import { Footer } from '../footer/footer';
 })
 export class Navigation {
   protected readonly links = NAV_LINKS;
+  protected readonly siteTitle = Site.TITLE;
   protected readonly menuOpen = signal(false);
   private readonly main = viewChild.required<ElementRef<HTMLElement>>('main');
   private readonly router = inject(Router);
@@ -37,6 +39,17 @@ export class Navigation {
   // With <base href="/">, a bare "#main" resolves to "/#main" and would leave the current page,
   // so the href carries the current path, which also holds before hydration.
   protected readonly skipHref = computed(() => `${this.url().split('#')[0]}#main`);
+  // aria-current per link: "page" for the page shown, "true" for its section while a detail
+  // page is shown (the breadcrumb marks that page), so only one link claims to be the page.
+  protected readonly ariaCurrent = computed(() => {
+    const path = this.url().split(/[?#]/)[0];
+    return Object.fromEntries(
+      this.links.map(({ path: link }) => {
+        const inSection = link !== '/' && path.startsWith(`${link}/`);
+        return [link, path === link ? 'page' : inSection ? 'true' : null];
+      }),
+    );
+  });
 
   constructor() {
     this.router.events

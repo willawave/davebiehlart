@@ -49,6 +49,11 @@ test.describe('desktop', () => {
     const breadcrumb = page.getByRole('navigation', { name: 'Breadcrumb' });
     await expect(breadcrumb.getByRole('listitem')).toHaveText(['Home', 'Bronzes', 'Details']);
     await expect(breadcrumb.locator('[aria-current="page"]')).toHaveText('Details');
+    // The header marks the section, leaving "page" to the breadcrumb.
+    const bronzes = page
+      .getByRole('navigation', { name: 'Main' })
+      .getByRole('link', { name: 'Bronzes', exact: true });
+    await expect(bronzes).toHaveAttribute('aria-current', 'true');
 
     await breadcrumb.getByRole('link', { name: 'Bronzes' }).click();
     await expect(page).toHaveURL('/bronzes');

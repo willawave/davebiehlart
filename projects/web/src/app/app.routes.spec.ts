@@ -1,9 +1,12 @@
 import { Route } from '@angular/router';
 import { routes } from './app.routes';
+import { eventDetailResolver } from './event/event-detail-resolver';
+import { galleryDetailResolver } from './gallery/gallery-detail-resolver';
 import { detailBreadcrumb } from './shared/breadcrumb/breadcrumb';
 import { RouterLinks } from './shared/router-links.enum';
 import { Site } from './shared/site.enum';
 import { NotFoundPage } from './static-pages/not-found-page/not-found-page';
+import { statueDetailResolver } from './statue/statue-detail-resolver';
 
 function route(path: string): Route {
   const found = routes.find((r) => r.path === path);
@@ -15,14 +18,14 @@ function route(path: string): Route {
 
 describe('routes', () => {
   const sections = [
-    { path: RouterLinks.BRONZES, label: 'Bronzes' },
-    { path: RouterLinks.STATUES, label: 'Statues' },
-    { path: RouterLinks.GLASS, label: 'Kiln Glass' },
-    { path: RouterLinks.EVENTS, label: 'Events' },
-    { path: RouterLinks.MEDIA, label: 'Media' },
+    { path: RouterLinks.BRONZES, label: 'Bronzes', resolve: { galleryDetailResolver } },
+    { path: RouterLinks.STATUES, label: 'Statues', resolve: { statueDetailResolver } },
+    { path: RouterLinks.GLASS, label: 'Kiln Glass', resolve: { galleryDetailResolver } },
+    { path: RouterLinks.EVENTS, label: 'Events', resolve: { eventDetailResolver } },
+    { path: RouterLinks.MEDIA, label: 'Media', resolve: undefined },
   ];
 
-  for (const { path, label } of sections) {
+  for (const { path, label, resolve } of sections) {
     describe(`/${path}`, () => {
       it(`should have the breadcrumb "${label}"`, () => {
         expect(route(path).data?.['breadcrumb']).toBe(label);
@@ -38,6 +41,7 @@ describe('routes', () => {
         const detail = route(path).children?.find((r) => r.path === ':id');
         expect(detail?.loadComponent).toBeDefined();
         expect(detail?.data?.['breadcrumb']).toBe(detailBreadcrumb);
+        expect(detail?.resolve).toEqual(resolve);
       });
     });
   }

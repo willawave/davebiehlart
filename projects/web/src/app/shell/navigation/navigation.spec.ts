@@ -41,6 +41,7 @@ describe('Navigation', () => {
             children: [
               { path: '', component: Page },
               { path: 'bronzes', component: Page },
+              { path: 'bronzes/:id', component: Page },
             ],
           },
         ]),
@@ -73,19 +74,47 @@ describe('Navigation', () => {
     await harness.navigateByUrl('/bronzes');
     expect(element().querySelector('.skip-link')?.getAttribute('href')).toBe('/bronzes#main');
     document.body.appendChild(element());
-    const click = new MouseEvent('click', { bubbles: true, cancelable: true });
+    try {
+      const click = new MouseEvent('click', { bubbles: true, cancelable: true });
 
-    element().querySelector('.skip-link')!.dispatchEvent(click);
+      element().querySelector('.skip-link')!.dispatchEvent(click);
 
-    expect(click.defaultPrevented).toBe(true);
-    expect(document.activeElement).toBe(element().querySelector('main'));
-    expect(TestBed.inject(Router).url).toBe('/bronzes');
-    element().remove();
+      expect(click.defaultPrevented).toBe(true);
+      expect(document.activeElement).toBe(element().querySelector('main'));
+      expect(TestBed.inject(Router).url).toBe('/bronzes');
+    } finally {
+      element().remove();
+    }
+  });
+
+  it('should replace any fragment in the current URL with #main in the skip link', async () => {
+    await harness.navigateByUrl('/bronzes#top');
+    expect(element().querySelector('.skip-link')?.getAttribute('href')).toBe('/bronzes#main');
+  });
+
+  it('should reset aria-expanded when the drawer closes itself', async () => {
+    const menuButton = element().querySelector<HTMLButtonElement>('.menu-button')!;
+    menuButton.click();
+    await settle();
+
+    // Escape and backdrop clicks close the drawer from inside MatSidenav.
+    await sidenav().close();
+    await settle();
+
+    expect(menuButton.getAttribute('aria-expanded')).toBe('false');
   });
 
   it('should mark only the current section', async () => {
     await harness.navigateByUrl('/bronzes');
     const current = element().querySelectorAll('nav[aria-label="Main"] a[aria-current="page"]');
+    expect(Array.from(current, (a) => a.textContent?.trim())).toEqual(['Bronzes']);
+  });
+
+  it('should mark the section, not the page, on a detail page', async () => {
+    await harness.navigateByUrl('/bronzes/abc');
+    const nav = element().querySelector('nav[aria-label="Main"]')!;
+    expect(nav.querySelector('a[aria-current="page"]')).toBeNull();
+    const current = nav.querySelectorAll('a[aria-current="true"]');
     expect(Array.from(current, (a) => a.textContent?.trim())).toEqual(['Bronzes']);
   });
 
