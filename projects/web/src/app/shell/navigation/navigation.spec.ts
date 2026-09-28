@@ -106,4 +106,14 @@ describe('Navigation', () => {
 
     expect(sidenav().opened).toBe(false);
   });
+
+  it('should close the menu when selecting the current page', async () => {
+    element().querySelector<HTMLButtonElement>('.menu-button')!.click();
+    await settle();
+
+    element().querySelector<HTMLAnchorElement>('nav[aria-label="Menu"] a[href="/"]')!.click();
+    await settle();
+
+    expect(sidenav().opened).toBe(false);
+  });
 });

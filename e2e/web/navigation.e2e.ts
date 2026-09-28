@@ -101,6 +101,13 @@ test.describe('phone', () => {
     await expect(page).toHaveURL('/statues');
     await expect(menu).toBeHidden();
     await expect(menuButton).toHaveAttribute('aria-expanded', 'false');
+
+    // Selecting the page already shown skips navigation but still closes the menu.
+    await menuButton.click();
+    await expect(page.getByRole('button', { name: 'Close menu' })).toBeFocused();
+    await menu.getByRole('link', { name: 'Statues' }).click();
+    await expect(menu).toBeHidden();
+    await expect(page).toHaveURL('/statues');
   });
 
   test('Escape closes the menu', async ({ page }) => {

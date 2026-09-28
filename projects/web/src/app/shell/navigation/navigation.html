@@ -21,6 +21,7 @@
           routerLinkActive="active"
           [routerLinkActiveOptions]="{ exact: link.path === '/' }"
           ariaCurrentWhenActive="page"
+          (click)="menuOpen.set(false)"
           >{{ link.label }}</a
         >
       }
