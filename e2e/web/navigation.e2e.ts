@@ -75,6 +75,8 @@ test.describe('desktop', () => {
     await expect(skip).toBeFocused();
     await page.keyboard.press('Enter');
     await expect(page.locator('main')).toBeFocused();
+    await expect(page).toHaveURL('/contact');
+    await expect(page.locator('main app-contact-page')).toBeAttached();
   });
 });
 

@@ -1,4 +1,4 @@
-<a class="skip-link" href="#main">Skip to content</a>
+<a class="skip-link" [href]="skipHref()" (click)="skipToMain($event)">Skip to content</a>
 
 <mat-sidenav-container class="container">
   <mat-sidenav
@@ -59,7 +59,7 @@
 
     <div class="content">
       <app-breadcrumb />
-      <main id="main" tabindex="-1">
+      <main #main id="main" tabindex="-1">
         <router-outlet />
       </main>
     </div>

@@ -65,8 +65,22 @@ describe('Navigation', () => {
 
   it('should offer a skip link to the main content', () => {
     const skip = element().querySelector('.skip-link');
-    expect(skip?.getAttribute('href')).toBe('#main');
+    expect(skip?.getAttribute('href')).toBe('/#main');
     expect(element().querySelector('main')?.getAttribute('tabindex')).toBe('-1');
+  });
+
+  it('should focus the main content from the skip link without navigating', async () => {
+    await harness.navigateByUrl('/bronzes');
+    expect(element().querySelector('.skip-link')?.getAttribute('href')).toBe('/bronzes#main');
+    document.body.appendChild(element());
+    const click = new MouseEvent('click', { bubbles: true, cancelable: true });
+
+    element().querySelector('.skip-link')!.dispatchEvent(click);
+
+    expect(click.defaultPrevented).toBe(true);
+    expect(document.activeElement).toBe(element().querySelector('main'));
+    expect(TestBed.inject(Router).url).toBe('/bronzes');
+    element().remove();
   });
 
   it('should mark only the current section', async () => {

@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, ElementRef, inject, signal, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
@@ -31,13 +31,27 @@ import { Footer } from '../footer/footer';
 export class Navigation {
   protected readonly links = NAV_LINKS;
   protected readonly menuOpen = signal(false);
+  private readonly main = viewChild.required<ElementRef<HTMLElement>>('main');
+  private readonly router = inject(Router);
+  private readonly url = signal(this.router.url);
+  // With <base href="/">, a bare "#main" resolves to "/#main" and would leave the current page,
+  // so the href carries the current path, which also holds before hydration.
+  protected readonly skipHref = computed(() => `${this.url().split('#')[0]}#main`);
 
   constructor() {
-    inject(Router)
-      .events.pipe(
+    this.router.events
+      .pipe(
         filter((event) => event instanceof NavigationEnd),
         takeUntilDestroyed(),
       )
-      .subscribe(() => this.menuOpen.set(false));
+      .subscribe(() => {
+        this.url.set(this.router.url);
+        this.menuOpen.set(false);
+      });
+  }
+
+  protected skipToMain(event: Event): void {
+    event.preventDefault();
+    this.main().nativeElement.focus();
   }
 }
