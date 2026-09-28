@@ -12,7 +12,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - A `.claude/settings.json` PostToolUse hook runs Prettier on every file you Write/Edit, so don't format by hand.
 - Start in plan mode. Run `/design-shotgun` before UI work.
-- Review, QA, and merge go through `/review` → `/qa` (against local emulators) → `/ship` (opens the PR) → `/land-and-deploy` (merges once all gates pass).
+- Review, QA, and merge go through `/codex:review` → `/qa` (against local emulators) → `/ship` (opens the PR) → `/land-and-deploy` (merges once all gates pass).
+- Keep `/ship` lightweight: `/codex:review` and `/qa` are the review gate, so don't run `/ship`'s coverage or plan audits, specialist or Red Team subagents, adversarial passes, fix loops, or doc-sync subagent. Just run the tests (unit, lint, web/admin E2E as touched, build), bump `VERSION` and `CHANGELOG.md`, push, and open the PR. Fix only failures that break real use; list anything else in the PR body. Ask before any multi-agent review.
 
 ## Skill routing
 
