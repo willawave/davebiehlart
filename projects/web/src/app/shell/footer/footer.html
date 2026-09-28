@@ -1,2 +1,24 @@
-<p>footer works!</p>
-<!-- Navigation links, logo, copyright, privacy policy, terms of use, link to willawave.ai -->
+<footer>
+  <a class="brand" routerLink="/">{{ siteTitle }}</a>
+  <nav aria-label="Footer">
+    <ul class="links">
+      @for (link of links; track link.path) {
+        <li>
+          <a [routerLink]="link.path">{{ link.label }}</a>
+        </li>
+      }
+    </ul>
+  </nav>
+  <p class="legal">
+    <span>&copy; {{ year }} {{ siteTitle }}</span>
+    <a [routerLink]="privacyPolicyLink">Privacy Policy</a>
+    <a [routerLink]="termsOfUseLink">Terms of Use</a>
+    <a
+      href="https://willawave.ai"
+      target="_blank"
+      rel="noopener"
+      aria-label="Site by Willawave (opens in a new tab)"
+      >Site by Willawave</a
+    >
+  </p>
+</footer>

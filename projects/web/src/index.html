@@ -2,10 +2,33 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Web</title>
+    <title>Dave Biehl Art</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Bronze sculpture, statues, and kiln glass by artist Dave Biehl."
+    />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=close,dark_mode,light_mode,menu&display=block"
+    />
+    <script>
+      // Apply a saved light/dark choice before first paint (ColorSchemeService writes it).
+      try {
+        var scheme = localStorage.getItem('color-scheme');
+        if (scheme === 'light' || scheme === 'dark') {
+          document.documentElement.style.colorScheme = scheme;
+        }
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <app-root></app-root>

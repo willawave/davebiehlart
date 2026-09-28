@@ -1,0 +1,55 @@
+footer {
+  padding: 24px 16px 32px;
+  border-top: 1px solid var(--dba-rule);
+  text-align: center;
+  font-size: 0.8125rem;
+  color: var(--dba-muted);
+}
+
+.brand {
+  display: inline-block;
+  margin-bottom: 12px;
+  font: 600 1.5rem/1 var(--dba-serif);
+  color: var(--dba-ink);
+  text-decoration: none;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 20px;
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+
+  a {
+    display: inline-block;
+    padding: 6px 0;
+    color: var(--dba-ink);
+    text-decoration: none;
+
+    &:hover {
+      color: var(--dba-bronze);
+    }
+  }
+}
+
+.legal {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  // Baseline, not stretch: the links' block padding would otherwise drop them below the ©.
+  align-items: baseline;
+  gap: 4px 16px;
+  margin: 0;
+
+  // 24px-tall targets keep wrapped rows clear of WCAG 2.5.8's minimum spacing.
+  a {
+    display: inline-block;
+    padding-block: 4px;
+    color: var(--dba-muted);
+  }
+}
