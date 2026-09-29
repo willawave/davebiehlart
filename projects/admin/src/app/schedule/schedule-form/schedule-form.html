@@ -1,0 +1,73 @@
+<form novalidate (submit)="onSubmit($event)">
+  <fieldset>
+    <legend>Special message</legend>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Special message</mat-label>
+      <input matInput [formField]="scheduleForm.specialMessage" />
+      <mat-hint
+        >Shown above the hours on the Contact page, e.g. "Closed Thanksgiving Day". Leave blank for
+        none.</mat-hint
+      >
+    </mat-form-field>
+  </fieldset>
+
+  <fieldset>
+    <legend>Weekly hours</legend>
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Day</th>
+            <th scope="col">Closed</th>
+            <th scope="col">Opens</th>
+            <th scope="col">Closes</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (day of scheduleForm.days; track $index) {
+            <tr>
+              <th scope="row">{{ dayNames[$index] }}</th>
+              <td>
+                <mat-checkbox
+                  [formField]="day.isClosed"
+                  [aria-label]="dayNames[$index] + ' closed'"
+                />
+              </td>
+              <td>
+                <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                  <input
+                    matInput
+                    type="time"
+                    [formField]="day.open"
+                    [attr.aria-label]="dayNames[$index] + ' opens'"
+                  />
+                  <mat-error>{{ firstError(day.open) }}</mat-error>
+                </mat-form-field>
+              </td>
+              <td>
+                <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                  <input
+                    matInput
+                    type="time"
+                    [formField]="day.close"
+                    [attr.aria-label]="dayNames[$index] + ' closes'"
+                  />
+                  <mat-error>{{ firstError(day.close) }}</mat-error>
+                </mat-form-field>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </fieldset>
+
+  <div class="actions">
+    <button type="button" matButton="outlined" [disabled]="saving()" (click)="cancelled.emit()">
+      Cancel
+    </button>
+    <button type="submit" matButton="filled" [disabled]="saving()">
+      {{ saving() ? 'Saving…' : 'Save' }}
+    </button>
+  </div>
+</form>

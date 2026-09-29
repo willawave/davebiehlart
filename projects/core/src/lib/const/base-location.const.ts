@@ -4,5 +4,5 @@ export const BaseLocation = {
   LONGITUDE: -96.23715453945961,
   STATE: 'Nebraska',
   STREET: '2610 North Main Street',
-  VENUE: 'Main Street Studios & Art Gallery',
+  VENUE: 'Main Street Studios',
 };

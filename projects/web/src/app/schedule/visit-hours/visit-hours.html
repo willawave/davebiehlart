@@ -1,0 +1,29 @@
+<section aria-labelledby="visit-heading">
+  @if (status(); as status) {
+    <p class="kicker">{{ status }}</p>
+  }
+  <h2 id="visit-heading">Visit the gallery</h2>
+  <address>
+    {{ location.VENUE }} · {{ location.STREET }}, {{ location.CITY }}, {{ location.STATE }}
+  </address>
+
+  @if (store.schedule(); as schedule) {
+    @if (schedule.specialMessage) {
+      <p class="notice">{{ schedule.specialMessage }}</p>
+    }
+    <dl class="hours" aria-label="Gallery hours">
+      @for (group of week(); track group.label) {
+        <div [class.today]="group.days.includes(today)">
+          <dt>
+            @if (group.days.includes(today)) {
+              <span class="visually-hidden">Today, </span>
+            }
+            <span aria-hidden="true">{{ group.label }}</span>
+            <span class="visually-hidden">{{ group.fullLabel }}</span>
+          </dt>
+          <dd>{{ group.hours }}</dd>
+        </div>
+      }
+    </dl>
+  }
+</section>

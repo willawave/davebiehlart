@@ -8,9 +8,12 @@ describe('serverRoutes', () => {
       .filter((route) => route.renderMode === RenderMode.Prerender)
       .map((route) => route.path)
       .sort();
-    expect(prerendered).toEqual(
-      [RouterLinks.CONTACT, RouterLinks.PRIVACY_POLICY, RouterLinks.TERMS_OF_USE].sort(),
-    );
+    expect(prerendered).toEqual([RouterLinks.PRIVACY_POLICY, RouterLinks.TERMS_OF_USE].sort());
+  });
+
+  // A prerendered Contact page would freeze the gallery hours at build time.
+  it('should server-render Contact, which shows the live gallery hours', () => {
+    expect(serverRoutes.some((route) => route.path === RouterLinks.CONTACT)).toBe(false);
   });
 
   it('should server-render everything else at request time via a final catch-all', () => {
