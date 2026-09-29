@@ -24,6 +24,8 @@ export interface LonLat {
 export interface LocationPicker {
   // Moves the pin, panning only if it left the visible area.
   place(position: LonLat): void;
+  // While disabled, clicks and drags leave the pin where it is; the map still pans and zooms.
+  setEnabled(enabled: boolean): void;
   destroy(): void;
 }
 
@@ -68,14 +70,16 @@ export function createLocationPicker(
   drag.on('translateend', () => report((pin.getGeometry() as Point).getCoordinates()));
   map.addInteraction(drag);
 
+  let enabled = true;
   map.on('click', (event) => {
     // A click that ends a drag has already been reported.
-    if (map.hasFeatureAtPixel(event.pixel, { hitTolerance: 6 })) return;
+    if (!enabled || map.hasFeatureAtPixel(event.pixel, { hitTolerance: 6 })) return;
     pin.setGeometry(new Point(event.coordinate));
     report(event.coordinate);
   });
   map.on('pointermove', (event) => {
-    target.style.cursor = map.hasFeatureAtPixel(event.pixel, { hitTolerance: 6 }) ? 'grab' : '';
+    target.style.cursor =
+      enabled && map.hasFeatureAtPixel(event.pixel, { hitTolerance: 6 }) ? 'grab' : '';
   });
 
   return {
@@ -86,6 +90,10 @@ export function createLocationPicker(
       if (!containsCoordinate(view.calculateExtent(map.getSize()), coordinate)) {
         view.animate({ center: coordinate, duration: 250 });
       }
+    },
+    setEnabled(value) {
+      enabled = value;
+      drag.setActive(value);
     },
     destroy() {
       map.setTarget(undefined);

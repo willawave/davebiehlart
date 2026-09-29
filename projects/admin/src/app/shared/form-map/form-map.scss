@@ -14,6 +14,10 @@
   border: 1px solid var(--dba-rule);
   background: #e8e2d6;
 
+  &.disabled {
+    opacity: 0.6;
+  }
+
   &:focus-visible {
     outline: 3px solid var(--dba-bronze);
     outline-offset: 2px;

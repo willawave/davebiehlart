@@ -51,8 +51,11 @@ export class FormMap {
   // Names the map for screen readers, e.g. "Statue location".
   readonly label = input('Location');
   readonly hintId = input<string>();
+  // True while the form saves: the pin can't be moved, since the save already has its values.
+  readonly disabled = input(false);
 
   protected readonly failed = signal(false);
+  private readonly pickerReady = signal(false);
   private picker?: LocationPicker;
 
   constructor() {
@@ -72,9 +75,11 @@ export class FormMap {
           ? { latitude, longitude }
           : { latitude: 0, longitude: 0 };
         this.picker = createLocationPicker(this.container().nativeElement, start, (position) => {
+          if (this.disabled()) return;
           this.latitude.set(position.latitude);
           this.longitude.set(position.longitude);
         });
+        this.pickerReady.set(true);
       } catch {
         this.failed.set(true);
       }
@@ -86,6 +91,10 @@ export class FormMap {
       if (this.picker && isPosition(latitude, longitude)) {
         this.picker.place({ latitude, longitude });
       }
+    });
+
+    effect(() => {
+      if (this.pickerReady()) this.picker?.setEnabled(!this.disabled());
     });
   }
 }

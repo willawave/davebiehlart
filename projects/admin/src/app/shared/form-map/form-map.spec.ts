@@ -5,7 +5,7 @@ import { LonLat, roundCoordinate } from './location-picker';
 describe('FormMap', () => {
   let fixture: ComponentFixture<FormMap>;
   let moved: (position: LonLat) => void;
-  const picker = { place: vi.fn(), destroy: vi.fn() };
+  const picker = { place: vi.fn(), setEnabled: vi.fn(), destroy: vi.fn() };
   const create = vi.fn((_target: HTMLElement, _start: LonLat, onMove: (p: LonLat) => void) => {
     moved = onMove;
     return picker;
@@ -52,6 +52,25 @@ describe('FormMap', () => {
     fixture.componentRef.setInput('latitude', 95);
     await fixture.whenStable();
     expect(picker.place).not.toHaveBeenCalled();
+  });
+
+  it('should keep the pin still while disabled', async () => {
+    await render();
+    expect(picker.setEnabled).toHaveBeenLastCalledWith(true);
+
+    fixture.componentRef.setInput('disabled', true);
+    await fixture.whenStable();
+    expect(picker.setEnabled).toHaveBeenLastCalledWith(false);
+    expect(fixture.nativeElement.querySelector('.map').getAttribute('aria-disabled')).toBe('true');
+    moved({ latitude: 40.8, longitude: -96.7 });
+    expect(fixture.componentInstance.latitude()).toBe(41.28);
+    expect(fixture.componentInstance.longitude()).toBe(-96.24);
+
+    fixture.componentRef.setInput('disabled', false);
+    await fixture.whenStable();
+    expect(picker.setEnabled).toHaveBeenLastCalledWith(true);
+    moved({ latitude: 40.8, longitude: -96.7 });
+    expect(fixture.componentInstance.latitude()).toBe(40.8);
   });
 
   it('should take the map down with the form', async () => {

@@ -5,6 +5,8 @@
   role="region"
   [attr.aria-label]="label() + ' map'"
   [attr.aria-describedby]="hintId() ?? null"
+  [attr.aria-disabled]="disabled() || null"
+  [class.disabled]="disabled()"
 ></div>
 @if (failed()) {
   <p class="error" role="alert">The map could not be loaded. Type the coordinates instead.</p>

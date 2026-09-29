@@ -52,6 +52,7 @@
     <app-form-map
       label="Statue location"
       hintId="map-hint"
+      [disabled]="saving()"
       [(latitude)]="statueForm.location.latitude().value"
       [(longitude)]="statueForm.location.longitude().value"
     />

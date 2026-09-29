@@ -30,7 +30,7 @@ describe('StatueForm', () => {
     uploadImages: vi.fn<(files: File[], key: string) => Promise<string[] | null>>(),
     discardImages: vi.fn(() => Promise.resolve()),
   };
-  const picker = { place: vi.fn(), destroy: vi.fn() };
+  const picker = { place: vi.fn(), setEnabled: vi.fn(), destroy: vi.fn() };
   const createPicker = (_target: HTMLElement, _start: LonLat, moved: (p: LonLat) => void) => {
     movePin = moved;
     return picker;
@@ -165,6 +165,12 @@ describe('StatueForm', () => {
     expect(
       Array.from(element.querySelectorAll<HTMLButtonElement>('button')).every((b) => b.disabled),
     ).toBe(true);
+
+    // The map too: a pin moved now would miss the save and be silently dropped.
+    expect(picker.setEnabled).toHaveBeenLastCalledWith(false);
+    movePin({ latitude: 40.8136, longitude: -96.7026 });
+    await fixture.whenStable();
+    expect(coordinates()[0].value).toBe('41.258');
   });
 
   it('should mark the required fields', async () => {
