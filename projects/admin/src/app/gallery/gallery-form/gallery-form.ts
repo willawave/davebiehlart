@@ -85,7 +85,10 @@ export class GalleryForm {
     () => this.initial() ?? new GalleryFormModel().galleryForm(),
   );
   protected readonly galleryForm = form(this.model, (item) => {
-    // Saved trimmed (toGalleryDocument), so spaces alone count as empty.
+    // required() marks the fields required (asterisk, aria-required); notBlank also rejects
+    // spaces alone, since values are saved trimmed (toGalleryDocument).
+    required(item.name, { message: 'Enter a name.' });
+    required(item.description, { message: 'Enter a description.' });
     validate(item.name, notBlank('Enter a name.'));
     validate(item.description, notBlank('Enter a description.'));
     required(item.style, { message: 'Choose a style.' });
