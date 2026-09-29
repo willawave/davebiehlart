@@ -2,6 +2,20 @@
 
 All notable changes to this project are documented here.
 
+## [0.9.0.0] - 2026-09-29
+
+### Added
+
+- The Contact page has a "Visit the gallery" section with the gallery's address and weekly hours. Days that keep the same hours share a row, such as Mon – Thu 10 AM – 6 PM, and today's row is marked. Above the heading, a line says whether the gallery is open today and when, worked out in Nebraska time wherever the page is rendered. An optional special message, such as a holiday closure, shows above the hours.
+- The Contact page is rendered on the server for every visit, so a change to the hours shows right away.
+- Admins can set the hours for each day of the week on a new Schedule page, reached from the dashboard. A day can be marked Closed, which locks its times. The form refuses a missing time on an open day and a closing time that isn't after the opening time. The hours are stored in the same document the current site reads, so both stay in sync.
+- The local emulators come with sample hours: Monday to Thursday 10 to 6, Friday and Saturday 10 to 7, closed Sunday.
+
+### Changed
+
+- The gallery's venue is now called Main Street Studios, which is also the default venue for new events and statues.
+- Dave's email address is corrected to dave.hvs50@gmail.com.
+
 ## [0.8.0.0] - 2026-09-29
 
 ### Added
