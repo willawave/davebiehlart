@@ -26,7 +26,7 @@
         <ng-container matColumnDef="date">
           <th mat-header-cell *matHeaderCellDef>Date</th>
           <td mat-cell *matCellDef="let media" class="nowrap">
-            {{ media.date.toDate() | date: 'mediumDate' }}
+            {{ media.date.toDate() | date: 'mediumDate' : 'UTC' }}
           </td>
         </ng-container>
         <ng-container matColumnDef="type">

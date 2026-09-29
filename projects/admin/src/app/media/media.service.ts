@@ -24,8 +24,12 @@ export function toMediaDocument(value: MediaFormValue): MediaDocument {
   // The form's mediaLink() validator already refused anything that doesn't parse.
   if (!link) throw new Error('Cannot save an invalid media link.');
   return {
-    // The start of the day, as the datepicker picks it; the untouched default is `new Date()`.
-    date: Timestamp.fromDate(new Date(date.getFullYear(), date.getMonth(), date.getDate())),
+    // A date-only value: the picked calendar day (the datepicker's local day) at UTC midnight,
+    // which the website and the table show in UTC. Local midnight would fall on the previous
+    // UTC day for an admin east of UTC. The untouched default is `new Date()`.
+    date: Timestamp.fromDate(
+      new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())),
+    ),
     description: value.description.trim(),
     // A YouTube link in any form is saved as its watch URL, as production always stored it.
     link: link.url,
@@ -34,9 +38,16 @@ export function toMediaDocument(value: MediaFormValue): MediaDocument {
   };
 }
 
+// The stored day, read in UTC, as the datepicker's local midnight. Also right for older items
+// saved at Nebraska midnight (05:00Z or 06:00Z), which fall on the same UTC day.
+function toPickerDate(stamp: Timestamp): Date {
+  const utc = stamp.toDate();
+  return new Date(utc.getUTCFullYear(), utc.getUTCMonth(), utc.getUTCDate());
+}
+
 export function toMediaFormValue(item: MediaDocument): MediaFormValue {
   return {
-    date: item.date.toDate(),
+    date: toPickerDate(item.date),
     description: item.description,
     link: item.link,
     title: item.title,
