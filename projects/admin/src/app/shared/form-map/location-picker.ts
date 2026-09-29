@@ -88,6 +88,9 @@ export function createLocationPicker(
       pin.setGeometry(new Point(coordinate));
       const view = map.getView();
       if (!containsCoordinate(view.calculateExtent(map.getSize()), coordinate)) {
+        // Overlapping pans (latitude then longitude, typed quickly) race, and the older one
+        // can finish last and leave the pin off screen. Only the latest should run.
+        view.cancelAnimations();
         view.animate({ center: coordinate, duration: 250 });
       }
     },
