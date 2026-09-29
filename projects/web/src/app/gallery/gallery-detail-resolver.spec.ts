@@ -14,6 +14,7 @@ import { galleryItem } from './gallery.testing';
 describe('galleryDetailResolver', () => {
   const store = {
     loadSelected: vi.fn<(id: string, style: GalleryStyle) => Promise<GalleryDocument | null>>(),
+    ensureVisible: vi.fn<(style: GalleryStyle) => Promise<void>>(() => Promise.resolve()),
   };
   let meta: Meta;
 
@@ -45,6 +46,19 @@ describe('galleryDetailResolver', () => {
 
     await expect(resolve()).resolves.toBe(item);
     expect(store.loadSelected).toHaveBeenCalledWith('mustang', GalleryStyle.BRONZE);
+  });
+
+  it("should load the section's list for the previous/next links", async () => {
+    store.loadSelected.mockResolvedValue(galleryItem({ style: GalleryStyle.GLASS }));
+    await resolve('bowl', GalleryStyle.GLASS);
+    expect(store.ensureVisible).toHaveBeenCalledWith(GalleryStyle.GLASS);
+  });
+
+  it('should still resolve the item when the list fails to load', async () => {
+    const item = galleryItem();
+    store.loadSelected.mockResolvedValue(item);
+    store.ensureVisible.mockRejectedValueOnce(new Error('offline'));
+    await expect(resolve()).resolves.toBe(item);
   });
 
   it("should set the page's description and share tags from the item", async () => {

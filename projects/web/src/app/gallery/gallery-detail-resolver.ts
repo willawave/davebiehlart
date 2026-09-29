@@ -27,7 +27,14 @@ function load(route: ActivatedRouteSnapshot): Promise<GalleryDocument | null> {
 export const galleryDetailResolver: ResolveFn<GalleryDocument> = async (route, state) => {
   const router = inject(Router);
   const meta = inject(Meta);
-  const item = await load(route);
+  // The section's list feeds the previous/next links. Loading it here puts those links in
+  // the server-rendered page; if it fails, the page just renders without them.
+  const [item] = await Promise.all([
+    load(route),
+    inject(GalleryStore)
+      .ensureVisible(section(route).style)
+      .catch(() => undefined),
+  ]);
   if (!item) {
     // browserUrl, not skipLocationChange: on a client-side click from a list, the latter
     // would leave the list's URL in the address bar.

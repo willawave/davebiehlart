@@ -28,4 +28,21 @@
       }
     </dl>
   </section>
+
+  @if (previous() || next()) {
+    <nav class="pager" [attr.aria-label]="'More ' + sectionLabel()">
+      @if (previous(); as previous) {
+        <a class="previous" rel="prev" [routerLink]="['..', previous.id]">
+          <span class="direction">‹ Previous</span>
+          <span class="name">{{ previous.name }}</span>
+        </a>
+      }
+      @if (next(); as next) {
+        <a class="next" rel="next" [routerLink]="['..', next.id]">
+          <span class="direction">Next ›</span>
+          <span class="name">{{ next.name }}</span>
+        </a>
+      }
+    </nav>
+  }
 </article>

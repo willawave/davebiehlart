@@ -1,6 +1,71 @@
+import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { RouterTestingHarness } from '@angular/router/testing';
+import { GalleryDocument } from 'core';
 import { galleryItem } from '../gallery.testing';
 import { GalleryItem } from './gallery-item';
+
+const previous = signal<GalleryDocument | null>(null);
+const next = signal<GalleryDocument | null>(null);
+
+@Component({
+  imports: [GalleryItem],
+  template: `<app-gallery-item
+    [item]="item"
+    kind="Bronze"
+    sectionLabel="bronzes"
+    [previous]="previous()"
+    [next]="next()"
+  />`,
+})
+class DetailPage {
+  protected readonly item = galleryItem({ id: 'b', name: 'Middle' });
+  protected readonly previous = previous;
+  protected readonly next = next;
+}
+
+describe('GalleryItem pager', () => {
+  let harness: RouterTestingHarness;
+  const pager = () => harness.routeNativeElement?.querySelector('nav[aria-label="More bronzes"]');
+
+  beforeEach(async () => {
+    TestBed.configureTestingModule({
+      providers: [provideRouter([{ path: 'bronzes/:id', component: DetailPage }])],
+    });
+    harness = await RouterTestingHarness.create();
+  });
+
+  it('should link to the newer and older neighbors in the same section', async () => {
+    previous.set(galleryItem({ id: 'a', name: 'Newer' }));
+    next.set(galleryItem({ id: 'c', name: 'Older' }));
+    await harness.navigateByUrl('/bronzes/b');
+
+    const prev = pager()?.querySelector<HTMLAnchorElement>('a[rel="prev"]');
+    const nxt = pager()?.querySelector<HTMLAnchorElement>('a[rel="next"]');
+    expect(prev?.getAttribute('href')).toBe('/bronzes/a');
+    expect(prev?.textContent).toContain('Previous');
+    expect(prev?.textContent).toContain('Newer');
+    expect(nxt?.getAttribute('href')).toBe('/bronzes/c');
+    expect(nxt?.textContent).toContain('Older');
+  });
+
+  it('should leave out the missing side at either end', async () => {
+    previous.set(null);
+    next.set(galleryItem({ id: 'c', name: 'Older' }));
+    await harness.navigateByUrl('/bronzes/b');
+
+    expect(pager()?.querySelector('a[rel="prev"]')).toBeNull();
+    expect(pager()?.querySelector('a[rel="next"]')).not.toBeNull();
+  });
+
+  it('should render no pager without neighbors', async () => {
+    previous.set(null);
+    next.set(null);
+    await harness.navigateByUrl('/bronzes/b');
+    expect(pager()).toBeNull();
+  });
+});
 
 describe('GalleryItem', () => {
   let fixture: ComponentFixture<GalleryItem>;

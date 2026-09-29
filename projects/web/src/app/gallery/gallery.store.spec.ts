@@ -105,6 +105,60 @@ describe('GalleryStore', () => {
     });
   });
 
+  describe('ensureVisible', () => {
+    it('should reuse a list already loaded for the same style', async () => {
+      service.getVisible.mockReturnValue([galleryItem()]);
+      await store.loadVisible(GalleryStyle.BRONZE);
+
+      await store.ensureVisible(GalleryStyle.BRONZE);
+
+      expect(service.getVisible).toHaveBeenCalledOnce();
+    });
+
+    it('should load the list for another style, or after a failed load', async () => {
+      service.getVisible.mockReturnValueOnce([galleryItem()]);
+      await store.loadVisible(GalleryStyle.BRONZE);
+      service.getVisible.mockReturnValueOnce(Promise.resolve([]));
+      await store.ensureVisible(GalleryStyle.GLASS);
+      expect(service.getVisible).toHaveBeenLastCalledWith(GalleryStyle.GLASS);
+
+      service.getVisible.mockReturnValueOnce(Promise.reject(new Error('offline')));
+      await store.loadVisible(GalleryStyle.BRONZE);
+      service.getVisible.mockReturnValueOnce([galleryItem()]);
+      await store.ensureVisible(GalleryStyle.BRONZE);
+      expect(service.getVisible).toHaveBeenCalledTimes(4);
+    });
+  });
+
+  describe('neighbors', () => {
+    const items = ['a', 'b', 'c'].map((id) => galleryItem({ id, name: id.toUpperCase() }));
+
+    async function select(id: string) {
+      service.getVisible.mockReturnValue(items);
+      await store.loadVisible(GalleryStyle.BRONZE);
+      service.getVisibleById.mockReturnValue(galleryItem({ id }));
+      await store.loadSelected(id, GalleryStyle.BRONZE);
+    }
+
+    it("should be the selected item's newer and older neighbors in list order", async () => {
+      await select('b');
+      expect(store.neighbors().previous?.id).toBe('a');
+      expect(store.neighbors().next?.id).toBe('c');
+    });
+
+    it('should have nothing past either end', async () => {
+      await select('a');
+      expect(store.neighbors()).toEqual({ previous: null, next: items[1] });
+      await select('c');
+      expect(store.neighbors()).toEqual({ previous: items[1], next: null });
+    });
+
+    it('should have nothing when the item is not in the list', async () => {
+      await select('z');
+      expect(store.neighbors()).toEqual({ previous: null, next: null });
+    });
+  });
+
   describe('loadSelected', () => {
     it('should select a visible item of the requested style', async () => {
       const item = galleryItem();

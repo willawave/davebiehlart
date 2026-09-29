@@ -1,3 +1,9 @@
 @if (store.selectedGalleryItem(); as item) {
-  <app-gallery-item [item]="item" kind="Kiln glass" />
+  <app-gallery-item
+    [item]="item"
+    kind="Kiln glass"
+    sectionLabel="kiln glass"
+    [previous]="store.neighbors().previous"
+    [next]="store.neighbors().next"
+  />
 }

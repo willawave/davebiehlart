@@ -109,6 +109,44 @@ test.describe('detail', () => {
     await expect(photos.nth(1)).toBeFocused();
   });
 
+  test('previous and next walk the section in list order', async ({ page }) => {
+    const pager = page.getByRole('navigation', { name: 'More bronzes' });
+    await page.goto('/bronzes/seed-bronze-01');
+    // The newest bronze has nothing before it.
+    await expect(pager.getByRole('link', { name: /Previous/ })).toHaveCount(0);
+
+    await pager.getByRole('link', { name: /Next.*The Herd/ }).click();
+    await expect(page).toHaveURL('/bronzes/seed-bronze-02');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('The Herd');
+    await expect(page).toHaveTitle('The Herd | Bronzes | Dave Biehl Art');
+
+    await pager.getByRole('link', { name: /Previous.*Mustang at Dawn/ }).click();
+    await expect(page).toHaveURL('/bronzes/seed-bronze-01');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Mustang at Dawn');
+
+    // The oldest has nothing after it.
+    await page.goto('/bronzes/seed-bronze-12');
+    await expect(pager.getByRole('link', { name: /Previous.*Pronghorn/ })).toBeVisible();
+    await expect(pager.getByRole('link', { name: /Next/ })).toHaveCount(0);
+  });
+
+  test('previous/next links are server-rendered, and hydration fetches nothing', async ({
+    page,
+    request,
+  }) => {
+    const html = await (await request.get('/glass/seed-glass-02')).text();
+    expect(html).toMatch(/<a[^>]*rel="prev"[^>]*href="\/glass\/seed-glass-01"/);
+    expect(html).toMatch(/<a[^>]*rel="next"[^>]*href="\/glass\/seed-glass-03"/);
+
+    const requests = recordFirestoreRequests(page);
+    await page.goto('/glass/seed-glass-02');
+    await page.waitForFunction(() => !document.querySelector('[ngh]'));
+    await expect(
+      page.getByRole('navigation', { name: 'More kiln glass' }).getByRole('link'),
+    ).toHaveCount(2);
+    expect(requests).toEqual([]);
+  });
+
   test('leaves out the weight when there is none', async ({ page }) => {
     await page.goto('/bronzes/seed-bronze-09');
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Coyote Moon');
