@@ -12,7 +12,7 @@
           <span class="mat">
             @if (item.imageUrls[0]; as src) {
               <span class="frame">
-                <img [ngSrc]="src" fill [priority]="i < 4" alt="" />
+                <img [ngSrc]="src" fill [priority]="i < priorityCount" alt="" />
               </span>
             }
           </span>

@@ -21,7 +21,7 @@ describe('ImageTrack', () => {
     element = fixture.nativeElement;
   });
 
-  it('should number each photo in its alt text and lazy-load all but the first', async () => {
+  it('should number each photo in its alt text', async () => {
     await render(['a.jpg', 'b.jpg', 'c.jpg']);
 
     const images = Array.from(element.querySelectorAll('img'));
@@ -30,7 +30,26 @@ describe('ImageTrack', () => {
       'Mustang, photo 2 of 3',
       'Mustang, photo 3 of 3',
     ]);
-    expect(images.map((img) => img.getAttribute('loading'))).toEqual([null, 'lazy', 'lazy']);
+  });
+
+  it('should load the photos that can be in view eagerly, the first at high priority', async () => {
+    await render(['a.jpg', 'b.jpg', 'c.jpg', 'd.jpg', 'e.jpg']);
+
+    const images = Array.from(element.querySelectorAll('img'));
+    expect(images.map((img) => img.getAttribute('loading'))).toEqual([
+      null,
+      null,
+      null,
+      'lazy',
+      'lazy',
+    ]);
+    expect(images.map((img) => img.getAttribute('fetchpriority'))).toEqual([
+      'high',
+      null,
+      null,
+      null,
+      null,
+    ]);
   });
 
   it('should open the tapped photo full size', async () => {

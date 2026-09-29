@@ -15,4 +15,9 @@ export class GalleryGrid {
   readonly items = input.required<GalleryDocument[]>();
   readonly loading = input(false);
   readonly error = input<string | null>(null);
+
+  // Cards that can be above the fold: two rows at 4 columns on desktop, four at 2 on phones.
+  // Any of them can be the page's largest paint (a wide photo fills more of its mat than a
+  // tall one), so all load eagerly at high priority, and SSR preloads them.
+  protected readonly priorityCount = 8;
 }

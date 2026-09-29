@@ -12,7 +12,8 @@
           <img
             [src]="src"
             [alt]="altTexts()[i]"
-            [attr.loading]="i === 0 ? null : 'lazy'"
+            [attr.loading]="i < eagerCount ? null : 'lazy'"
+            [attr.fetchpriority]="i === 0 ? 'high' : null"
             decoding="async"
             (load)="updateEnds()"
           />

@@ -39,6 +39,26 @@ describe('GalleryGrid', () => {
     expect(cards[1].querySelector('img')).toBeNull();
   });
 
+  it('should load the first 8 covers eagerly at high priority and lazy-load the rest', async () => {
+    await render(
+      Array.from({ length: 10 }, (_, i) =>
+        galleryItem({ id: `item-${i}`, imageUrls: [`https://example.test/${i}.jpg`] }),
+      ),
+    );
+
+    const images = Array.from(element.querySelectorAll('img'));
+    expect(images.map((img) => img.getAttribute('fetchpriority'))).toEqual([
+      ...Array(8).fill('high'),
+      'auto',
+      'auto',
+    ]);
+    expect(images.map((img) => img.getAttribute('loading'))).toEqual([
+      ...Array(8).fill('eager'),
+      'lazy',
+      'lazy',
+    ]);
+  });
+
   it('should say so when there is nothing to show', async () => {
     await render([]);
     expect(element.textContent).toContain('Nothing here yet');

@@ -67,6 +67,31 @@ test.describe('lists', () => {
   });
 });
 
+test.describe('largest contentful paint', () => {
+  // Development builds check the page's largest paint: a lazy or non-priority image there
+  // logs NG02955 / NG0913. Any above-the-fold photo can be the largest.
+  for (const viewport of [
+    { width: 1280, height: 900 },
+    { width: 1920, height: 1080 },
+    { width: 390, height: 844 },
+  ]) {
+    for (const path of ['/bronzes', '/glass', '/bronzes/seed-bronze-01']) {
+      test(`${path} at ${viewport.width}px loads its largest photo eagerly`, async ({ page }) => {
+        const warnings: string[] = [];
+        page.on('console', (message) => {
+          const text = message.text();
+          if (/NG02955|NG0913[\s\S]*Largest Contentful Paint/.test(text)) warnings.push(text);
+        });
+        await page.setViewportSize(viewport);
+        await page.goto(path, { waitUntil: 'networkidle' });
+        // Angular reports once the browser settles the largest paint.
+        await page.waitForTimeout(1000);
+        expect(warnings).toEqual([]);
+      });
+    }
+  }
+});
+
 test.describe('detail', () => {
   test('is server-rendered with the item, its title, and share tags', async ({ request }) => {
     const response = await request.get('/bronzes/seed-bronze-01');

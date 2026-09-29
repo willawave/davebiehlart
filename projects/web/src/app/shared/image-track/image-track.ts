@@ -30,6 +30,10 @@ export class ImageTrack {
   // What the photos show, e.g. the artwork's name.
   readonly alt = input.required<string>();
 
+  // Photos that can be in view when the page opens (three fit at the desktop strip height).
+  // The widest of them is often the page's largest paint, so none of them may be lazy.
+  protected readonly eagerCount = 3;
+
   protected readonly altTexts = computed(() => {
     const count = this.images().length;
     return this.images().map((_, i) =>
