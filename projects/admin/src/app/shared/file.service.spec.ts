@@ -68,6 +68,7 @@ describe('FileService', () => {
       service as unknown as {
         uploadOne: (path: string, blob: Blob, type: string) => Promise<string>;
         deletePath: (path: string) => Promise<void>;
+        shrink: (file: File) => Promise<Blob>;
       };
     const photos = ['a.jpg', 'b.jpg', 'c.jpg'].map(
       (name) => new File(['x'], name, { type: 'image/gif' }), // GIF: uploaded as-is
@@ -104,6 +105,32 @@ describe('FileService', () => {
         upload.mock.calls[0][0],
         upload.mock.calls[1][0],
       ]);
+    });
+
+    it('should never send a photo of 1 MB or more to Storage', async () => {
+      const tooBig = new Blob(['x'], { type: 'image/jpeg' });
+      Object.defineProperty(tooBig, 'size', { value: 1024 * 1024 });
+      vi.spyOn(internals(), 'shrink').mockResolvedValue(tooBig);
+      const upload = vi.spyOn(internals(), 'uploadOne');
+
+      await expect(service.uploadImages(photos, 'gallery', 'key-1')).rejects.toThrow(
+        'a.jpg is still 1 MB or larger after resizing.',
+      );
+      expect(upload).not.toHaveBeenCalled();
+    });
+
+    it('should upload what the shrink step returns, with its type', async () => {
+      const shrunk = new Blob(['x'], { type: 'image/jpeg' });
+      vi.spyOn(internals(), 'shrink').mockResolvedValue(shrunk);
+      const upload = vi.spyOn(internals(), 'uploadOne').mockResolvedValue('url');
+
+      await service.uploadImages([photos[0]], 'gallery', 'key-1');
+
+      expect(upload).toHaveBeenCalledWith(
+        expect.stringMatching(/^gallery\/key-1\/\d+-a\.jpg$/),
+        shrunk,
+        'image/jpeg',
+      );
     });
 
     it('should still rethrow the upload error when a cleanup delete fails', async () => {

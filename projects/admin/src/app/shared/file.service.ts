@@ -1,12 +1,13 @@
 import { Service, inject } from '@angular/core';
 import { FIREBASE_STORAGE } from 'core/firebase';
 import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { resizeImage } from './resize-image';
+import { MAX_STORED_BYTES, resizeImage } from './resize-image';
 
 // The Storage prefixes storage.rules lets admins write under.
 export type StorageFolder = 'gallery' | 'statues';
 
-// Must match storage.rules: raster images only (no SVG, which can carry script), under 20 MB.
+// Must match storage.rules: raster images only (no SVG, which can carry script). Stored
+// photos are also under MAX_STORED_BYTES (1 MB), which resizeImage guarantees.
 export const ACCEPTED_IMAGE_TYPES = [
   'image/jpeg',
   'image/png',
@@ -14,7 +15,8 @@ export const ACCEPTED_IMAGE_TYPES = [
   'image/gif',
   'image/avif',
 ] as const;
-export const MAX_IMAGE_BYTES = 20 * 1024 * 1024;
+// The largest file the browser will try to decode and shrink; not a storage limit.
+export const MAX_INPUT_BYTES = 20 * 1024 * 1024;
 
 const EXTENSIONS: Record<string, string> = {
   'image/jpeg': 'jpg',
@@ -29,7 +31,7 @@ export function imageFileProblem(file: File): string | null {
   if (!(ACCEPTED_IMAGE_TYPES as readonly string[]).includes(file.type)) {
     return `${file.name} is not a JPEG, PNG, WebP, GIF or AVIF image.`;
   }
-  if (file.size >= MAX_IMAGE_BYTES) {
+  if (file.size >= MAX_INPUT_BYTES) {
     return `${file.name} is 20 MB or larger.`;
   }
   return null;
@@ -66,7 +68,11 @@ export class FileService {
     const stored: string[] = [];
     try {
       for (const file of files) {
-        const blob = await resizeImage(file);
+        const blob = await this.shrink(file);
+        // storage.rules would refuse it anyway; fail before any bytes go up.
+        if (blob.size >= MAX_STORED_BYTES) {
+          throw new Error(`${file.name} is still 1 MB or larger after resizing.`);
+        }
         const type = blob.type || file.type;
         const path = `${folder}/${storageKey}/${objectName(file.name, type)}`;
         stored.push(path);
@@ -100,7 +106,12 @@ export class FileService {
     await Promise.all(owned.map((url) => this.deletePath(url)));
   }
 
-  // The two Storage SDK calls, kept apart so specs can stand in for them.
+  // The browser image pipeline and the two Storage SDK calls, kept apart so specs can stand
+  // in for them.
+
+  protected shrink(file: File): Promise<Blob> {
+    return resizeImage(file);
+  }
 
   // Stores one object and returns its download URL.
   protected async uploadOne(path: string, blob: Blob, contentType: string): Promise<string> {

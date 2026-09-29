@@ -90,6 +90,56 @@ test('an admin adds, edits and deletes a gallery item', async ({ page, request }
   await expect.poll(async () => (await request.get(cover ?? '')).status()).toBe(404);
 });
 
+test('a large photo is stored as a JPEG under 1 MB', async ({ page, request }) => {
+  await page.goto('/');
+  await signInWithGoogle(page, ADMIN);
+  await page.goto('/gallery-add');
+
+  // Random noise barely compresses, so this PNG is several MB: the worst case for the
+  // browser's shrink step.
+  const png = await page.evaluate(() => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 2000;
+    canvas.height = 1500;
+    const context = canvas.getContext('2d');
+    if (!context) throw new Error('no 2d context');
+    const pixels = context.createImageData(canvas.width, canvas.height);
+    for (let i = 0; i < pixels.data.length; i++) pixels.data[i] = (Math.random() * 256) | 0;
+    context.putImageData(pixels, 0, 0);
+    return canvas.toDataURL('image/png').split(',')[1];
+  });
+  const buffer = Buffer.from(png, 'base64');
+  expect(buffer.length).toBeGreaterThan(4 * 1024 * 1024);
+
+  await page.locator('input[type="file"]').setInputFiles({
+    name: 'noise.png',
+    mimeType: 'image/png',
+    buffer,
+  });
+  const photo = page.getByRole('img', { name: 'Photo 1 (cover)' });
+  await expect(photo).toBeVisible({ timeout: 30_000 });
+
+  // The download URL without alt=media returns the stored object's metadata.
+  const url = new URL((await photo.getAttribute('src')) ?? '');
+  url.searchParams.delete('alt');
+  url.searchParams.delete('token');
+  const metadata = (await (await request.get(url.toString())).json()) as {
+    size: string;
+    contentType: string;
+    name: string;
+  };
+  expect(metadata.contentType).toBe('image/jpeg');
+  expect(metadata.name).toMatch(/\.jpg$/);
+  expect(Number(metadata.size)).toBeLessThan(1024 * 1024);
+  test.info().annotations.push({
+    type: 'stored size',
+    description: `${buffer.length} byte PNG stored as ${metadata.size} byte JPEG`,
+  });
+
+  await page.getByRole('button', { name: 'Cancel' }).click();
+  await expect(page).toHaveURL('/gallery');
+});
+
 test('leaving the add page without saving deletes its uploads', async ({ page, request }) => {
   await page.goto('/');
   await signInWithGoogle(page, ADMIN);

@@ -17,10 +17,11 @@ service firebase.storage {
     }
 
     // Deletes have no request.resource. Uploads must be raster images (no SVG, which can
-    // carry script) under 20 MB.
+    // carry script) under 1 MB. The admin apps shrink photos in the browser first (this
+    // repo's resize-image.ts; the legacy app's browser-image-compression, maxSizeMB: 1).
     function isDeleteOrImageUpload() {
       return request.resource == null
-          || (request.resource.size < 20 * 1024 * 1024
+          || (request.resource.size < 1024 * 1024
               && request.resource.contentType.matches('image/(jpeg|png|webp|gif|avif)'));
     }
 
