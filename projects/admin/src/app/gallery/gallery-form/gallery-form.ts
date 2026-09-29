@@ -13,6 +13,7 @@ import {
 import {
   FieldTree,
   FormField,
+  disabled,
   form,
   minLength,
   required,
@@ -85,6 +86,9 @@ export class GalleryForm {
     () => this.initial() ?? new GalleryFormModel().galleryForm(),
   );
   protected readonly galleryForm = form(this.model, (item) => {
+    // The save already holds the form's value: lock every field until it finishes, so no
+    // edit is silently dropped.
+    disabled(item, { when: () => this.saving() });
     // required() marks the fields required (asterisk, aria-required); notBlank also rejects
     // spaces alone, since values are saved trimmed (toGalleryDocument).
     required(item.name, { message: 'Enter a name.' });

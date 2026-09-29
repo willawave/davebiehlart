@@ -77,7 +77,7 @@
       type="button"
       matButton="outlined"
       aria-describedby="photo-hint"
-      [disabled]="uploading() > 0"
+      [disabled]="saving() || uploading() > 0"
       (click)="fileInput.click()"
     >
       Upload photos
@@ -106,7 +106,7 @@
                 class="icon-button"
                 [id]="'photo-' + i + '-move-left'"
                 [attr.aria-label]="'Move photo ' + (i + 1) + ' left'"
-                [disabled]="first"
+                [disabled]="saving() || first"
                 (click)="move(i, -1)"
               >
                 ‹
@@ -116,6 +116,7 @@
                 class="icon-button"
                 [id]="'photo-' + i + '-remove'"
                 [attr.aria-label]="'Remove photo ' + (i + 1)"
+                [disabled]="saving()"
                 (click)="remove(i)"
               >
                 ✕
@@ -125,7 +126,7 @@
                 class="icon-button"
                 [id]="'photo-' + i + '-move-right'"
                 [attr.aria-label]="'Move photo ' + (i + 1) + ' right'"
-                [disabled]="last"
+                [disabled]="saving() || last"
                 (click)="move(i, 1)"
               >
                 ›

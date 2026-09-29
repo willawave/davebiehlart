@@ -155,6 +155,29 @@ describe('GalleryForm', () => {
     expect(button('Cancel').disabled).toBe(true);
   });
 
+  it('should lock every field and photo control while a save is running', async () => {
+    await create(VALID);
+    fixture.componentRef.setInput('saving', true);
+    await fixture.whenStable();
+
+    const inputs = Array.from(element.querySelectorAll<HTMLInputElement>('input[matInput]'));
+    const textarea = element.querySelector<HTMLTextAreaElement>('textarea');
+    expect(inputs.length).toBeGreaterThan(0);
+    expect(inputs.every((input) => input.disabled)).toBe(true);
+    expect(textarea?.disabled).toBe(true);
+    expect(element.querySelector('mat-select')?.getAttribute('aria-disabled')).toBe('true');
+    expect(element.querySelector('mat-checkbox input')?.hasAttribute('disabled')).toBe(true);
+    expect(button('Upload photos').disabled).toBe(true);
+    const photoButtons = Array.from(element.querySelectorAll<HTMLButtonElement>('.photos button'));
+    expect(photoButtons.every((b) => b.disabled)).toBe(true);
+
+    // A failed save hands the form back, editable again.
+    fixture.componentRef.setInput('saving', false);
+    await fixture.whenStable();
+    expect(textarea?.disabled).toBe(false);
+    expect(button('Remove photo 1').disabled).toBe(false);
+  });
+
   it('should require height, width and depth once they are cleared', async () => {
     await create(VALID);
     // In template order: weight, height, width, depth.
