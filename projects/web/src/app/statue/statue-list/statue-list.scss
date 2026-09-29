@@ -1,0 +1,9 @@
+.map {
+  display: block;
+  margin-bottom: 32px;
+  --map-height: 420px;
+
+  @media (max-width: 599px) {
+    --map-height: 300px;
+  }
+}

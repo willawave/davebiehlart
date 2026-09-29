@@ -32,9 +32,14 @@ describe('DashboardPage', () => {
   });
 
   it('should link to each section it manages', () => {
-    const nav = element.querySelector('nav[aria-label="Manage"]');
-    expect(nav?.querySelector('a')?.getAttribute('href')).toBe('/gallery');
-    expect(nav?.textContent).toContain('Gallery');
+    const links = Array.from(element.querySelectorAll('nav[aria-label="Manage"] a'), (a) => [
+      a.textContent?.trim(),
+      a.getAttribute('href'),
+    ]);
+    expect(links).toEqual([
+      ['Gallery', '/gallery'],
+      ['Statues', '/statues'],
+    ]);
   });
 
   it('should announce a store error such as a failed sign-out', async () => {

@@ -1,0 +1,112 @@
+:host {
+  display: block;
+}
+
+.intro,
+.location {
+  max-width: 760px;
+}
+
+.page-title {
+  margin-bottom: 6px;
+  overflow-wrap: anywhere;
+}
+
+.kicker {
+  margin: 0 0 20px;
+  color: var(--dba-muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.description {
+  margin: 0 0 28px;
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  // Keep the admin's paragraph breaks.
+  white-space: pre-line;
+}
+
+.photos {
+  margin-bottom: 32px;
+}
+
+.location {
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--dba-rule);
+
+  h2 {
+    margin: 0 0 8px;
+    font-size: 1.5rem;
+  }
+
+  address {
+    display: flex;
+    flex-direction: column;
+    margin: 0 0 16px;
+    font-size: 1rem;
+    font-style: normal;
+    line-height: 1.5;
+  }
+
+  .venue {
+    font-weight: 600;
+  }
+
+  .map {
+    --map-height: 320px;
+  }
+}
+
+// Previous on the left, next on the right, on one row at every width; long names wrap.
+.pager {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: start;
+  gap: 16px;
+  // The Location section's bottom rule already separates the pager.
+  margin-top: 24px;
+
+  a {
+    display: flex;
+    flex-direction: column;
+    min-height: 44px;
+    padding: 8px 0;
+    color: var(--dba-ink);
+    text-decoration: none;
+
+    &:hover .name {
+      color: var(--dba-bronze);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    &:focus-visible {
+      outline: 3px solid var(--dba-bronze);
+      outline-offset: 4px;
+    }
+  }
+
+  // Stays in the right column even when there is no previous link.
+  .next {
+    grid-column: -2;
+    text-align: right;
+  }
+
+  .direction {
+    color: var(--dba-muted);
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .name {
+    margin-top: 2px;
+    font-family: var(--dba-serif);
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+  }
+}

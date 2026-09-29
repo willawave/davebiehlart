@@ -10,14 +10,14 @@
       <li>
         <a class="card" [routerLink]="[item.id]">
           <span class="mat">
-            @if (item.imageUrls[0]; as src) {
+            @if (item.imageUrl; as src) {
               <span class="frame">
                 <img [ngSrc]="src" fill [priority]="i < priorityCount" alt="" />
               </span>
             }
           </span>
           <span class="name">{{ item.name }}</span>
-          <span class="year">{{ item.created.toDate() | date: 'y' : 'UTC' }}</span>
+          <span class="year">{{ item.date.toDate() | date: 'y' : 'UTC' }}</span>
         </a>
       </li>
     }

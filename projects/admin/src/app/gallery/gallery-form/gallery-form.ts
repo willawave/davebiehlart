@@ -1,8 +1,6 @@
 import {
   Component,
   DestroyRef,
-  Injector,
-  afterNextRender,
   computed,
   inject,
   input,
@@ -26,24 +24,12 @@ import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatError, MatFormField, MatLabel, MatSuffix } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
-import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatOption, MatSelect } from '@angular/material/select';
 import { GalleryFormModel, GalleryStyle } from 'core';
-import { ACCEPTED_IMAGE_TYPES, imageFileProblem } from '../../shared/file.service';
+import { PhotoField } from '../../shared/photo-field/photo-field';
+import { notBlank, positive } from '../../shared/validators';
 import { GalleryFormValue } from '../gallery.service';
 import { GalleryStore } from '../gallery.store';
-
-function positive(message: string) {
-  return ({ value }: { value: () => number | null }) => {
-    const current = value();
-    return current === null || current > 0 ? null : { kind: 'positive', message };
-  };
-}
-
-function notBlank(message: string) {
-  return ({ value }: { value: () => string }) =>
-    value().trim() ? null : { kind: 'required', message };
-}
 
 // The add/edit form. Photos upload as soon as they are picked (into `storageKey`'s
 // folder), and every upload is reported through `uploaded` so the page can delete the
@@ -59,9 +45,9 @@ function notBlank(message: string) {
     MatInput,
     MatLabel,
     MatOption,
-    MatProgressSpinner,
     MatSelect,
     MatSuffix,
+    PhotoField,
   ],
   providers: [provideNativeDateAdapter()],
   selector: 'app-gallery-form',
@@ -70,7 +56,6 @@ function notBlank(message: string) {
 })
 export class GalleryForm {
   private readonly store = inject(GalleryStore);
-  private readonly injector = inject(Injector);
 
   readonly storageKey = input.required<string>();
   // The item being edited; a new item starts from GalleryFormModel's defaults.
@@ -81,7 +66,6 @@ export class GalleryForm {
   readonly uploaded = output<string[]>();
 
   protected readonly styles = Object.values(GalleryStyle);
-  protected readonly accept = ACCEPTED_IMAGE_TYPES.join(',');
   protected readonly model = linkedSignal<GalleryFormValue>(
     () => this.initial() ?? new GalleryFormModel().galleryForm(),
   );
@@ -108,8 +92,13 @@ export class GalleryForm {
     minLength(item.imageUrls, 1, { message: 'Upload at least one photo.' });
   });
   protected readonly images = computed(() => this.model().imageUrls);
+  protected readonly photoError = computed(() => {
+    const photos = this.galleryForm.imageUrls();
+    return photos.touched() && photos.invalid()
+      ? this.firstError(this.galleryForm.imageUrls)
+      : null;
+  });
   protected readonly uploading = signal(0);
-  protected readonly fileProblems = signal<string[]>([]);
   private destroyed = false;
 
   constructor() {
@@ -120,18 +109,10 @@ export class GalleryForm {
     return field().errors()[0]?.message ?? '';
   }
 
-  protected async pick(event: Event): Promise<void> {
-    const input = event.target as HTMLInputElement;
-    const files = Array.from(input.files ?? []);
-    input.value = '';
-    const problems = files.map(imageFileProblem).filter((problem) => problem !== null);
-    this.fileProblems.set(problems);
-    const accepted = files.filter((file) => !imageFileProblem(file));
-    if (!accepted.length) return;
-
-    this.uploading.set(accepted.length);
+  protected async upload(files: File[]): Promise<void> {
+    this.uploading.set(files.length);
     const storageKey = this.storageKey();
-    const urls = await this.store.uploadImages(accepted, storageKey);
+    const urls = await this.store.uploadImages(files, storageKey);
     // The page closed mid-upload (Save is disabled while uploading, so nothing saved
     // these): nobody is left to report them to, so delete them here.
     if (this.destroyed) {
@@ -145,24 +126,9 @@ export class GalleryForm {
     }
   }
 
-  protected move(index: number, direction: -1 | 1): void {
-    const images = [...this.images()];
-    const target = index + direction;
-    [images[index], images[target]] = [images[target], images[index]];
-    this.setImages(images);
-    // The buttons move with their photo; keep focus on the one just used, or its opposite
-    // when the photo reached an end.
-    const side = direction < 0 ? 'left' : 'right';
-    const atEnd = target === 0 || target === images.length - 1;
-    this.focusLater(`photo-${target}-move-${atEnd ? (side === 'left' ? 'right' : 'left') : side}`);
-  }
-
-  protected remove(index: number): void {
-    const images = this.images().filter((_, i) => i !== index);
-    this.setImages(images);
-    this.focusLater(
-      images.length ? `photo-${Math.min(index, images.length - 1)}-remove` : 'upload',
-    );
+  protected setImages(imageUrls: string[]): void {
+    this.model.update((value) => ({ ...value, imageUrls }));
+    this.galleryForm.imageUrls().markAsTouched();
   }
 
   protected async onSubmit(event: Event): Promise<void> {
@@ -171,14 +137,5 @@ export class GalleryForm {
       this.saved.emit(this.model());
       return undefined;
     });
-  }
-
-  private setImages(imageUrls: string[]): void {
-    this.model.update((value) => ({ ...value, imageUrls }));
-    this.galleryForm.imageUrls().markAsTouched();
-  }
-
-  private focusLater(id: string): void {
-    afterNextRender(() => document.getElementById(id)?.focus(), { injector: this.injector });
   }
 }

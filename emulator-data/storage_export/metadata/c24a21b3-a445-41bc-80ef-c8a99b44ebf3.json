@@ -1,0 +1,19 @@
+{
+  "name": "statues/seed-statue-hidden-key/2-landscape.jpg",
+  "bucket": "demo-bronze-horse.appspot.com",
+  "metageneration": 1,
+  "generation": 1790683487153,
+  "contentType": "image/jpeg",
+  "storageClass": "STANDARD",
+  "contentDisposition": "inline",
+  "downloadTokens": [
+    "87799435-de9b-4fd1-9d1e-6d7c3479be46"
+  ],
+  "etag": "aKMYrHIBFl7qMTH4nyaMeV5YSB8",
+  "customMetadata": {},
+  "timeCreated": "2026-09-29T12:04:47.153Z",
+  "updated": "2026-09-29T12:04:47.153Z",
+  "size": 21714,
+  "md5Hash": "SLm+sv1/HbJhnTYRr0Da3w==",
+  "crc32c": "939562823"
+}

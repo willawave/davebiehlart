@@ -1,1 +1,78 @@
-<p>statue-table works!</p>
+<section class="panel wide" aria-labelledby="statues-heading">
+  <p class="back"><a routerLink="/dashboard">‹ Dashboard</a></p>
+  <div class="head">
+    <h1 id="statues-heading" #heading tabindex="-1">Statues</h1>
+    <a matButton="filled" routerLink="/statues-add">Add statue</a>
+  </div>
+  @if (store.error(); as error) {
+    <p class="error" role="alert">{{ error }}</p>
+  }
+
+  @if (store.allStatueItems().length) {
+    <div class="scroll">
+      <table mat-table [dataSource]="store.allStatueItems()">
+        <caption class="caption">
+          Statues, most recently dedicated first
+        </caption>
+        <ng-container matColumnDef="cover">
+          <th mat-header-cell *matHeaderCellDef><span class="hidden">Cover</span></th>
+          <td mat-cell *matCellDef="let statue">
+            @if (statue.imageUrls[0]; as src) {
+              <img class="thumb" [src]="src" alt="" />
+            }
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let statue">{{ statue.name }}</td>
+        </ng-container>
+        <ng-container matColumnDef="place">
+          <th mat-header-cell *matHeaderCellDef>Location</th>
+          <td mat-cell *matCellDef="let statue">
+            {{ statue.location.city }}, {{ statue.location.state }}
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="visible">
+          <th mat-header-cell *matHeaderCellDef>On website</th>
+          <td mat-cell *matCellDef="let statue">
+            <span class="chip" [class.hidden-chip]="!statue.visible">{{
+              statue.visible ? 'Visible' : 'Hidden'
+            }}</span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="dedicated">
+          <th mat-header-cell *matHeaderCellDef>Dedicated</th>
+          <td mat-cell *matCellDef="let statue">
+            {{ statue.dedicated.toDate() | date: 'mediumDate' }}
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef><span class="hidden">Actions</span></th>
+          <td mat-cell *matCellDef="let statue" class="actions">
+            <a
+              matButton="outlined"
+              [routerLink]="['/statues-edit', statue.id]"
+              [attr.aria-label]="'Edit ' + statue.name"
+              >Edit</a
+            >
+            <button
+              type="button"
+              matButton="outlined"
+              [attr.aria-label]="'Delete ' + statue.name"
+              [disabled]="store.loading()"
+              (click)="confirmDelete(statue)"
+            >
+              Delete
+            </button>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="columns"></tr>
+        <tr mat-row *matRowDef="let row; columns: columns"></tr>
+      </table>
+    </div>
+  } @else if (store.loading()) {
+    <p class="muted" role="status">Loading…</p>
+  } @else if (!store.error()) {
+    <p class="muted">No statues yet. Add the first one.</p>
+  }
+</section>

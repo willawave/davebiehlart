@@ -4,7 +4,6 @@ import { eventDetailResolver } from './event/event-detail-resolver';
 import { detailBreadcrumb } from './shared/breadcrumb/breadcrumb';
 import { RouterLinks } from './shared/router-links.enum';
 import { Site } from './shared/site.enum';
-import { statueDetailResolver } from './statue/statue-detail-resolver';
 
 // Each section nests its list and detail pages, so the route tree matches the breadcrumb:
 // Home › Bronzes › <item>. Sections that read Firestore load their children lazily
@@ -23,21 +22,7 @@ export const routes: Routes = [
   {
     path: RouterLinks.STATUES,
     data: { breadcrumb: 'Statues' },
-    children: [
-      {
-        path: '',
-        loadComponent: () => import('./statue/statue-list/statue-list').then((c) => c.StatueList),
-        title: `Statues | ${Site.TITLE}`,
-      },
-      {
-        path: ':id',
-        loadComponent: () =>
-          import('./statue/statue-detail/statue-detail').then((c) => c.StatueDetail),
-        resolve: { statueDetailResolver },
-        title: `Statues | ${Site.TITLE}`,
-        data: { breadcrumb: detailBreadcrumb },
-      },
-    ],
+    loadChildren: () => import('./statue/statue.routes').then((m) => m.statueRoutes),
   },
   {
     path: RouterLinks.GLASS,

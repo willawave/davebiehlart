@@ -1,7 +1,7 @@
 import {
   Component,
   ElementRef,
-  afterNextRender,
+  afterRenderEffect,
   computed,
   inject,
   input,
@@ -45,7 +45,13 @@ export class ImageTrack {
   protected readonly atEnd = signal(false);
 
   constructor() {
-    afterNextRender(() => this.updateEnds());
+    // Prev/next between items reuses this strip, so a new set of photos starts back at the
+    // first one (the cover) rather than wherever the last item's strip was scrolled to.
+    afterRenderEffect(() => {
+      this.images();
+      this.track().nativeElement.scrollLeft = 0;
+      this.updateEnds();
+    });
   }
 
   protected scroll(direction: -1 | 1): void {

@@ -1,21 +1,12 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { StatueListSkeleton } from './statue-list-skeleton';
 
 describe('StatueListSkeleton', () => {
-  let component: StatueListSkeleton;
-  let fixture: ComponentFixture<StatueListSkeleton>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [StatueListSkeleton],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(StatueListSkeleton);
-    component = fixture.componentInstance;
+  it('should hold the map’s place without announcing anything', async () => {
+    const fixture = TestBed.createComponent(StatueListSkeleton);
     await fixture.whenStable();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
+    const box = (fixture.nativeElement as HTMLElement).querySelector('.box');
+    expect(box?.getAttribute('aria-hidden')).toBe('true');
+    expect(box?.textContent).toBe('');
   });
 });

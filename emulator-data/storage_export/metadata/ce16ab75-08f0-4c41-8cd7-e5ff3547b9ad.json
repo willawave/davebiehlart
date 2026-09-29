@@ -1,0 +1,19 @@
+{
+  "name": "statues/seed-statue-10-key/2-portrait.jpg",
+  "bucket": "demo-bronze-horse.appspot.com",
+  "metageneration": 1,
+  "generation": 1790683486884,
+  "contentType": "image/jpeg",
+  "storageClass": "STANDARD",
+  "contentDisposition": "inline",
+  "downloadTokens": [
+    "9a24f7c0-9b79-4b6d-8a8b-5213d0b77694"
+  ],
+  "etag": "MIac/kN4dg+UTDGPKsRBENBhRvo",
+  "customMetadata": {},
+  "timeCreated": "2026-09-29T12:04:46.884Z",
+  "updated": "2026-09-29T12:04:46.884Z",
+  "size": 19106,
+  "md5Hash": "5av7NXgzaqgO/0p88oG/Ow==",
+  "crc32c": "1502599470"
+}

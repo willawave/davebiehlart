@@ -1,1 +1,93 @@
-<p>statue-form works!</p>
+<form novalidate (submit)="onSubmit($event)">
+  <fieldset>
+    <legend>Details</legend>
+    <mat-form-field appearance="outline">
+      <mat-label>Name</mat-label>
+      <input matInput [formField]="statueForm.name" />
+      <mat-error>{{ firstError(statueForm.name) }}</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Description</mat-label>
+      <textarea matInput rows="5" [formField]="statueForm.description"></textarea>
+      <mat-error>{{ firstError(statueForm.description) }}</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="date">
+      <mat-label>Dedicated</mat-label>
+      <input matInput [matDatepicker]="picker" [formField]="statueForm.dedicated" />
+      <mat-datepicker-toggle matIconSuffix [for]="picker" />
+      <mat-datepicker #picker />
+      <mat-error>{{ firstError(statueForm.dedicated) }}</mat-error>
+    </mat-form-field>
+    <mat-checkbox [formField]="statueForm.visible">Visible on the website</mat-checkbox>
+  </fieldset>
+
+  <fieldset>
+    <legend>Location</legend>
+    <div class="grid">
+      <mat-form-field appearance="outline">
+        <mat-label>Venue</mat-label>
+        <input matInput [formField]="statueForm.location.venue" />
+        <mat-error>{{ firstError(statueForm.location.venue) }}</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Street (optional)</mat-label>
+        <input matInput [formField]="statueForm.location.street" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>City</mat-label>
+        <input matInput [formField]="statueForm.location.city" />
+        <mat-error>{{ firstError(statueForm.location.city) }}</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>State</mat-label>
+        <input matInput [formField]="statueForm.location.state" />
+        <mat-error>{{ firstError(statueForm.location.state) }}</mat-error>
+      </mat-form-field>
+    </div>
+
+    <p class="hint" id="map-hint">
+      Click the map or drag the pin to set where the statue stands, or type the coordinates. Scroll
+      or pinch to zoom.
+    </p>
+    <app-form-map
+      label="Statue location"
+      hintId="map-hint"
+      [disabled]="saving()"
+      [(latitude)]="statueForm.location.latitude().value"
+      [(longitude)]="statueForm.location.longitude().value"
+    />
+    <div class="grid coordinates">
+      <mat-form-field appearance="outline">
+        <mat-label>Latitude</mat-label>
+        <input matInput type="number" step="any" [formField]="statueForm.location.latitude" />
+        <mat-error>{{ firstError(statueForm.location.latitude) }}</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Longitude</mat-label>
+        <input matInput type="number" step="any" [formField]="statueForm.location.longitude" />
+        <mat-error>{{ firstError(statueForm.location.longitude) }}</mat-error>
+      </mat-form-field>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Photos</legend>
+    <app-photo-field
+      [images]="images()"
+      (imagesChange)="setImages($event)"
+      [uploading]="uploading()"
+      [disabled]="saving()"
+      [error]="photoError()"
+      (filesPicked)="upload($event)"
+    />
+  </fieldset>
+
+  <div class="actions">
+    <button type="button" matButton="outlined" [disabled]="saving()" (click)="cancelled.emit()">
+      Cancel
+    </button>
+    <button type="submit" matButton="filled" [disabled]="saving() || uploading() > 0">
+      {{ saving() ? 'Saving…' : 'Save' }}
+    </button>
+  </div>
+</form>

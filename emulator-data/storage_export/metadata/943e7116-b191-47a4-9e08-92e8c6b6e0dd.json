@@ -1,0 +1,19 @@
+{
+  "name": "statues/seed-statue-07-key/1-square.jpg",
+  "bucket": "demo-bronze-horse.appspot.com",
+  "metageneration": 1,
+  "generation": 1790683486651,
+  "contentType": "image/jpeg",
+  "storageClass": "STANDARD",
+  "contentDisposition": "inline",
+  "downloadTokens": [
+    "085933d1-1815-4f20-ba9c-6f5140884a0c"
+  ],
+  "etag": "ZTOuCzPd6gkKDzmfXfUbJm/ZSs0",
+  "customMetadata": {},
+  "timeCreated": "2026-09-29T12:04:46.651Z",
+  "updated": "2026-09-29T12:04:46.651Z",
+  "size": 21704,
+  "md5Hash": "jpSxeoyYnAp61jjmjIPZiw==",
+  "crc32c": "283451835"
+}

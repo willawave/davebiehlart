@@ -119,6 +119,31 @@ describe('ImageTrack', () => {
     expect(forward()?.disabled).toBe(true);
   });
 
+  it('should start back at the first photo when the photos change', async () => {
+    await render(['a.jpg', 'b.jpg', 'c.jpg']);
+    const track = element.querySelector<HTMLElement>('.track');
+    if (!track) throw new Error('no track');
+    Object.defineProperty(track, 'scrollWidth', { get: () => 1200 });
+    Object.defineProperty(track, 'clientWidth', { get: () => 400 });
+    // jsdom has no scrolling: keep scrollLeft as a plain value.
+    let scrollLeft = 500;
+    Object.defineProperty(track, 'scrollLeft', {
+      get: () => scrollLeft,
+      set: (value: number) => (scrollLeft = value),
+    });
+    track.dispatchEvent(new Event('scroll'));
+    await fixture.whenStable();
+    const back = () =>
+      element.querySelector<HTMLButtonElement>('[aria-label="Scroll photos back"]');
+    expect(back()?.disabled).toBe(false);
+
+    // Prev/next to another item reuses the strip with that item's photos.
+    await render(['d.jpg', 'e.jpg', 'f.jpg']);
+
+    expect(track.scrollLeft).toBe(0);
+    expect(back()?.disabled).toBe(true);
+  });
+
   it('should show one photo by its name alone, without arrows', async () => {
     await render(['a.jpg']);
     expect(element.querySelector('img')?.alt).toBe('Mustang');

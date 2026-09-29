@@ -1,6 +1,2 @@
 <h1 class="page-title">Kiln Glass</h1>
-<app-gallery-grid
-  [items]="store.visibleGalleryItems()"
-  [loading]="store.loading()"
-  [error]="store.error()"
-/>
+<app-image-grid [items]="items()" [loading]="store.loading()" [error]="store.error()" />
