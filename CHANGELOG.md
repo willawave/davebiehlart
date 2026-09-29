@@ -2,6 +2,16 @@
 
 All notable changes to this project are documented here.
 
+## [0.7.0.0] - 2026-09-29
+
+### Added
+
+- The public site has an Events page listing upcoming events, soonest first, each with its date, time, venue and town. An event stays listed through its whole day. When nothing is coming up, which is most of the time, the page says so and points to the contact page.
+- Each event has its own page with its date and time, description, an optional link to more details, its address and a map of where it takes place. A past event's page still opens, with a note that it has ended and a link back to upcoming events.
+- Event pages are rendered on the server with their own title and description. Hidden events show the Not Found page with a 404.
+- Admins can add, edit and delete events. The location is set on a map the same way as a statue's. The table marks each event Upcoming or Past, and an event's date is saved as the start of that day, so a new event left on today's date still lists as upcoming.
+- The local emulators come with 12 past sample events plus one hidden, so the public Events page shows its empty state, as it usually will in production.
+
 ## [0.6.0.0] - 2026-09-29
 
 ### Added
