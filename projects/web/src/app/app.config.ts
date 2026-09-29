@@ -1,3 +1,4 @@
+import { PRECONNECT_CHECK_BLOCKLIST } from '@angular/common';
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter, withComponentInputBinding, withInMemoryScrolling } from '@angular/router';
 import { routes } from './app.routes';
@@ -18,5 +19,8 @@ export const appConfig: ApplicationConfig = {
     // Event replay replays clicks made before hydration finishes.
     provideClientHydration(withEventReplay()),
     provideFirebase(environment.firebase),
+    // Only /media loads YouTube stills, so they get no site-wide preconnect. NgOptimizedImage
+    // reads this list at the root, so it can't be scoped to that page.
+    { provide: PRECONNECT_CHECK_BLOCKLIST, useValue: 'https://i.ytimg.com' },
   ],
 };

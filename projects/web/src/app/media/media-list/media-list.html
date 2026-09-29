@@ -5,12 +5,12 @@
   <app-media-list-skeleton />
 } @else if (rows().length) {
   <ul class="media" aria-label="Videos and articles">
-    @for (row of rows(); track row.item.id) {
+    @for (row of rows(); track row.item.id; let i = $index) {
       <li>
         <a class="row" [routerLink]="row.item.id">
           @if (row.link.kind === 'video') {
             <span class="still">
-              <img [ngSrc]="thumbnail(row.link.videoId)" fill alt="" />
+              <img [ngSrc]="thumbnail(row.link.videoId)" fill [priority]="i < aboveFold" alt="" />
               <span class="play" aria-hidden="true"></span>
             </span>
           } @else {

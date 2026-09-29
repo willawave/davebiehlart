@@ -26,6 +26,8 @@ export class MediaList {
   protected readonly store = inject(MediaStore);
   protected readonly thumbnail = youTubeThumbnailUrl;
   protected readonly contactLink = `/${RouterLinks.CONTACT}`;
+  // Rows a phone shows before scrolling; one of their stills is the page's LCP element.
+  protected readonly aboveFold = 6;
 
   // The service only returns items whose link parses; the filter narrows the type.
   protected readonly rows = computed(() =>
