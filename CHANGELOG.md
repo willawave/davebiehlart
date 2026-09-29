@@ -2,6 +2,20 @@
 
 All notable changes to this project are documented here.
 
+## [0.10.0.0] - 2026-09-29
+
+### Added
+
+- The Contact page lists Dave's email and phone number as links that open your mail app or dialer, above the gallery hours.
+- The Privacy Policy is written in plain language and matches what the site actually does: no accounts, no analytics and no tracking cookies. The only thing kept on your device is your light or dark theme choice. It names the outside services pages load from (Google Firebase, OpenStreetMap map tiles, and YouTube's privacy-enhanced player), each linked to its own privacy policy.
+- The Terms of Use cover copyright on Dave's artwork, photos and text (no reuse or AI training without his written permission), say that nothing is sold on the site, note that hours and events can change, and set Nebraska law.
+- The Not Found page says the page may have moved, links home and lists every section of the site. It still answers with a real 404.
+- Contact, Privacy Policy and Terms of Use each have their own search description and share tags.
+
+### Changed
+
+- No page is prerendered anymore. Privacy Policy and Terms of Use are rendered on the server for every visit like the rest, so the footer's copyright year stays current without a redeploy.
+
 ## [0.9.0.0] - 2026-09-29
 
 ### Added

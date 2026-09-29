@@ -1,11 +1,8 @@
 import { RenderMode, ServerRoute } from '@angular/ssr';
-import { RouterLinks } from './shared/router-links.enum';
 
 export const serverRoutes: ServerRoute[] = [
-  // render all static pages with the prerender mode. Contact is not one: it shows the
-  // gallery hours, which Dave can change at any time.
-  { path: RouterLinks.PRIVACY_POLICY, renderMode: RenderMode.Prerender },
-  { path: RouterLinks.TERMS_OF_USE, renderMode: RenderMode.Prerender },
-  // render all other pages with SSR, so builds never read Firestore
+  // Server-render every page per request, so builds never read Firestore and time-based
+  // content (the footer's copyright year, Contact's gallery hours) never goes stale.
+  // Don't prerender: a prerendered page freezes its footer year at build time.
   { path: '**', renderMode: RenderMode.Server },
 ];

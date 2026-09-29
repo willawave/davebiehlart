@@ -1,1 +1,65 @@
-<p>privacy-policy-page works!</p>
+<article class="prose">
+  <h1 class="page-title">Privacy Policy</h1>
+  <p class="updated">Last updated: {{ updated }}</p>
+
+  <h2>Overview</h2>
+  <p>
+    Dave Biehl Art runs davebiehlart.com to share Dave Biehl's artwork, events, press, and gallery
+    hours. The site has no accounts, no sign-up forms, and nothing for sale.
+  </p>
+
+  <h2>What we collect</h2>
+  <p>
+    Nothing personal. The site doesn't use analytics, advertising, or tracking cookies, and we don't
+    build profiles of visitors.
+  </p>
+
+  <h2>Stored on your device</h2>
+  <p>
+    If you pick a light or dark theme, your browser remembers that choice in its local storage. It
+    never leaves your device, and clearing your browser's site data removes it.
+  </p>
+
+  <h2>Services that load content</h2>
+  <p>
+    To show some pages, your browser loads content directly from these services. Like any website,
+    they can see your IP address and basic browser details, and they handle them under their own
+    privacy policies:
+  </p>
+  <ul>
+    @for (service of services; track service.name) {
+      <li>
+        <a [href]="service.policy" target="_blank" rel="noopener">
+          {{ service.name
+          }}<span class="visually-hidden"> privacy policy (opens in a new tab)</span>
+        </a>
+        — {{ service.use }}
+      </li>
+    }
+  </ul>
+  <p>
+    Articles on the Media page link to news sites. Those sites see your visit only if you follow the
+    link.
+  </p>
+
+  <h2>Email and phone</h2>
+  <p>
+    If you email or call Dave, your message and contact details are used only to reply to you. They
+    are never sold or shared.
+  </p>
+
+  <h2>Children</h2>
+  <p>
+    The site isn't directed at children under 13, and we don't knowingly collect information from
+    them.
+  </p>
+
+  <h2>Changes to this policy</h2>
+  <p>If this policy changes, the new version will be posted here with a new date.</p>
+
+  <h2>Questions</h2>
+  <p>
+    If you have questions about this policy, please
+    <a [routerLink]="contactLink">get in touch</a>.
+  </p>
+</article>

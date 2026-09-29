@@ -1,0 +1,33 @@
+.lede {
+  max-width: 60ch;
+  margin: 0 0 24px;
+  line-height: 1.6;
+}
+
+.contact-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 48px;
+  margin: 0 0 40px;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  a {
+    font-size: 1.125rem;
+  }
+}
+
+// Matches the gallery hours' kicker.
+.label {
+  color: var(--dba-bronze);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}

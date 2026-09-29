@@ -1,12 +1,17 @@
 import { Component, RESPONSE_INIT, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { NAV_LINKS } from '../../shared/nav-links';
 
 @Component({
-  imports: [],
+  imports: [RouterLink],
   selector: 'app-not-found-page',
   styleUrl: './not-found-page.scss',
   templateUrl: './not-found-page.html',
 })
 export class NotFoundPage {
+  // Home already has its own link above the list.
+  protected readonly links = NAV_LINKS.filter((link) => link.path !== '/');
+
   constructor() {
     // Server rendering only (null in the browser): answer with a real 404, not a soft 404
     // that search engines would index.

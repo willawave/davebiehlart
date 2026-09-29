@@ -1,1 +1,14 @@
-<p>not-found-page works!</p>
+<h1 class="page-title">Page not found</h1>
+<p class="message">The page you're looking for may have moved or no longer exists.</p>
+<a class="home" routerLink="/">Go to the home page</a>
+
+<nav aria-labelledby="not-found-sections">
+  <h2 id="not-found-sections">Or explore</h2>
+  <ul>
+    @for (link of links; track link.path) {
+      <li>
+        <a [routerLink]="link.path">{{ link.label }}</a>
+      </li>
+    }
+  </ul>
+</nav>
