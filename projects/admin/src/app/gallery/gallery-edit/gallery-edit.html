@@ -1,1 +1,21 @@
-<p>gallery-edit works!</p>
+<section class="panel wide" aria-labelledby="edit-heading">
+  <p class="back"><a routerLink="/gallery">‹ Gallery</a></p>
+  <h1 id="edit-heading" #heading tabindex="-1">Edit gallery item</h1>
+  @if (store.error(); as error) {
+    <p class="error" role="alert">{{ error }}</p>
+  }
+  @if (loaded(); as item) {
+    <app-gallery-form
+      [storageKey]="storageKey()"
+      [initial]="store.selectedFormValue() ?? undefined"
+      [saving]="store.loading()"
+      (uploaded)="onUploaded($event)"
+      (saved)="onSave($event)"
+      (cancelled)="cancel()"
+    />
+  } @else if (store.loading()) {
+    <p class="muted" role="status">Loading…</p>
+  } @else if (!store.error()) {
+    <p class="muted">This gallery item doesn't exist. It may have been deleted.</p>
+  }
+</section>

@@ -1,1 +1,9 @@
-<p>bronze-detail works!</p>
+@if (store.selectedGalleryItem(); as item) {
+  <app-gallery-item
+    [item]="item"
+    kind="Bronze"
+    sectionLabel="bronzes"
+    [previous]="store.neighbors().previous"
+    [next]="store.neighbors().next"
+  />
+}

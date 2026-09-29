@@ -1,0 +1,90 @@
+:host {
+  display: block;
+}
+
+.track {
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scrollbar-width: thin;
+
+  ul {
+    display: flex;
+    gap: 12px;
+    margin: 0;
+    padding: 0 0 8px;
+    list-style: none;
+  }
+
+  li {
+    flex: none;
+    scroll-snap-align: start;
+  }
+}
+
+.photo {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: zoom-in;
+
+  &:focus-visible {
+    outline: 3px solid var(--dba-bronze);
+    outline-offset: -3px;
+  }
+
+  img {
+    display: block;
+    width: auto;
+    max-width: 85vw;
+    height: 260px;
+    object-fit: contain;
+    background: color-mix(in srgb, var(--dba-rule) 45%, var(--dba-page));
+
+    @media (min-width: 600px) {
+      height: 340px;
+    }
+  }
+}
+
+.controls {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.arrow {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--dba-rule);
+  border-radius: 50%;
+  background: var(--dba-page);
+  color: var(--dba-ink);
+  cursor: pointer;
+
+  svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+  }
+
+  &:hover:not(:disabled) {
+    border-color: var(--dba-bronze);
+    color: var(--dba-bronze);
+  }
+
+  &:focus-visible {
+    outline: 3px solid var(--dba-bronze);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+}

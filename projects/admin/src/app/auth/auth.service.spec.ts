@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { FIREBASE_AUTH, FIRESTORE } from 'core';
+import { FIREBASE_AUTH, FIRESTORE } from 'core/firebase';
 import type { Auth } from 'firebase/auth';
 import type { Firestore } from 'firebase/firestore';
 import { AuthService } from './auth.service';

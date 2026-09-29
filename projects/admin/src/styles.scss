@@ -48,6 +48,25 @@ html {
   }
 }
 
+// Pages with tables and forms.
+.panel.wide {
+  max-width: 1100px;
+
+  @media (min-width: 600px) {
+    margin-right: auto;
+  }
+}
+
+// "‹ Section" link back to the parent page.
+.back {
+  margin: 0 0 8px;
+  font-size: 0.875rem;
+
+  a {
+    color: var(--dba-bronze);
+  }
+}
+
 .muted {
   margin: 0 0 20px;
   color: var(--dba-muted);

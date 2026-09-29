@@ -1,0 +1,25 @@
+@if (error(); as error) {
+  <p class="message" role="alert">{{ error }}</p>
+} @else if (loading()) {
+  <p class="message" role="status">Loading…</p>
+} @else if (items().length === 0) {
+  <p class="message">Nothing here yet. Check back soon.</p>
+} @else {
+  <ul class="grid">
+    @for (item of items(); track item.id; let i = $index) {
+      <li>
+        <a class="card" [routerLink]="[item.id]">
+          <span class="mat">
+            @if (item.imageUrls[0]; as src) {
+              <span class="frame">
+                <img [ngSrc]="src" fill [priority]="i < priorityCount" alt="" />
+              </span>
+            }
+          </span>
+          <span class="name">{{ item.name }}</span>
+          <span class="year">{{ item.created.toDate() | date: 'y' : 'UTC' }}</span>
+        </a>
+      </li>
+    }
+  </ul>
+}

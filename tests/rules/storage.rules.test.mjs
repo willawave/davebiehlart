@@ -19,7 +19,7 @@ const CLOSED = [
 ];
 
 // Must match the size limit in storage.rules.
-const MAX_UPLOAD_BYTES = 20 * 1024 * 1024;
+const MAX_UPLOAD_BYTES = 1024 * 1024;
 
 let testEnv;
 let ctx;

@@ -1,8 +1,10 @@
 import { Component, ElementRef, afterNextRender, inject, viewChild } from '@angular/core';
+import { MatButton } from '@angular/material/button';
+import { RouterLink } from '@angular/router';
 import { AuthStore } from '../auth.store';
 
 @Component({
-  imports: [],
+  imports: [MatButton, RouterLink],
   selector: 'app-dashboard-page',
   styleUrl: './dashboard-page.scss',
   templateUrl: './dashboard-page.html',

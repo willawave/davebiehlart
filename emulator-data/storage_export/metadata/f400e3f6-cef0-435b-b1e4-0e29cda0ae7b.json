@@ -1,0 +1,19 @@
+{
+  "name": "gallery/seed-bronze-05-key/2-square.jpg",
+  "bucket": "demo-bronze-horse.appspot.com",
+  "metageneration": 1,
+  "generation": 1790637633512,
+  "contentType": "image/jpeg",
+  "storageClass": "STANDARD",
+  "contentDisposition": "inline",
+  "downloadTokens": [
+    "cc1c12fe-3457-41a6-87d7-3e7c77f17598"
+  ],
+  "etag": "KNbow9b8wcLRLTUxYuDDlYUfXgg",
+  "customMetadata": {},
+  "timeCreated": "2026-09-28T23:20:33.512Z",
+  "updated": "2026-09-28T23:20:33.512Z",
+  "size": 12523,
+  "md5Hash": "MWHMNIm1DG17ibyUFTFmhw==",
+  "crc32c": "3059883618"
+}

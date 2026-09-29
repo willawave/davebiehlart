@@ -1,5 +1,5 @@
 import { Service, inject } from '@angular/core';
-import { FIREBASE_AUTH, FIRESTORE } from 'core';
+import { FIREBASE_AUTH, FIRESTORE } from 'core/firebase';
 import {
   GoogleAuthProvider,
   Unsubscribe,

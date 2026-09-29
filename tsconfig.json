@@ -4,7 +4,8 @@
   "compileOnSave": false,
   "compilerOptions": {
     "paths": {
-      "core": ["./projects/core/src/public-api.ts"]
+      "core": ["./projects/core/src/public-api.ts"],
+      "core/firebase": ["./projects/core/src/firebase-api.ts"]
     },
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,

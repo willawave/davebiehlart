@@ -2,6 +2,25 @@
 
 All notable changes to this project are documented here.
 
+## [0.5.0.0] - 2026-09-28
+
+### Added
+
+- The public site has Bronzes and Kiln Glass pages. Each shows a grid of visible pieces, newest first, with the whole photo in a mat so nothing is cropped.
+- Each piece has its own page with its photos in a scrolling strip, its date and dimensions, and a full-size photo viewer with arrow-key navigation. Previous and Next links step through the section in list order, on one row even on phones.
+- Pages are rendered on the server with their own title, description and share image, so search engines and link previews see each piece. Hidden pieces, and pieces opened under the wrong section, show the Not Found page with a 404.
+- Admins can add, edit and delete gallery pieces. The form checks required fields, and photos upload as soon as they're picked. The first photo is the cover, and photos can be reordered or removed.
+- Each piece keeps its photos in its own storage folder. Photos that are removed, or that were uploaded to a piece that was never saved, are deleted.
+- Photos over 1 MB are shrunk before they're stored, converting to JPEG when needed. JPEG, PNG, WebP, GIF and AVIF files up to 20 MB are accepted.
+- The local emulators come with sample bronzes and glass pieces in mixed portrait and landscape sizes, for testing.
+
+### Changed
+
+- The storage rules now reject uploads of 1 MB or more (this takes effect in production only when the rules are deployed).
+- The production Firebase web config is now in each app's `environment.ts`. The README explains why it isn't a secret.
+- The first photos on the gallery pages load right away at high priority, so the page's largest photo appears sooner.
+- The admin form locks while a save is running, so no edit made mid-save is lost.
+
 ## [0.4.0.1] - 2026-09-28
 
 ### Fixed

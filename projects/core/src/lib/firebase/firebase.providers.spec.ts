@@ -67,7 +67,7 @@ describe('Firebase providers', () => {
       ).not.toThrow();
     });
 
-    // Mirrors the placeholder in the apps' environment.ts until the production config lands.
+    // An empty config, as the apps' environment.ts held before the production config landed.
     const PLACEHOLDER: FirebaseEnvironment = { options: {}, useEmulators: false };
 
     it('should refuse the empty production placeholder with a clear message', () => {

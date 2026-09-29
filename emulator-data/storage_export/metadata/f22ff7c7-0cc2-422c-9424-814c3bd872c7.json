@@ -1,0 +1,19 @@
+{
+  "name": "gallery/seed-bronze-05-key/3-landscape.jpg",
+  "bucket": "demo-bronze-horse.appspot.com",
+  "metageneration": 1,
+  "generation": 1790637633518,
+  "contentType": "image/jpeg",
+  "storageClass": "STANDARD",
+  "contentDisposition": "inline",
+  "downloadTokens": [
+    "9999c9e0-93a3-46a6-ab3e-180e656197a5"
+  ],
+  "etag": "V7aEze3U7mkbMxFrB5HpqTdsH6U",
+  "customMetadata": {},
+  "timeCreated": "2026-09-28T23:20:33.518Z",
+  "updated": "2026-09-28T23:20:33.518Z",
+  "size": 11391,
+  "md5Hash": "54wdjD7yjWaiNeQ7gXdK3Q==",
+  "crc32c": "24430828"
+}

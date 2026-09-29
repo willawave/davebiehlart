@@ -8,7 +8,6 @@ Only items that break real use, risk production data, or block launch belong her
 
 Do these when `web` and `admin` are first hosted from this repo (davebiehlart.com and admin.davebiehlart.com serve the legacy site today), alongside the rules deploy described in AGENTS.md.
 
-- Paste the production web config into `projects/admin/src/environments/environment.ts` (still `options: {}`). The admin app shell starts Firebase on every page, so without it a production admin build throws `Firebase is not configured: projectId is empty` and renders blank. Dev builds and E2E use the emulators and can't catch this.
 - Add `admin.davebiehlart.com` to Firebase Auth's authorized domains, or popup sign-in fails with `auth/unauthorized-domain`.
 - If hosting sets `Cross-Origin-Opener-Policy`, use `same-origin-allow-popups`; `same-origin` breaks `signInWithPopup`.
 - Re-run `/setup-deploy` so CLAUDE.md's "Deploy Configuration" records the platform, deploy trigger, status command, and health checks.

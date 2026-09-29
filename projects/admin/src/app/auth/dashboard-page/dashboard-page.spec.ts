@@ -1,5 +1,6 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { AuthStore } from '../auth.store';
 import { AuthorizedUser } from '../authorized-user.model';
 import { DashboardPage } from './dashboard-page';
@@ -17,7 +18,7 @@ describe('DashboardPage', () => {
     error.set(null);
     await TestBed.configureTestingModule({
       imports: [DashboardPage],
-      providers: [{ provide: AuthStore, useValue: { error, authorizedUser } }],
+      providers: [provideRouter([]), { provide: AuthStore, useValue: { error, authorizedUser } }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(DashboardPage);
@@ -28,6 +29,12 @@ describe('DashboardPage', () => {
   it('should show who is signed in and focus the heading', () => {
     expect(element.textContent).toContain('Signed in as admin@test.com');
     expect(document.activeElement).toBe(element.querySelector('h1'));
+  });
+
+  it('should link to each section it manages', () => {
+    const nav = element.querySelector('nav[aria-label="Manage"]');
+    expect(nav?.querySelector('a')?.getAttribute('href')).toBe('/gallery');
+    expect(nav?.textContent).toContain('Gallery');
   });
 
   it('should announce a store error such as a failed sign-out', async () => {

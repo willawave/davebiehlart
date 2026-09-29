@@ -1,0 +1,19 @@
+{
+  "name": "gallery/seed-bronze-04-key/1-tall.jpg",
+  "bucket": "demo-bronze-horse.appspot.com",
+  "metageneration": 1,
+  "generation": 1790637633487,
+  "contentType": "image/jpeg",
+  "storageClass": "STANDARD",
+  "contentDisposition": "inline",
+  "downloadTokens": [
+    "339e9d44-1b0d-4c9f-9424-814166c61a2c"
+  ],
+  "etag": "YXvNWIs7oZ1OssJMXcbvwh+2uP0",
+  "customMetadata": {},
+  "timeCreated": "2026-09-28T23:20:33.487Z",
+  "updated": "2026-09-28T23:20:33.487Z",
+  "size": 7173,
+  "md5Hash": "evfyW5xabvDlPIUiI9gYbw==",
+  "crc32c": "1837195832"
+}

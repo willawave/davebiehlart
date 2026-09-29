@@ -1,0 +1,19 @@
+{
+  "name": "gallery/seed-bronze-07-key/2-portrait.jpg",
+  "bucket": "demo-bronze-horse.appspot.com",
+  "metageneration": 1,
+  "generation": 1790637633549,
+  "contentType": "image/jpeg",
+  "storageClass": "STANDARD",
+  "contentDisposition": "inline",
+  "downloadTokens": [
+    "fe09f3e0-c492-469d-bd4c-40fab9849f3b"
+  ],
+  "etag": "t5P3vE9nfTMev2iS5otpvDFwu4c",
+  "customMetadata": {},
+  "timeCreated": "2026-09-28T23:20:33.549Z",
+  "updated": "2026-09-28T23:20:33.549Z",
+  "size": 9991,
+  "md5Hash": "j3WWVER4cLM1wKUltXNG/Q==",
+  "crc32c": "156137485"
+}
