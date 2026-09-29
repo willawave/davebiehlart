@@ -1,1 +1,38 @@
-<p>event-list works!</p>
+<h1 class="page-title">Events</h1>
+@if (store.error(); as error) {
+  <p class="message" role="alert">{{ error }}</p>
+} @else if (store.loading()) {
+  <p class="message" role="status">Loading…</p>
+} @else if (store.upcomingEvents().length) {
+  <ul class="events" aria-label="Upcoming events">
+    @for (event of store.upcomingEvents(); track event.id) {
+      <li>
+        <a class="event" [routerLink]="event.id">
+          <span class="date" aria-hidden="true">
+            <span class="month">{{ event.date.toDate() | date: 'MMM' : 'UTC' }}</span>
+            <span class="day">{{ event.date.toDate() | date: 'd' : 'UTC' }}</span>
+          </span>
+          <span class="details">
+            <span class="name">{{ event.name }}</span>
+            <span class="meta">
+              {{ event.date.toDate() | date: 'EEEE, MMMM d, y' : 'UTC' }}
+              @if (event.time) {
+                · {{ formatTime(event.time) }}
+              }
+            </span>
+            <span class="meta">
+              {{ event.location.venue }} · {{ event.location.city }}, {{ event.location.state }}
+            </span>
+          </span>
+        </a>
+      </li>
+    }
+  </ul>
+} @else {
+  <div class="empty">
+    <p class="lead">No upcoming events right now.</p>
+    <p class="muted">
+      Check back soon, or <a [routerLink]="contactLink">get in touch</a> about a studio visit.
+    </p>
+  </div>
+}

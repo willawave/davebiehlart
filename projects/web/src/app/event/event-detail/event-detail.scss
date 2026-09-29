@@ -1,0 +1,94 @@
+:host {
+  display: block;
+}
+
+.intro,
+.location {
+  max-width: 760px;
+}
+
+.page-title {
+  margin-bottom: 6px;
+  overflow-wrap: anywhere;
+}
+
+.kicker {
+  margin: 0 0 20px;
+  color: var(--dba-muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.ended {
+  margin: 0 0 20px;
+  padding: 10px 14px;
+  border-left: 3px solid var(--dba-bronze);
+  background: color-mix(in srgb, var(--dba-rule) 35%, transparent);
+}
+
+.description {
+  margin: 0 0 24px;
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  // Keep the admin's paragraph breaks.
+  white-space: pre-line;
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  margin-bottom: 32px;
+  padding: 0 16px;
+  border: 1px solid var(--dba-bronze);
+  color: var(--dba-bronze);
+  text-decoration: none;
+
+  &:hover {
+    background: var(--dba-bronze);
+    color: var(--dba-on-bronze);
+  }
+
+  &:focus-visible {
+    outline: 3px solid var(--dba-bronze);
+    outline-offset: 3px;
+  }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.location {
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--dba-rule);
+
+  h2 {
+    margin: 0 0 8px;
+    font-size: 1.5rem;
+  }
+
+  address {
+    display: flex;
+    flex-direction: column;
+    margin: 0 0 16px;
+    font-size: 1rem;
+    font-style: normal;
+    line-height: 1.5;
+  }
+
+  .venue {
+    font-weight: 600;
+  }
+
+  .map {
+    --map-height: 320px;
+  }
+}

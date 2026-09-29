@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { GalleryStyle } from 'core';
-import { eventDetailResolver } from './event/event-detail-resolver';
 import { detailBreadcrumb } from './shared/breadcrumb/breadcrumb';
 import { RouterLinks } from './shared/router-links.enum';
 import { Site } from './shared/site.enum';
@@ -32,20 +31,7 @@ export const routes: Routes = [
   {
     path: RouterLinks.EVENTS,
     data: { breadcrumb: 'Events' },
-    children: [
-      {
-        path: '',
-        loadComponent: () => import('./event/event-list/event-list').then((c) => c.EventList),
-        title: `Events | ${Site.TITLE}`,
-      },
-      {
-        path: ':id',
-        loadComponent: () => import('./event/event-detail/event-detail').then((c) => c.EventDetail),
-        resolve: { eventDetailResolver },
-        title: `Events | ${Site.TITLE}`,
-        data: { breadcrumb: detailBreadcrumb },
-      },
-    ],
+    loadChildren: () => import('./event/event.routes').then((m) => m.eventRoutes),
   },
   {
     path: RouterLinks.MEDIA,

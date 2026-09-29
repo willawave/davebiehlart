@@ -39,6 +39,7 @@ describe('DashboardPage', () => {
     expect(links).toEqual([
       ['Gallery', '/gallery'],
       ['Statues', '/statues'],
+      ['Events', '/events'],
     ]);
   });
 

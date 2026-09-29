@@ -34,7 +34,17 @@ export async function signInWithGoogle(page: Page, email: string): Promise<void>
 }
 
 // WCAG 2.1 A/AA. The SDK's hidden relay iframe belongs to the Auth emulator, not the app.
+// Waits for finite animations first: a form field's hint fades in as its error clears, and
+// axe would measure its contrast mid-fade.
 export async function expectNoAxeViolations(page: Page): Promise<void> {
+  await page.evaluate(() =>
+    Promise.all(
+      document
+        .getAnimations()
+        .filter((animation) => animation.effect?.getComputedTiming().iterations !== Infinity)
+        .map((animation) => animation.finished.catch(() => undefined)),
+    ),
+  );
   const results = await new AxeBuilder({ page })
     .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
     .exclude('iframe[aria-hidden="true"]')

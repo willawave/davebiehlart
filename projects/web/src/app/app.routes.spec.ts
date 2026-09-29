@@ -1,7 +1,7 @@
 import { Route, Routes } from '@angular/router';
 import { GalleryStyle } from 'core';
 import { routes } from './app.routes';
-import { eventDetailResolver } from './event/event-detail-resolver';
+import { eventDetailResolver, eventDetailTitle } from './event/event-detail-resolver';
 import { galleryDetailResolver, galleryDetailTitle } from './gallery/gallery-detail-resolver';
 import { detailBreadcrumb } from './shared/breadcrumb/breadcrumb';
 import { RouterLinks } from './shared/router-links.enum';
@@ -51,7 +51,7 @@ describe('routes', () => {
       path: RouterLinks.EVENTS,
       label: 'Events',
       resolve: { eventDetailResolver },
-      title: `Events | ${Site.TITLE}`,
+      title: eventDetailTitle,
     },
     { path: RouterLinks.MEDIA, label: 'Media', resolve: undefined, title: `Media | ${Site.TITLE}` },
   ];

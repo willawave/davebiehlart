@@ -1,1 +1,19 @@
-<p>event-edit works!</p>
+<section class="panel wide" aria-labelledby="edit-heading">
+  <p class="back"><a routerLink="/events">‹ Events</a></p>
+  <h1 id="edit-heading" #heading tabindex="-1">Edit event</h1>
+  @if (store.error(); as error) {
+    <p class="error" role="alert">{{ error }}</p>
+  }
+  @if (loaded()) {
+    <app-event-form
+      [initial]="store.selectedFormValue() ?? undefined"
+      [saving]="store.loading()"
+      (saved)="onSave($event)"
+      (cancelled)="cancel()"
+    />
+  } @else if (store.loading()) {
+    <p class="muted" role="status">Loading…</p>
+  } @else if (!store.error()) {
+    <p class="muted">This event doesn't exist. It may have been deleted.</p>
+  }
+</section>
