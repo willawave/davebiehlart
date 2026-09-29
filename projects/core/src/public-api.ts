@@ -14,3 +14,4 @@ export * from './lib/models/event.model';
 export * from './lib/models/gallery.model';
 export * from './lib/models/media.model';
 export * from './lib/models/statue.model';
+export * from './lib/utils/event-time';

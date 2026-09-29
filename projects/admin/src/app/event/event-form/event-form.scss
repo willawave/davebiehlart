@@ -1,0 +1,48 @@
+:host {
+  display: block;
+}
+
+fieldset {
+  display: flex;
+  flex-direction: column;
+  margin: 0 0 20px;
+  padding: 16px 20px 20px;
+  border: 1px solid var(--dba-rule);
+  background: #fffdf8;
+}
+
+legend {
+  padding: 0 6px;
+  font-weight: 600;
+}
+
+.when {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  column-gap: 16px;
+  max-width: 540px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  column-gap: 16px;
+  // Room for an error line under one row and the floating label of the next.
+  row-gap: 12px;
+}
+
+.hint {
+  margin: 4px 0 12px;
+  color: var(--dba-muted);
+  font-size: 0.875rem;
+}
+
+.coordinates {
+  margin-top: 16px;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}

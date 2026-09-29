@@ -1,1 +1,42 @@
-<p>event-detail works!</p>
+@if (store.selectedEvent(); as event) {
+  <article>
+    <header class="intro">
+      <h1 class="page-title">{{ event.name }}</h1>
+      <p class="kicker">
+        Event · {{ event.date.toDate() | date: 'EEEE, MMMM d, y' : 'UTC' }}
+        @if (event.time) {
+          · {{ formatTime(event.time) }}
+        }
+      </p>
+      @if (ended()) {
+        <p class="ended">This event has ended. <a routerLink="..">See upcoming events</a></p>
+      }
+      @if (event.description) {
+        <p class="description">{{ event.description }}</p>
+      }
+      @if (event.link) {
+        <a class="link" [href]="event.link" target="_blank" rel="noopener">
+          Event details <span aria-hidden="true">↗</span>
+          <span class="visually-hidden">(opens in a new tab)</span>
+        </a>
+      }
+    </header>
+
+    <section class="location" aria-labelledby="location-heading">
+      <h2 id="location-heading">Location</h2>
+      <address>
+        <span class="venue">{{ event.location.venue }}</span>
+        @if (event.location.street) {
+          <span>{{ event.location.street }}</span>
+        }
+        <span>{{ event.location.city }}, {{ event.location.state }}</span>
+      </address>
+      <app-single-point-map
+        class="map"
+        [latitude]="event.location.latitude"
+        [longitude]="event.location.longitude"
+        [label]="'Map showing where ' + event.name + ' takes place'"
+      />
+    </section>
+  </article>
+}

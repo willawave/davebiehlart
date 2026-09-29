@@ -1,1 +1,79 @@
-<p>event-table works!</p>
+<section class="panel wide" aria-labelledby="events-heading">
+  <p class="back"><a routerLink="/dashboard">‹ Dashboard</a></p>
+  <div class="head">
+    <h1 id="events-heading" #heading tabindex="-1">Events</h1>
+    <a matButton="filled" routerLink="/events-add">Add event</a>
+  </div>
+  @if (store.error(); as error) {
+    <p class="error" role="alert">{{ error }}</p>
+  }
+
+  @if (store.allEvents().length) {
+    <div class="scroll">
+      <table mat-table [dataSource]="store.allEvents()">
+        <caption class="caption">
+          Events, latest first. The website lists only upcoming, visible events.
+        </caption>
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let event">{{ event.name }}</td>
+        </ng-container>
+        <ng-container matColumnDef="when">
+          <th mat-header-cell *matHeaderCellDef>When</th>
+          <td mat-cell *matCellDef="let event" class="when">
+            {{ event.date.toDate() | date: 'mediumDate' }}
+            @if (event.time) {
+              · {{ formatTime(event.time) }}
+            }
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="place">
+          <th mat-header-cell *matHeaderCellDef>Location</th>
+          <td mat-cell *matCellDef="let event">
+            {{ event.location.venue }}, {{ event.location.city }}
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let event" [class.past]="!isUpcoming(event)">
+            {{ isUpcoming(event) ? 'Upcoming' : 'Past' }}
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="visible">
+          <th mat-header-cell *matHeaderCellDef>On website</th>
+          <td mat-cell *matCellDef="let event">
+            <span class="chip" [class.hidden-chip]="!event.visible">{{
+              event.visible ? 'Visible' : 'Hidden'
+            }}</span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef><span class="hidden">Actions</span></th>
+          <td mat-cell *matCellDef="let event" class="actions">
+            <a
+              matButton="outlined"
+              [routerLink]="['/events-edit', event.id]"
+              [attr.aria-label]="'Edit ' + event.name"
+              >Edit</a
+            >
+            <button
+              type="button"
+              matButton="outlined"
+              [attr.aria-label]="'Delete ' + event.name"
+              [disabled]="store.loading()"
+              (click)="confirmDelete(event)"
+            >
+              Delete
+            </button>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="columns"></tr>
+        <tr mat-row *matRowDef="let row; columns: columns"></tr>
+      </table>
+    </div>
+  } @else if (store.loading()) {
+    <p class="muted" role="status">Loading…</p>
+  } @else if (!store.error()) {
+    <p class="muted">No events yet. Add the first one.</p>
+  }
+</section>

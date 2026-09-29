@@ -26,7 +26,8 @@ export class EventFormModel {
   eventForm = signal({
     date: new Date(),
     description: '',
-    link: null as string | null,
+    // A text input's value; saved as null when left blank.
+    link: '',
     location: {
       city: BaseLocation.CITY,
       latitude: BaseLocation.LATITUDE,

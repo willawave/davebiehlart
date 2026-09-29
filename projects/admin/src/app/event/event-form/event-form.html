@@ -1,1 +1,94 @@
-<p>event-form works!</p>
+<form novalidate (submit)="onSubmit($event)">
+  <fieldset>
+    <legend>Details</legend>
+    <mat-form-field appearance="outline">
+      <mat-label>Name</mat-label>
+      <input matInput [formField]="eventForm.name" />
+      <mat-error>{{ firstError(eventForm.name) }}</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Description</mat-label>
+      <textarea matInput rows="5" [formField]="eventForm.description"></textarea>
+      <mat-error>{{ firstError(eventForm.description) }}</mat-error>
+    </mat-form-field>
+    <div class="when">
+      <mat-form-field appearance="outline">
+        <mat-label>Date</mat-label>
+        <input matInput [matDatepicker]="picker" [formField]="eventForm.date" />
+        <mat-datepicker-toggle matIconSuffix [for]="picker" />
+        <mat-datepicker #picker />
+        <mat-error>{{ firstError(eventForm.date) }}</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Start time</mat-label>
+        <input matInput type="time" [formField]="eventForm.time" />
+        <mat-error>{{ firstError(eventForm.time) }}</mat-error>
+      </mat-form-field>
+    </div>
+    <mat-form-field appearance="outline">
+      <mat-label>Link (optional)</mat-label>
+      <input matInput type="url" [formField]="eventForm.link" />
+      <mat-hint>Tickets or more details, e.g. https://example.com/event</mat-hint>
+      <mat-error>{{ firstError(eventForm.link) }}</mat-error>
+    </mat-form-field>
+    <mat-checkbox [formField]="eventForm.visible">Visible on the website</mat-checkbox>
+  </fieldset>
+
+  <fieldset>
+    <legend>Location</legend>
+    <div class="grid">
+      <mat-form-field appearance="outline">
+        <mat-label>Venue</mat-label>
+        <input matInput [formField]="eventForm.location.venue" />
+        <mat-error>{{ firstError(eventForm.location.venue) }}</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Street (optional)</mat-label>
+        <input matInput [formField]="eventForm.location.street" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>City</mat-label>
+        <input matInput [formField]="eventForm.location.city" />
+        <mat-error>{{ firstError(eventForm.location.city) }}</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>State</mat-label>
+        <input matInput [formField]="eventForm.location.state" />
+        <mat-error>{{ firstError(eventForm.location.state) }}</mat-error>
+      </mat-form-field>
+    </div>
+
+    <p class="hint" id="map-hint">
+      Click the map or drag the pin to set where the event is, or type the coordinates. Scroll or
+      pinch to zoom.
+    </p>
+    <app-form-map
+      label="Event location"
+      hintId="map-hint"
+      [disabled]="saving()"
+      [(latitude)]="eventForm.location.latitude().value"
+      [(longitude)]="eventForm.location.longitude().value"
+    />
+    <div class="grid coordinates">
+      <mat-form-field appearance="outline">
+        <mat-label>Latitude</mat-label>
+        <input matInput type="number" step="any" [formField]="eventForm.location.latitude" />
+        <mat-error>{{ firstError(eventForm.location.latitude) }}</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Longitude</mat-label>
+        <input matInput type="number" step="any" [formField]="eventForm.location.longitude" />
+        <mat-error>{{ firstError(eventForm.location.longitude) }}</mat-error>
+      </mat-form-field>
+    </div>
+  </fieldset>
+
+  <div class="actions">
+    <button type="button" matButton="outlined" [disabled]="saving()" (click)="cancelled.emit()">
+      Cancel
+    </button>
+    <button type="submit" matButton="filled" [disabled]="saving()">
+      {{ saving() ? 'Saving…' : 'Save' }}
+    </button>
+  </div>
+</form>
