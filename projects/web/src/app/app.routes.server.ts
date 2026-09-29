@@ -2,8 +2,8 @@ import { RenderMode, ServerRoute } from '@angular/ssr';
 import { RouterLinks } from './shared/router-links.enum';
 
 export const serverRoutes: ServerRoute[] = [
-  // render all static pages with the prerender mode. Contact is not one: it shows the
-  // gallery hours, which Dave can change at any time.
+  // Prerender the static pages that never read Firestore. Contact stays on SSR because it
+  // shows the live gallery hours, and Not Found because its 404 status is set per request.
   { path: RouterLinks.PRIVACY_POLICY, renderMode: RenderMode.Prerender },
   { path: RouterLinks.TERMS_OF_USE, renderMode: RenderMode.Prerender },
   // render all other pages with SSR, so builds never read Firestore
