@@ -1,0 +1,59 @@
+:host {
+  display: block;
+}
+
+fieldset {
+  display: flex;
+  flex-direction: column;
+  margin: 0 0 20px;
+  padding: 16px 20px 20px;
+  border: 1px solid var(--dba-rule);
+  background: #fffdf8;
+}
+
+legend {
+  padding: 0 6px;
+  font-weight: 600;
+}
+
+// The table keeps its columns on a phone and scrolls sideways instead.
+.scroll {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 6px 8px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--dba-rule);
+}
+
+thead th {
+  font-size: 0.85rem;
+}
+
+tbody th {
+  padding-top: 20px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+td:nth-child(2) {
+  padding-top: 10px;
+}
+
+mat-form-field {
+  width: 150px;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}

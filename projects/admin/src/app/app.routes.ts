@@ -78,6 +78,13 @@ export const routes: Routes = [
     title: 'Edit Media',
   },
   {
+    path: 'schedule',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./schedule/schedule-page/schedule-page').then((c) => c.SchedulePage),
+    title: 'Schedule',
+  },
+  {
     path: 'statues',
     canActivate: [authGuard],
     loadComponent: () => import('./statue/statue-table/statue-table').then((c) => c.StatueTable),

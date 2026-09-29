@@ -1,0 +1,17 @@
+<section class="panel wide" aria-labelledby="schedule-heading">
+  <p class="back"><a routerLink="/dashboard">‹ Dashboard</a></p>
+  <h1 id="schedule-heading" #heading tabindex="-1">Schedule</h1>
+  @if (store.error(); as error) {
+    <p class="error" role="alert">{{ error }}</p>
+  }
+  @if (store.loaded()) {
+    <app-schedule-form
+      [initial]="store.formValue()"
+      [saving]="store.loading()"
+      (saved)="onSave($event)"
+      (cancelled)="cancel()"
+    />
+  } @else if (store.loading()) {
+    <p class="muted" role="status">Loading…</p>
+  }
+</section>

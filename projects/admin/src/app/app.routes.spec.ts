@@ -24,7 +24,7 @@ describe('admin routes', () => {
     return TestBed.inject(Router).url;
   }
 
-  it.each(['/dashboard', '/events', '/gallery-edit/x', '/media-add', '/statues'])(
+  it.each(['/dashboard', '/events', '/gallery-edit/x', '/media-add', '/schedule', '/statues'])(
     'should send a signed-out visitor on %s to sign-in',
     async (url) => {
       expect(await visit(url)).toBe('/');

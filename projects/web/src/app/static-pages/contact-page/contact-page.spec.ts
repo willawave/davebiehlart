@@ -1,21 +1,22 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Component } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
+import { VisitHours } from '../../schedule/visit-hours/visit-hours';
 import { ContactPage } from './contact-page';
 
+@Component({ selector: 'app-visit-hours', template: '' })
+class FakeVisitHours {}
+
 describe('ContactPage', () => {
-  let component: ContactPage;
-  let fixture: ComponentFixture<ContactPage>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [ContactPage],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(ContactPage);
-    component = fixture.componentInstance;
+  it('should show the page heading and the gallery hours', async () => {
+    TestBed.overrideComponent(ContactPage, {
+      remove: { imports: [VisitHours] },
+      add: { imports: [FakeVisitHours] },
+    });
+    const fixture = TestBed.createComponent(ContactPage);
     await fixture.whenStable();
-  });
+    const element: HTMLElement = fixture.nativeElement;
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(element.querySelector('h1')?.textContent).toBe('Contact');
+    expect(element.querySelector('app-visit-hours')).not.toBeNull();
   });
 });

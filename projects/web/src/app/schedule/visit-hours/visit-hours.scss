@@ -1,0 +1,77 @@
+:host {
+  display: block;
+  max-width: 760px;
+}
+
+.kicker {
+  margin: 0 0 4px;
+  color: var(--dba-bronze);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+h2 {
+  margin: 0 0 8px;
+}
+
+address {
+  margin: 0 0 20px;
+  color: var(--dba-muted);
+  font-style: normal;
+  line-height: 1.5;
+}
+
+// A notice boxed between rules, e.g. a holiday closure.
+.notice {
+  margin: 0 0 20px;
+  padding: 12px 0;
+  border-top: 1px solid var(--dba-rule);
+  border-bottom: 1px solid var(--dba-rule);
+  font-weight: 600;
+}
+
+// The week as a ledger: days left, hours right, rules between rows.
+.hours {
+  margin: 0;
+
+  div {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 4px 16px;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--dba-rule);
+    border-left: 3px solid transparent;
+
+    &:first-child {
+      border-top: 1px solid var(--dba-rule);
+    }
+  }
+
+  .today {
+    border-left-color: var(--dba-bronze);
+    background: color-mix(in srgb, var(--dba-rule) 35%, transparent);
+  }
+
+  dt {
+    font-family: var(--dba-serif);
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  dd {
+    margin: 0;
+  }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
