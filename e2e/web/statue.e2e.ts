@@ -169,6 +169,33 @@ test.describe('detail', () => {
     await expect(pager.getByRole('link', { name: /Next/ })).toHaveCount(0);
   });
 
+  test('the next statue opens on its cover, not where the last strip was scrolled', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/statues/seed-statue-01');
+    const track = page.locator('app-image-track .track');
+    const scrollLeft = () => track.evaluate((el) => el.scrollLeft);
+    await page.getByRole('button', { name: 'Scroll photos forward' }).click();
+    await expect(page.getByRole('button', { name: 'Scroll photos back' })).toBeEnabled();
+    // Let the smooth scroll finish, as it would before anyone reaches the pager.
+    await expect
+      .poll(async () => {
+        const before = await scrollLeft();
+        await page.waitForTimeout(150);
+        return before > 0 && before === (await scrollLeft());
+      })
+      .toBe(true);
+
+    await page
+      .getByRole('navigation', { name: 'More statues' })
+      .getByRole('link', { name: /Next/ })
+      .click();
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Spirit of the Prairie');
+    await expect.poll(scrollLeft).toBe(0);
+    await expect(page.getByRole('button', { name: 'Scroll photos back' })).toBeDisabled();
+  });
+
   test('leaves out a missing street', async ({ page }) => {
     await page.goto('/statues/seed-statue-07');
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('The Homesteader');
