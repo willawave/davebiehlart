@@ -1,31 +1,26 @@
 import { RESPONSE_INIT } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { NAV_LINKS } from '../../shared/nav-links';
 import { NotFoundPage } from './not-found-page';
 
 describe('NotFoundPage', () => {
-  let component: NotFoundPage;
-  let fixture: ComponentFixture<NotFoundPage>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [NotFoundPage],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(NotFoundPage);
-    component = fixture.componentInstance;
+  it('should link home and to every other section', async () => {
+    TestBed.configureTestingModule({ providers: [provideRouter([])] });
+    const fixture = TestBed.createComponent(NotFoundPage);
     await fixture.whenStable();
-  });
+    const element: HTMLElement = fixture.nativeElement;
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(element.querySelector('h1')?.textContent).toBe('Page not found');
+    expect(element.querySelector('a.home')?.getAttribute('href')).toBe('/');
+    const sections = [...element.querySelectorAll('nav a')].map((a) => a.getAttribute('href'));
+    expect(sections).toEqual(NAV_LINKS.filter((l) => l.path !== '/').map((l) => l.path));
   });
 
   it('should set a 404 status when server-rendered', () => {
     const responseInit: ResponseInit = {};
-    TestBed.resetTestingModule();
     TestBed.configureTestingModule({
-      imports: [NotFoundPage],
-      providers: [{ provide: RESPONSE_INIT, useValue: responseInit }],
+      providers: [provideRouter([]), { provide: RESPONSE_INIT, useValue: responseInit }],
     });
     TestBed.createComponent(NotFoundPage);
     expect(responseInit.status).toBe(404);

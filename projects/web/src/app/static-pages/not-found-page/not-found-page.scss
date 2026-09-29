@@ -1,0 +1,27 @@
+.message {
+  max-width: 60ch;
+  margin: 0 0 16px;
+  line-height: 1.6;
+}
+
+.home {
+  font-size: 1.125rem;
+}
+
+nav {
+  margin-top: 40px;
+}
+
+h2 {
+  margin: 0 0 8px;
+  font-size: 1.125rem;
+}
+
+ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
