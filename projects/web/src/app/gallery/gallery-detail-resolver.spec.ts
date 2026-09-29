@@ -40,6 +40,22 @@ describe('galleryDetailResolver', () => {
     meta = TestBed.inject(Meta);
   });
 
+  // The document's <head> outlives this file; leave no share tags behind for other specs.
+  afterEach(() => {
+    for (const selector of [
+      "name='description'",
+      "property='og:title'",
+      "property='og:description'",
+      "property='og:url'",
+      "property='og:image'",
+      "property='og:image:alt'",
+      "property='og:image:width'",
+      "property='og:image:height'",
+    ]) {
+      meta.getTags(selector).forEach((tag) => meta.removeTagElement(tag));
+    }
+  });
+
   it('should load the item for the section style and return it', async () => {
     const item = galleryItem();
     store.loadSelected.mockResolvedValue(item);

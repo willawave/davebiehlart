@@ -18,9 +18,26 @@ describe('toMetaDescription', () => {
 describe('setPageMeta', () => {
   let meta: Meta;
   const content = (selector: string) => meta.getTag(selector)?.content;
+  const selectors = [
+    "name='description'",
+    "property='og:title'",
+    "property='og:description'",
+    "property='og:url'",
+    "property='og:image'",
+    "property='og:image:alt'",
+    "property='og:image:width'",
+    "property='og:image:height'",
+  ];
+  // Removes every match, so tags another spec left in the shared <head> can't shadow ours.
+  const clearTags = () => {
+    for (const selector of selectors) {
+      meta.getTags(selector).forEach((tag) => meta.removeTagElement(tag));
+    }
+  };
 
   beforeEach(() => {
     meta = TestBed.inject(Meta);
+    clearTags();
     meta.addTags([
       { property: 'og:image', content: 'https://davebiehlart.com/og-image.png' },
       { property: 'og:image:width', content: '1200' },
@@ -28,20 +45,7 @@ describe('setPageMeta', () => {
     ]);
   });
 
-  afterEach(() => {
-    for (const selector of [
-      "name='description'",
-      "property='og:title'",
-      "property='og:description'",
-      "property='og:url'",
-      "property='og:image'",
-      "property='og:image:alt'",
-      "property='og:image:width'",
-      "property='og:image:height'",
-    ]) {
-      meta.removeTag(selector);
-    }
-  });
+  afterEach(clearTags);
 
   it('should set the description, title and canonical URL tags', () => {
     setPageMeta(meta, {
