@@ -1,1 +1,70 @@
-<p>media-form works!</p>
+<form novalidate (submit)="onSubmit($event)">
+  <fieldset>
+    <legend>Link</legend>
+    <mat-form-field appearance="outline">
+      <mat-label>Link</mat-label>
+      <input matInput type="url" [formField]="mediaForm.link" />
+      <mat-hint
+        >A YouTube video or a web article, e.g. https://www.youtube.com/watch?v=… or
+        https://news-site.com/story</mat-hint
+      >
+      <mat-error>{{ firstError(mediaForm.link) }}</mat-error>
+    </mat-form-field>
+
+    <div class="preview" aria-live="polite">
+      @if (mediaForm.link().valid() && preview(); as link) {
+        @if (link.kind === 'video') {
+          <img [ngSrc]="thumbnail(link.videoId)" width="160" height="120" alt="" />
+          <p>
+            <strong>YouTube video.</strong> It will be saved as
+            <span class="url">{{ link.url }}</span>
+            <a [href]="link.url" target="_blank" rel="noopener noreferrer"
+              >Open link <span aria-hidden="true">↗</span
+              ><span class="visually-hidden"> (opens in a new tab)</span></a
+            >
+          </p>
+        } @else {
+          <p>
+            <strong>Article on {{ link.site }}.</strong>
+            <a [href]="link.url" target="_blank" rel="noopener noreferrer"
+              >Open link <span aria-hidden="true">↗</span
+              ><span class="visually-hidden"> (opens in a new tab)</span></a
+            >
+          </p>
+        }
+      }
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Details</legend>
+    <mat-form-field appearance="outline">
+      <mat-label>Title</mat-label>
+      <input matInput [formField]="mediaForm.title" />
+      <mat-error>{{ firstError(mediaForm.title) }}</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Description</mat-label>
+      <textarea matInput rows="4" [formField]="mediaForm.description"></textarea>
+      <mat-error>{{ firstError(mediaForm.description) }}</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="date">
+      <mat-label>Date</mat-label>
+      <input matInput [matDatepicker]="picker" [formField]="mediaForm.date" />
+      <mat-datepicker-toggle matIconSuffix [for]="picker" />
+      <mat-datepicker #picker />
+      <mat-hint>When it aired or was published</mat-hint>
+      <mat-error>{{ firstError(mediaForm.date) }}</mat-error>
+    </mat-form-field>
+    <mat-checkbox [formField]="mediaForm.visible">Visible on the website</mat-checkbox>
+  </fieldset>
+
+  <div class="actions">
+    <button type="button" matButton="outlined" [disabled]="saving()" (click)="cancelled.emit()">
+      Cancel
+    </button>
+    <button type="submit" matButton="filled" [disabled]="saving()">
+      {{ saving() ? 'Saving…' : 'Save' }}
+    </button>
+  </div>
+</form>

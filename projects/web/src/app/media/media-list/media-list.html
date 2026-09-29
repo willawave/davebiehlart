@@ -1,1 +1,51 @@
-<p>media-list works!</p>
+<h1 class="page-title">Media</h1>
+@if (store.error(); as error) {
+  <p class="message" role="alert">{{ error }}</p>
+} @else if (store.loading()) {
+  <app-media-list-skeleton />
+} @else if (rows().length) {
+  <ul class="media" aria-label="Videos and articles">
+    @for (row of rows(); track row.item.id; let i = $index) {
+      <li>
+        <a class="row" [routerLink]="row.item.id">
+          @if (row.link.kind === 'video') {
+            <span class="still">
+              <img [ngSrc]="thumbnail(row.link.videoId)" fill [priority]="i < aboveFold" alt="" />
+              <span class="play" aria-hidden="true"></span>
+            </span>
+          } @else {
+            <span class="tile" aria-hidden="true">
+              <span class="word">Article</span>
+              <span class="site">
+                @for (part of siteParts(row.link.site); track $index) {
+                  @if ($index) {
+                    <wbr />
+                  }
+                  <span>{{ part }}</span>
+                }
+              </span>
+            </span>
+          }
+          <span class="details">
+            <span class="title">{{ row.item.title }}</span>
+            <span class="meta">
+              @if (row.link.kind === 'video') {
+                Video
+              } @else {
+                Article · {{ row.link.site }}
+              }
+              · <span class="date">{{ row.item.date.toDate() | date: 'MMMM d, y' : 'UTC' }}</span>
+            </span>
+          </span>
+        </a>
+      </li>
+    }
+  </ul>
+} @else {
+  <div class="empty">
+    <p class="lead">No videos or articles yet.</p>
+    <p class="muted">
+      Check back soon, or <a [routerLink]="contactLink">get in touch</a> with a press inquiry.
+    </p>
+  </div>
+}

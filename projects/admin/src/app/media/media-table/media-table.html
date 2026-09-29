@@ -1,1 +1,75 @@
-<p>media-table works!</p>
+<section class="panel wide" aria-labelledby="media-heading">
+  <p class="back"><a routerLink="/dashboard">‹ Dashboard</a></p>
+  <div class="head">
+    <h1 id="media-heading" #heading tabindex="-1">Media</h1>
+    <a matButton="filled" routerLink="/media-add">Add media</a>
+  </div>
+  @if (store.error(); as error) {
+    <p class="error" role="alert">{{ error }}</p>
+  }
+
+  @if (store.allMediaItems().length) {
+    <div class="scroll">
+      <table mat-table [dataSource]="store.allMediaItems()">
+        <caption class="caption">
+          Videos and articles, newest first. The website hides any with an invalid link.
+        </caption>
+        <ng-container matColumnDef="title">
+          <th mat-header-cell *matHeaderCellDef>Title</th>
+          <td mat-cell *matCellDef="let media">
+            <a [href]="media.link" target="_blank" rel="noopener noreferrer"
+              >{{ media.title }} <span aria-hidden="true">↗</span
+              ><span class="hidden"> (opens in a new tab)</span></a
+            >
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef>Date</th>
+          <td mat-cell *matCellDef="let media" class="nowrap">
+            {{ media.date.toDate() | date: 'mediumDate' : 'UTC' }}
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="type">
+          <th mat-header-cell *matHeaderCellDef>Type</th>
+          <td mat-cell *matCellDef="let media" [class.invalid]="type(media) === 'Invalid link'">
+            {{ type(media) }}
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="visible">
+          <th mat-header-cell *matHeaderCellDef>On website</th>
+          <td mat-cell *matCellDef="let media">
+            <span class="chip" [class.hidden-chip]="!media.visible">{{
+              media.visible ? 'Visible' : 'Hidden'
+            }}</span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef><span class="hidden">Actions</span></th>
+          <td mat-cell *matCellDef="let media" class="actions">
+            <a
+              matButton="outlined"
+              [routerLink]="['/media-edit', media.id]"
+              [attr.aria-label]="'Edit ' + media.title"
+              >Edit</a
+            >
+            <button
+              type="button"
+              matButton="outlined"
+              [attr.aria-label]="'Delete ' + media.title"
+              [disabled]="store.loading()"
+              (click)="confirmDelete(media)"
+            >
+              Delete
+            </button>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="columns"></tr>
+        <tr mat-row *matRowDef="let row; columns: columns"></tr>
+      </table>
+    </div>
+  } @else if (store.loading()) {
+    <p class="muted" role="status">Loading…</p>
+  } @else if (!store.error()) {
+    <p class="muted">No media yet. Add the first video or article.</p>
+  }
+</section>

@@ -2,6 +2,21 @@
 
 All notable changes to this project are documented here.
 
+## [0.8.0.0] - 2026-09-29
+
+### Added
+
+- The public site has a Media page listing YouTube videos and press articles together, newest first. A video shows its YouTube thumbnail, and an article shows the publication's name, such as startribune.com.
+- Each item has its own page. A video plays there, embedded without YouTube cookies. An article's page gives its summary and a "Read on {site}" button that opens the article in a new tab.
+- Media pages are rendered on the server with their own title, description and, for a video, its thumbnail as the share image. Hidden items, and old ones whose link can't be shown, show the Not Found page with a 404.
+- Admins can add, edit and delete media. The form refuses a link that isn't a full web address, isn't http or https, carries a name and password, points at a local address, is a YouTube channel or playlist rather than one video, or is already listed. It shows a preview of what the site will display, with a link to check it. YouTube links in any form (youtu.be, Shorts, embed, mobile) are saved as the standard watch address, the form older items already use.
+- The admin table has a Type column that marks each item Video or Article, and flags an old link the site can't show as "Invalid link".
+- The local emulators come with 12 sample media items, 7 videos and 5 articles, plus one hidden.
+
+### Fixed
+
+- A media date keeps the day that was picked, whatever the admin's time zone.
+
 ## [0.7.0.0] - 2026-09-29
 
 ### Added
