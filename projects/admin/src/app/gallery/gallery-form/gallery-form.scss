@@ -20,6 +20,8 @@ legend {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   column-gap: 16px;
+  // Room for an error line under one row and the floating label of the next.
+  row-gap: 12px;
 }
 
 .hint {
