@@ -58,17 +58,14 @@
   }
 }
 
-// Previous on the left, next on the right; stacked on phones.
+// Previous on the left, next on the right, on one row at every width; long names wrap.
 .pager {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
+  grid-template-columns: 1fr 1fr;
+  align-items: start;
+  gap: 16px;
   // The Dimensions list's bottom rule already separates the pager.
   margin-top: 24px;
-
-  @media (min-width: 600px) {
-    grid-template-columns: 1fr 1fr;
-  }
 
   a {
     display: flex;
@@ -94,10 +91,6 @@
   .next {
     grid-column: -2;
     text-align: right;
-
-    @media (max-width: 599px) {
-      grid-column: auto;
-    }
   }
 
   .direction {
