@@ -142,6 +142,10 @@
   color: var(--dba-muted);
   font-size: 0.9375rem;
   overflow-wrap: anywhere;
+
+  .date {
+    white-space: nowrap;
+  }
 }
 
 .empty {

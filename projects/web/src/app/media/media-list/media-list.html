@@ -16,7 +16,14 @@
           } @else {
             <span class="tile" aria-hidden="true">
               <span class="word">Article</span>
-              <span class="site">{{ row.link.site }}</span>
+              <span class="site">
+                @for (part of siteParts(row.link.site); track $index) {
+                  @if ($index) {
+                    <wbr />
+                  }
+                  <span>{{ part }}</span>
+                }
+              </span>
             </span>
           }
           <span class="details">
@@ -27,7 +34,7 @@
               } @else {
                 Article · {{ row.link.site }}
               }
-              · {{ row.item.date.toDate() | date: 'MMMM d, y' : 'UTC' }}
+              · <span class="date">{{ row.item.date.toDate() | date: 'MMMM d, y' : 'UTC' }}</span>
             </span>
           </span>
         </a>

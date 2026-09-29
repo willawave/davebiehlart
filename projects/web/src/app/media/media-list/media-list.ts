@@ -37,6 +37,12 @@ export class MediaList {
       .filter((row): row is MediaRow => row.link !== null),
   );
 
+  // "magazine.example.com" → ["magazine.", "example.", "com"], so a narrow tile wraps the
+  // name after a dot instead of mid-word.
+  protected siteParts(site: string): string[] {
+    return site.split(/(?<=\.)/);
+  }
+
   constructor() {
     void this.store.loadVisible();
     setPageMeta(inject(Meta), {
