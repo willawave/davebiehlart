@@ -2,6 +2,21 @@
 
 All notable changes to this project are documented here.
 
+## [0.6.0.0] - 2026-09-29
+
+### Added
+
+- The public site has a Statues page: a map of every visible statue above a grid of them, newest dedication first. Nearby statues group into a numbered marker that zooms in when clicked, and clicking a single marker opens that statue. The map only zooms with Ctrl or ⌘ held, so scrolling the page never gets stuck on it.
+- Each statue has its own page with its photos, its dedication date, its address and a map of where it stands. Previous and Next links step through the statues in list order.
+- Statue pages are rendered on the server with their own title, description and share image. Hidden statues show the Not Found page with a 404.
+- Admins can add, edit and delete statues. The statue's location is set by clicking the map, dragging its pin, or typing the latitude and longitude, and the map follows typed coordinates. A new statue starts at the studio's address. The map is locked while a save runs, so a late pin move can't be lost.
+- Statue photos upload, reorder and delete the same way as gallery photos, in each statue's own storage folder. A photo that a statue reuses from elsewhere is never deleted with it.
+- The local emulators come with 12 sample statues around Nebraska and Iowa, plus one hidden, with photos in mixed shapes.
+
+### Fixed
+
+- A piece's photo strip now starts at its cover after Previous or Next, instead of where the last piece's strip was scrolled to (bronzes and glass too).
+
 ## [0.5.0.0] - 2026-09-28
 
 ### Added
