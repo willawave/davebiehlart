@@ -48,9 +48,11 @@
 }
 
 // A 16:9 frame for the video still, or the article's paper tile.
+// Border-box, so the tile's border and padding don't make it taller than a still.
 .still,
 .tile {
   position: relative;
+  box-sizing: border-box;
   aspect-ratio: 16 / 9;
   overflow: hidden;
 }
