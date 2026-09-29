@@ -1,1 +1,44 @@
-<p>media-detail works!</p>
+@if (store.selectedMediaItem(); as item) {
+  @if (link(); as link) {
+    <article>
+      <h1 class="page-title">{{ item.title }}</h1>
+      <p class="kicker">
+        @if (link.kind === 'video') {
+          Video
+        } @else {
+          Article · {{ link.site }}
+        }
+        · {{ item.date.toDate() | date: 'MMMM d, y' : 'UTC' }}
+      </p>
+      @if (embedUrl(); as src) {
+        <div class="player">
+          <iframe
+            [src]="src"
+            [title]="item.title + ' (YouTube video)'"
+            loading="lazy"
+            allow="
+              accelerometer;
+              autoplay;
+              clipboard-write;
+              encrypted-media;
+              gyroscope;
+              picture-in-picture;
+              web-share;
+            "
+            referrerpolicy="strict-origin-when-cross-origin"
+            allowfullscreen
+          ></iframe>
+        </div>
+      }
+      @if (item.description) {
+        <p class="description">{{ item.description }}</p>
+      }
+      @if (link.kind === 'article') {
+        <a class="link" [href]="link.url" target="_blank" rel="noopener noreferrer">
+          Read on {{ link.site }} <span aria-hidden="true">↗</span>
+          <span class="visually-hidden">(opens in a new tab)</span>
+        </a>
+      }
+    </article>
+  }
+}

@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { GalleryStyle } from 'core';
-import { detailBreadcrumb } from './shared/breadcrumb/breadcrumb';
 import { RouterLinks } from './shared/router-links.enum';
 import { Site } from './shared/site.enum';
 
@@ -36,19 +35,7 @@ export const routes: Routes = [
   {
     path: RouterLinks.MEDIA,
     data: { breadcrumb: 'Media' },
-    children: [
-      {
-        path: '',
-        loadComponent: () => import('./media/media-list/media-list').then((c) => c.MediaList),
-        title: `Media | ${Site.TITLE}`,
-      },
-      {
-        path: ':id',
-        loadComponent: () => import('./media/media-detail/media-detail').then((c) => c.MediaDetail),
-        title: `Media | ${Site.TITLE}`,
-        data: { breadcrumb: detailBreadcrumb },
-      },
-    ],
+    loadChildren: () => import('./media/media.routes').then((m) => m.mediaRoutes),
   },
   {
     path: RouterLinks.CONTACT,

@@ -3,6 +3,7 @@ import { GalleryStyle } from 'core';
 import { routes } from './app.routes';
 import { eventDetailResolver, eventDetailTitle } from './event/event-detail-resolver';
 import { galleryDetailResolver, galleryDetailTitle } from './gallery/gallery-detail-resolver';
+import { mediaDetailResolver, mediaDetailTitle } from './media/media-detail-resolver';
 import { detailBreadcrumb } from './shared/breadcrumb/breadcrumb';
 import { RouterLinks } from './shared/router-links.enum';
 import { Site } from './shared/site.enum';
@@ -53,7 +54,12 @@ describe('routes', () => {
       resolve: { eventDetailResolver },
       title: eventDetailTitle,
     },
-    { path: RouterLinks.MEDIA, label: 'Media', resolve: undefined, title: `Media | ${Site.TITLE}` },
+    {
+      path: RouterLinks.MEDIA,
+      label: 'Media',
+      resolve: { mediaDetailResolver },
+      title: mediaDetailTitle,
+    },
   ];
 
   for (const { path, label, resolve, title, style } of sections) {

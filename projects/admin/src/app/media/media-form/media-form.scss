@@ -1,0 +1,69 @@
+:host {
+  display: block;
+}
+
+fieldset {
+  display: flex;
+  flex-direction: column;
+  margin: 0 0 20px;
+  padding: 16px 20px 20px;
+  border: 1px solid var(--dba-rule);
+  background: #fffdf8;
+}
+
+legend {
+  padding: 0 6px;
+  font-weight: 600;
+}
+
+.date {
+  max-width: 260px;
+}
+
+// Room for the hint, which wraps on a phone.
+.preview {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-top: 24px;
+
+  &:empty {
+    display: none;
+  }
+
+  img {
+    flex: none;
+    width: 120px;
+    height: auto;
+    border: 1px solid var(--dba-rule);
+  }
+
+  p {
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .url {
+    overflow-wrap: anywhere;
+  }
+
+  a {
+    display: inline-block;
+    margin-left: 4px;
+  }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}

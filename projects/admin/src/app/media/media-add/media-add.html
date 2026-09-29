@@ -1,1 +1,13 @@
-<p>media-add works!</p>
+<section class="panel wide" aria-labelledby="add-heading">
+  <p class="back"><a routerLink="/media">‹ Media</a></p>
+  <h1 id="add-heading" #heading tabindex="-1">Add media</h1>
+  @if (store.error(); as error) {
+    <p class="error" role="alert">{{ error }}</p>
+  }
+  <app-media-form
+    [otherLinks]="otherLinks()"
+    [saving]="store.loading()"
+    (saved)="onSave($event)"
+    (cancelled)="cancel()"
+  />
+</section>

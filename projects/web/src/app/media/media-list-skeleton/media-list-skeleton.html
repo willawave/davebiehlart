@@ -1,1 +1,12 @@
-<p>media-list-skeleton works!</p>
+<p class="visually-hidden" role="status">Loading…</p>
+<ul class="rows" aria-hidden="true">
+  @for (row of rows; track row) {
+    <li>
+      <span class="frame"></span>
+      <span class="lines">
+        <span class="line title"></span>
+        <span class="line meta"></span>
+      </span>
+    </li>
+  }
+</ul>

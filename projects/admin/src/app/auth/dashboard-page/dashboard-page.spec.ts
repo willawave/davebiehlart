@@ -40,6 +40,7 @@ describe('DashboardPage', () => {
       ['Gallery', '/gallery'],
       ['Statues', '/statues'],
       ['Events', '/events'],
+      ['Media', '/media'],
     ]);
   });
 
