@@ -12,6 +12,9 @@
 }
 
 .scroll {
+  // Positioned, so the absolutely positioned .hidden header labels stay inside the scroll
+  // box instead of widening the whole page on a phone.
+  position: relative;
   overflow-x: auto;
 }
 
