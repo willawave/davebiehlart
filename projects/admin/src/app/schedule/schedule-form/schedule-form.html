@@ -1,7 +1,7 @@
 <form novalidate (submit)="onSubmit($event)">
   <fieldset>
     <legend>Special message</legend>
-    <mat-form-field appearance="outline">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
       <mat-label>Special message</mat-label>
       <input matInput [formField]="scheduleForm.specialMessage" />
       <mat-hint

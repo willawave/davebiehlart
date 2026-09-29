@@ -5,6 +5,9 @@
 fieldset {
   display: flex;
   flex-direction: column;
+  // A fieldset is otherwise at least as wide as its content, so the hours table would
+  // widen the page on a phone instead of scrolling inside .scroll.
+  min-inline-size: 0;
   margin: 0 0 20px;
   padding: 16px 20px 20px;
   border: 1px solid var(--dba-rule);
@@ -48,7 +51,8 @@ td:nth-child(2) {
   padding-top: 10px;
 }
 
-mat-form-field {
+// The time inputs only; the special message takes the fieldset's width.
+td mat-form-field {
   width: 150px;
 }
 
