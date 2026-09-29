@@ -1,18 +1,21 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { GalleryDocument } from 'core';
-import { galleryItem } from '../gallery.testing';
-import { GalleryGrid } from './gallery-grid';
+import { galleryItem } from '../../gallery/gallery.testing';
+import { ImageGrid, toImageGridItem } from './image-grid';
 
-describe('GalleryGrid', () => {
-  let fixture: ComponentFixture<GalleryGrid>;
+describe('ImageGrid', () => {
+  let fixture: ComponentFixture<ImageGrid>;
   let element: HTMLElement;
 
   async function render(
     items: GalleryDocument[],
     state: { loading?: boolean; error?: string | null } = {},
   ) {
-    fixture.componentRef.setInput('items', items);
+    fixture.componentRef.setInput(
+      'items',
+      items.map((item) => toImageGridItem(item, item.created)),
+    );
     fixture.componentRef.setInput('loading', state.loading ?? false);
     fixture.componentRef.setInput('error', state.error ?? null);
     await fixture.whenStable();
@@ -20,7 +23,7 @@ describe('GalleryGrid', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({ providers: [provideRouter([])] });
-    fixture = TestBed.createComponent(GalleryGrid);
+    fixture = TestBed.createComponent(ImageGrid);
     element = fixture.nativeElement;
   });
 

@@ -1,0 +1,19 @@
+{
+  "name": "statues/seed-statue-06-key/1-landscape.jpg",
+  "bucket": "demo-bronze-horse.appspot.com",
+  "metageneration": 1,
+  "generation": 1790683486555,
+  "contentType": "image/jpeg",
+  "storageClass": "STANDARD",
+  "contentDisposition": "inline",
+  "downloadTokens": [
+    "62314181-34e8-4fe4-8718-547d7ce57259"
+  ],
+  "etag": "T4azvbZPudwV+f++3D2UsRETTkU",
+  "customMetadata": {},
+  "timeCreated": "2026-09-29T12:04:46.555Z",
+  "updated": "2026-09-29T12:04:46.555Z",
+  "size": 20660,
+  "md5Hash": "B/rPcxeah3WDHfiEuSqdiA==",
+  "crc32c": "2097607218"
+}

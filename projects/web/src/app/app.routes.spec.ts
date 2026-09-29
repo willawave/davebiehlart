@@ -7,7 +7,7 @@ import { detailBreadcrumb } from './shared/breadcrumb/breadcrumb';
 import { RouterLinks } from './shared/router-links.enum';
 import { Site } from './shared/site.enum';
 import { NotFoundPage } from './static-pages/not-found-page/not-found-page';
-import { statueDetailResolver } from './statue/statue-detail-resolver';
+import { statueDetailResolver, statueDetailTitle } from './statue/statue-detail-resolver';
 
 function route(path: string): Route {
   const found = routes.find((r) => r.path === path);
@@ -38,7 +38,7 @@ describe('routes', () => {
       path: RouterLinks.STATUES,
       label: 'Statues',
       resolve: { statueDetailResolver },
-      title: `Statues | ${Site.TITLE}`,
+      title: statueDetailTitle,
     },
     {
       path: RouterLinks.GLASS,

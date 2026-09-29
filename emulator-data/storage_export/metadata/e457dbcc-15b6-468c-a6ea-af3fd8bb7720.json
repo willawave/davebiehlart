@@ -1,0 +1,19 @@
+{
+  "name": "statues/seed-statue-hidden-key/1-portrait.jpg",
+  "bucket": "demo-bronze-horse.appspot.com",
+  "metageneration": 1,
+  "generation": 1790683487117,
+  "contentType": "image/jpeg",
+  "storageClass": "STANDARD",
+  "contentDisposition": "inline",
+  "downloadTokens": [
+    "fe87f270-0f92-4500-86e6-e7e9204e0ade"
+  ],
+  "etag": "ASvkKWJ+C9hR0HRMi6pzPlfRO4Y",
+  "customMetadata": {},
+  "timeCreated": "2026-09-29T12:04:47.117Z",
+  "updated": "2026-09-29T12:04:47.117Z",
+  "size": 19614,
+  "md5Hash": "PyHR3QETww4IK2AGdsKZDg==",
+  "crc32c": "826909090"
+}

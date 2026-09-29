@@ -1,0 +1,27 @@
+@use 'ol-map';
+
+// OpenLayers' controls, styled here so they load with the map rather than globally.
+:host ::ng-deep {
+  @include ol-map.controls;
+}
+
+:host {
+  display: block;
+}
+
+.map {
+  height: var(--map-height, 420px);
+  border: 1px solid var(--dba-rule);
+  background: color-mix(in srgb, var(--dba-rule) 45%, var(--dba-page));
+
+  &:focus-visible {
+    outline: 3px solid var(--dba-bronze);
+    outline-offset: 2px;
+  }
+}
+
+.message {
+  margin: 8px 0 0;
+  color: var(--dba-muted);
+  font-size: 0.875rem;
+}

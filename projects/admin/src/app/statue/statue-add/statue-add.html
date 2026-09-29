@@ -1,1 +1,14 @@
-<p>statue-add works!</p>
+<section class="panel wide" aria-labelledby="add-heading">
+  <p class="back"><a routerLink="/statues">‹ Statues</a></p>
+  <h1 id="add-heading" #heading tabindex="-1">Add statue</h1>
+  @if (store.error(); as error) {
+    <p class="error" role="alert">{{ error }}</p>
+  }
+  <app-statue-form
+    [storageKey]="storageKey"
+    [saving]="store.loading()"
+    (uploaded)="onUploaded($event)"
+    (saved)="onSave($event)"
+    (cancelled)="cancel()"
+  />
+</section>

@@ -7,7 +7,8 @@ import { GalleryDocument, GalleryStyle } from 'core';
 import { Timestamp } from 'firebase/firestore';
 import { of } from 'rxjs';
 import { GalleryStore } from '../gallery.store';
-import { ConfirmDelete, GalleryTable } from './gallery-table';
+import { ConfirmDelete } from '../../shared/confirm-delete';
+import { GalleryTable } from './gallery-table';
 
 const item = (id: string, overrides: Partial<GalleryDocument> = {}): GalleryDocument => ({
   id,

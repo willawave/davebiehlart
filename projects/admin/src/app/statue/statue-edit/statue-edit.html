@@ -1,1 +1,21 @@
-<p>statue-edit works!</p>
+<section class="panel wide" aria-labelledby="edit-heading">
+  <p class="back"><a routerLink="/statues">‹ Statues</a></p>
+  <h1 id="edit-heading" #heading tabindex="-1">Edit statue</h1>
+  @if (store.error(); as error) {
+    <p class="error" role="alert">{{ error }}</p>
+  }
+  @if (loaded(); as item) {
+    <app-statue-form
+      [storageKey]="storageKey()"
+      [initial]="store.selectedFormValue() ?? undefined"
+      [saving]="store.loading()"
+      (uploaded)="onUploaded($event)"
+      (saved)="onSave($event)"
+      (cancelled)="cancel()"
+    />
+  } @else if (store.loading()) {
+    <p class="muted" role="status">Loading…</p>
+  } @else if (!store.error()) {
+    <p class="muted">This statue doesn't exist. It may have been deleted.</p>
+  }
+</section>

@@ -58,84 +58,14 @@
 
   <fieldset>
     <legend>Photos</legend>
-    <p class="hint" id="photo-hint">
-      The first photo is the cover. JPEG, PNG, WebP, GIF or AVIF, up to 20 MB each; large photos are
-      shrunk to under 1 MB.
-    </p>
-    <input
-      #fileInput
-      class="file-input"
-      type="file"
-      multiple
-      tabindex="-1"
-      aria-hidden="true"
-      [accept]="accept"
-      (change)="pick($event)"
+    <app-photo-field
+      [images]="images()"
+      (imagesChange)="setImages($event)"
+      [uploading]="uploading()"
+      [disabled]="saving()"
+      [error]="photoError()"
+      (filesPicked)="upload($event)"
     />
-    <button
-      id="upload"
-      type="button"
-      matButton="outlined"
-      aria-describedby="photo-hint"
-      [disabled]="saving() || uploading() > 0"
-      (click)="fileInput.click()"
-    >
-      Upload photos
-    </button>
-    <div class="status" role="status">
-      @if (uploading() > 0) {
-        <mat-spinner diameter="20" aria-hidden="true" />
-        Uploading {{ uploading() }} {{ uploading() === 1 ? 'photo' : 'photos' }}…
-      }
-    </div>
-    @for (problem of fileProblems(); track problem) {
-      <p class="error" role="alert">{{ problem }}</p>
-    }
-    @if (galleryForm.imageUrls().touched() && galleryForm.imageUrls().invalid()) {
-      <p class="error" role="alert">{{ firstError(galleryForm.imageUrls) }}</p>
-    }
-
-    <ol class="photos">
-      @for (url of images(); track url; let i = $index, first = $first, last = $last) {
-        <li>
-          <figure>
-            <img [src]="url" [alt]="'Photo ' + (i + 1) + (first ? ' (cover)' : '')" />
-            <figcaption>
-              <button
-                type="button"
-                class="icon-button"
-                [id]="'photo-' + i + '-move-left'"
-                [attr.aria-label]="'Move photo ' + (i + 1) + ' left'"
-                [disabled]="saving() || first"
-                (click)="move(i, -1)"
-              >
-                ‹
-              </button>
-              <button
-                type="button"
-                class="icon-button"
-                [id]="'photo-' + i + '-remove'"
-                [attr.aria-label]="'Remove photo ' + (i + 1)"
-                [disabled]="saving()"
-                (click)="remove(i)"
-              >
-                ✕
-              </button>
-              <button
-                type="button"
-                class="icon-button"
-                [id]="'photo-' + i + '-move-right'"
-                [attr.aria-label]="'Move photo ' + (i + 1) + ' right'"
-                [disabled]="saving() || last"
-                (click)="move(i, 1)"
-              >
-                ›
-              </button>
-            </figcaption>
-          </figure>
-        </li>
-      }
-    </ol>
   </fieldset>
 
   <div class="actions">

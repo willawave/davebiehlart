@@ -1,0 +1,19 @@
+{
+  "name": "statues/seed-statue-10-key/4-tall.jpg",
+  "bucket": "demo-bronze-horse.appspot.com",
+  "metageneration": 1,
+  "generation": 1790683486950,
+  "contentType": "image/jpeg",
+  "storageClass": "STANDARD",
+  "contentDisposition": "inline",
+  "downloadTokens": [
+    "e0d22bc9-d4e4-4c8c-9b59-80ef7fa5060a"
+  ],
+  "etag": "hFP9kTvSdCRf73Cn3jFHhBT4990",
+  "customMetadata": {},
+  "timeCreated": "2026-09-29T12:04:46.950Z",
+  "updated": "2026-09-29T12:04:46.950Z",
+  "size": 17487,
+  "md5Hash": "NYV97G/QTSTdLKFHcj4fuQ==",
+  "crc32c": "1882102737"
+}

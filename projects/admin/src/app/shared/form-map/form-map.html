@@ -1,1 +1,11 @@
-<p>form-map works!</p>
+<div
+  #map
+  class="map"
+  tabindex="0"
+  role="region"
+  [attr.aria-label]="label() + ' map'"
+  [attr.aria-describedby]="hintId() ?? null"
+></div>
+@if (failed()) {
+  <p class="error" role="alert">The map could not be loaded. Type the coordinates instead.</p>
+}

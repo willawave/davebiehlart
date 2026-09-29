@@ -1,1 +1,53 @@
-<p>statue-detail works!</p>
+@if (store.selectedStatueItem(); as statue) {
+  <article>
+    <header class="intro">
+      <h1 class="page-title">{{ statue.name }}</h1>
+      <p class="kicker">
+        Statue · Dedicated {{ statue.dedicated.toDate() | date: 'MMMM y' : 'UTC' }}
+      </p>
+      @if (statue.description) {
+        <p class="description">{{ statue.description }}</p>
+      }
+    </header>
+
+    @if (statue.imageUrls.length) {
+      <app-image-track class="photos" [images]="statue.imageUrls" [alt]="statue.name" />
+    }
+
+    <section class="location" aria-labelledby="location-heading">
+      <h2 id="location-heading">Location</h2>
+      <address>
+        <span class="venue">{{ statue.location.venue }}</span>
+        @if (statue.location.street) {
+          <span>{{ statue.location.street }}</span>
+        }
+        <span>{{ statue.location.city }}, {{ statue.location.state }}</span>
+      </address>
+      <app-single-point-map
+        class="map"
+        [latitude]="statue.location.latitude"
+        [longitude]="statue.location.longitude"
+        [label]="'Map showing where ' + statue.name + ' stands'"
+      />
+    </section>
+
+    @if (store.neighbors(); as neighbors) {
+      @if (neighbors.previous || neighbors.next) {
+        <nav class="pager" aria-label="More statues">
+          @if (neighbors.previous; as previous) {
+            <a class="previous" rel="prev" [routerLink]="['..', previous.id]">
+              <span class="direction">‹ Previous</span>
+              <span class="name">{{ previous.name }}</span>
+            </a>
+          }
+          @if (neighbors.next; as next) {
+            <a class="next" rel="next" [routerLink]="['..', next.id]">
+              <span class="direction">Next ›</span>
+              <span class="name">{{ next.name }}</span>
+            </a>
+          }
+        </nav>
+      }
+    }
+  </article>
+}

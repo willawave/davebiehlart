@@ -1,0 +1,70 @@
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+
+  h1 {
+    margin: 0;
+  }
+}
+
+.scroll {
+  // Positioned, so the absolutely positioned .hidden header labels stay inside the scroll
+  // box instead of widening the whole page on a phone.
+  position: relative;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  background: #fff;
+}
+
+.caption {
+  padding: 0 0 8px;
+  color: var(--dba-muted);
+  font-size: 0.875rem;
+  text-align: left;
+}
+
+.thumb {
+  display: block;
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+}
+
+.chip {
+  padding: 2px 10px;
+  border-radius: 10px;
+  background: #e6efe9;
+  color: #1e4d33;
+  font-size: 0.8125rem;
+  white-space: nowrap;
+
+  &.hidden-chip {
+    background: #eee;
+    color: #4a4a4a;
+  }
+}
+
+.actions {
+  white-space: nowrap;
+
+  > * + * {
+    margin-left: 8px;
+  }
+}
+
+// Names the icon-only columns for screen readers only.
+.hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

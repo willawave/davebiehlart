@@ -1,0 +1,127 @@
+// The parts of OpenLayers' ol.css the site's maps use (zoom, rotate and attribution
+// controls), in the Foundry palette. Include it under `:host ::ng-deep` in a map component,
+// so it ships with the lazily loaded map rather than in every page's styles. Controls sit on
+// map tiles, which are light in both color schemes, so the colors are fixed.
+
+@mixin controls {
+  .ol-viewport {
+    touch-action: pan-x pan-y;
+  }
+
+  .ol-viewport canvas {
+    all: unset;
+    overflow: hidden;
+  }
+
+  .ol-unselectable {
+    -webkit-touch-callout: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .ol-selectable {
+    user-select: text;
+  }
+
+  .ol-grab {
+    cursor: grab;
+  }
+
+  .ol-grabbing {
+    cursor: grabbing;
+  }
+
+  .ol-hidden {
+    display: none;
+  }
+
+  .ol-control {
+    position: absolute;
+    border-radius: 4px;
+    background: rgb(255 255 255 / 55%);
+  }
+
+  .ol-zoom {
+    top: 8px;
+    left: 8px;
+  }
+
+  .ol-rotate {
+    top: 8px;
+    right: 8px;
+  }
+
+  // 32px, comfortably above WCAG's 24px minimum target.
+  .ol-control button {
+    display: block;
+    width: 32px;
+    height: 32px;
+    margin: 2px;
+    padding: 0;
+    border: none;
+    border-radius: 3px;
+    background: #fff;
+    color: #1f1a14;
+    font:
+      600 1.25rem/1 system-ui,
+      sans-serif;
+    cursor: pointer;
+
+    &:hover {
+      color: #7a4a1e;
+    }
+
+    &:focus-visible {
+      outline: 3px solid #7a4a1e;
+      outline-offset: 1px;
+    }
+  }
+
+  .ol-compass {
+    display: block;
+    font-weight: normal;
+  }
+
+  .ol-attribution {
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-flow: row-reverse;
+    align-items: center;
+    max-width: calc(100% - 16px);
+    border-radius: 4px 0 0;
+    text-align: right;
+
+    ul {
+      margin: 0;
+      padding: 2px 8px;
+      color: #1f1a14;
+      font-size: 12px;
+    }
+
+    li {
+      display: inline;
+      list-style: none;
+    }
+
+    a {
+      color: #1f1a14;
+    }
+
+    button {
+      flex-shrink: 0;
+    }
+
+    &.ol-collapsed ul {
+      display: none;
+    }
+
+    &:not(.ol-collapsed) {
+      background: rgb(255 255 255 / 85%);
+    }
+
+    &.ol-uncollapsible button {
+      display: none;
+    }
+  }
+}

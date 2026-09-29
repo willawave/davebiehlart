@@ -1,1 +1,12 @@
-<p>statue-list works!</p>
+<h1 class="page-title">Statues</h1>
+@if (store.loading()) {
+  <app-statue-list-skeleton class="map" />
+} @else if (points().length) {
+  <app-multi-point-map
+    class="map"
+    label="Map of statue locations. Every statue is also listed below."
+    [points]="points()"
+    (pointSelected)="open($event)"
+  />
+}
+<app-image-grid [items]="items()" [loading]="store.loading()" [error]="store.error()" />

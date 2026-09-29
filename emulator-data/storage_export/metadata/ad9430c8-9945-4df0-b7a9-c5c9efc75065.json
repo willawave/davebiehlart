@@ -1,0 +1,19 @@
+{
+  "name": "statues/seed-statue-12-key/1-panorama.jpg",
+  "bucket": "demo-bronze-horse.appspot.com",
+  "metageneration": 1,
+  "generation": 1790683487017,
+  "contentType": "image/jpeg",
+  "storageClass": "STANDARD",
+  "contentDisposition": "inline",
+  "downloadTokens": [
+    "8cf40b45-2b27-4432-a4eb-324067db9354"
+  ],
+  "etag": "lR3/XrUYOJ2UiNCSxT82UkG0P8Q",
+  "customMetadata": {},
+  "timeCreated": "2026-09-29T12:04:47.018Z",
+  "updated": "2026-09-29T12:04:47.018Z",
+  "size": 16647,
+  "md5Hash": "gLrSvpgbakFS3bh5GKYJgw==",
+  "crc32c": "3894783450"
+}
