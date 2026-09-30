@@ -2,6 +2,24 @@
 
 All notable changes to this project are documented here.
 
+## [0.11.2.0] - 2026-09-30
+
+### Added
+
+- A repeatable production deploy. One command ships the public site, the admin app, the Firestore and Storage security rules, and the Firestore indexes together, so the rules and indexes can't fall behind the code that needs them. A Deploy workflow, started by hand in GitHub Actions, runs it on `main` only after CI has passed on that commit, and signs in to Google Cloud without storing a key.
+- The public site is set up for Firebase App Hosting, with one server instance kept warm so visitors and search crawlers don't wait for a cold start. The admin app is set up for its own Firebase Hosting site.
+- Production's Firestore indexes are now tracked in the repo. Deploys never delete an index that's missing from the file.
+- `docs/DEPLOY.md` covers one-time setup, backups, the first deploy, routine deploys, post-deploy checks, rollback, and moving the domains over from the legacy site.
+- `TODOS.md` lists everything left before launch.
+
+### Fixed
+
+- The public site now renders pages on the server for davebiehlart.com and its App Hosting address. Before, those hosts weren't on the allowed list, so production would have sent search engines an empty page shell.
+
+### Changed
+
+- `pnpm start` and `pnpm emulators` start only the Auth, Firestore and Storage emulators, so they never serve a production build of the admin app locally.
+
 ## [0.11.1.0] - 2026-09-29
 
 ### Added
