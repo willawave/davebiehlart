@@ -1,0 +1,67 @@
+# Deploy davebiehlart.com to production — the only workflow allowed to touch the live Firebase
+# project. Run it by hand (Actions → Deploy → Run workflow) on main after a PR merges; see
+# docs/DEPLOY.md for the first deploy, which is done locally, and for rollback.
+#
+# Every run deploys everything together, so security rules and indexes can't drift from the code:
+#   firestore   firestore.rules + firestore.indexes.json (unchanged rules are skipped; indexes
+#               missing from the file are kept, never deleted)
+#   storage     storage.rules
+#   apphosting  web (SSR), built from this commit's source by App Hosting (apphosting.yaml)
+#   hosting     admin (static SPA), built here
+#
+# It signs in to Google Cloud through Workload Identity Federation, so no keys are stored in
+# GitHub. The provider only trusts this repository's main branch.
+
+name: Deploy
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  id-token: write
+
+# Never run two deploys at once, and never cancel one halfway.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy to production
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    env:
+      PROJECT_ID: the-bronze-horse-b3aa2
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      # Only deploy a commit that passed CI on main.
+      - name: CI passed on this commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ github.sha }}
+        run: |
+          passed=$(gh run list --workflow ci.yml --commit "$SHA" --event push \
+            --json conclusion --jq '[.[] | select(.conclusion == "success")] | length')
+          if [ "$passed" = "0" ]; then
+            echo "::error::CI hasn't passed on $SHA yet. Wait for the CI run on main, then deploy again."
+            exit 1
+          fi
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm ng build admin
+      - uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_DEPLOY_SERVICE_ACCOUNT }}
+      - name: Deploy rules, indexes, web and admin
+        run: >-
+          pnpm exec firebase deploy
+          --only firestore,storage,apphosting,hosting
+          --project "$PROJECT_ID"
+          --non-interactive

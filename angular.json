@@ -41,7 +41,11 @@
             "server": "projects/web/src/main.server.ts",
             "outputMode": "server",
             "security": {
-              "allowedHosts": []
+              "allowedHosts": [
+                "davebiehlart.com",
+                "www.davebiehlart.com",
+                "web--the-bronze-horse-b3aa2.us-central1.hosted.app"
+              ]
             },
             "ssr": {
               "entry": "projects/web/src/server.ts"

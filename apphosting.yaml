@@ -1,0 +1,15 @@
+# App Hosting settings for the `web` backend (see docs/DEPLOY.md).
+#
+# App Hosting's Angular adapter refuses a workspace with more than one application ("Unable to
+# determine the application to deploy"), so these scripts skip the adapter: App Hosting installs
+# with pnpm, runs the build, and starts the SSR server like any Node app. The Firebase web config
+# is public and lives in projects/web/src/environments/environment.ts, so no env vars or secrets.
+
+scripts:
+  buildCommand: pnpm ng build web
+  runCommand: node dist/web/server/server.mjs
+
+runConfig:
+  # One warm instance so visitors and crawlers don't wait on a cold start.
+  minInstances: 1
+  maxInstances: 2
