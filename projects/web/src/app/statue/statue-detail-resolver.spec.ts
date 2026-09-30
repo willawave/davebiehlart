@@ -98,6 +98,19 @@ describe('statueDetailResolver', () => {
     });
   });
 
+  it('should trim stray spaces from the stored location', async () => {
+    const item = statueItem();
+    store.loadSelected.mockResolvedValue({
+      ...item,
+      description: '',
+      location: { ...item.location, city: 'Omaha ', state: ' Nebraska' },
+    });
+    await resolve();
+    expect(content("name='description'")).toBe(
+      'The Pioneer, a bronze statue by Dave Biehl in Omaha, Nebraska.',
+    );
+  });
+
   it('should fall back to a description naming the place', async () => {
     store.loadSelected.mockResolvedValue(statueItem({ description: '  ' }));
     await resolve();

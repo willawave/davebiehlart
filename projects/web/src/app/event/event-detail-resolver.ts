@@ -22,7 +22,13 @@ export const eventDetailResolver: ResolveFn<EventDocument> = async (route, state
     // would leave the list's URL in the address bar.
     return new RedirectCommand(router.parseUrl('/not-found'), { browserUrl: state.url });
   }
-  const { venue, street, city, state: region } = item.location;
+  // Trimmed: stored locations can carry stray spaces ("Grand Island ").
+  const [venue, street, city, region] = [
+    item.location.venue,
+    item.location.street,
+    item.location.city,
+    item.location.state,
+  ].map((part) => part.trim());
   const description =
     toMetaDescription(item.description) || `${item.name} at ${venue}, ${city}, ${region}.`;
   setPageMeta(meta, {
