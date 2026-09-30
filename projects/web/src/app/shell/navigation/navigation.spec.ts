@@ -181,6 +181,30 @@ describe('Navigation', () => {
     expect(sidenav().opened).toBe(false);
   });
 
+  it('should keep the menu open when the first page load finishes after a tap', async () => {
+    // In the app the shell renders before the first navigation ends (its page chunk loads
+    // lazily), so a tap can open the menu first. Ending that navigation must not close it.
+    TestBed.resetTestingModule();
+    let releaseFirst!: () => void;
+    const first = new Promise<boolean>((resolve) => (releaseFirst = () => resolve(true)));
+    TestBed.configureTestingModule({
+      providers: [provideRouter([{ path: '', component: Page, canActivate: [() => first] }])],
+    });
+    const fixture = TestBed.createComponent(Navigation);
+    fixture.detectChanges();
+    const loaded = TestBed.inject(Router).navigateByUrl('/');
+
+    fixture.nativeElement.querySelector('.menu-button').click();
+    fixture.detectChanges();
+    releaseFirst();
+    await loaded;
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const menu = fixture.debugElement.query(By.directive(MatSidenav)).componentInstance;
+    expect(menu.opened).toBe(true);
+  });
+
   it('should close the menu when selecting the current page', async () => {
     element().querySelector<HTMLButtonElement>('.menu-button')!.click();
     await settle();
