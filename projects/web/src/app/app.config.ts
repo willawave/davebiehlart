@@ -18,20 +18,26 @@ import {
 import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideFirebase } from 'core';
-import { EMPTY, from, Observable, switchMap } from 'rxjs';
+import { catchError, EMPTY, from, Observable, switchMap } from 'rxjs';
 import { environment } from '../environments/environment';
 
 // Fetches every section's chunk once the first page has hydrated, so a later click on a slow
 // connection waits only for its data. Preloading any sooner holds up hydration and the taps it
-// replays. The server has no later clicks to serve.
+// replays. The server has no later clicks to serve. A failed fetch (say, a dropped connection)
+// skips just that route: an error would end the router's preloading for the session.
 @Injectable({ providedIn: 'root' })
-class PreloadAfterHydration implements PreloadingStrategy {
+export class PreloadAfterHydration implements PreloadingStrategy {
   private readonly stable = isPlatformBrowser(inject(PLATFORM_ID))
     ? inject(ApplicationRef).whenStable()
     : null;
 
   preload(_route: Route, load: () => Observable<unknown>): Observable<unknown> {
-    return this.stable ? from(this.stable).pipe(switchMap(load)) : EMPTY;
+    return this.stable
+      ? from(this.stable).pipe(
+          switchMap(load),
+          catchError(() => EMPTY),
+        )
+      : EMPTY;
   }
 }
 
