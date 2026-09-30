@@ -1,0 +1,119 @@
+@use '../home';
+
+@include home.keyframes;
+
+:host {
+  display: block;
+}
+
+.label {
+  @include home.label;
+}
+
+.explore {
+  padding: 110px 0;
+  text-align: center;
+
+  ol {
+    max-width: 1000px;
+    margin: 32px auto 0;
+    padding: 0;
+    list-style: none;
+    text-align: left;
+  }
+
+  li {
+    @include home.reveal(entry 0% entry 90%);
+    border-top: 1px solid var(--dba-rule);
+
+    &:last-child {
+      border-bottom: 1px solid var(--dba-rule);
+    }
+  }
+
+  a {
+    display: grid;
+    grid-template-columns: 60px 1fr auto;
+    align-items: center;
+    padding: 22px 8px;
+    color: var(--dba-ink);
+    font: 600 clamp(2rem, 5vw, 3.5rem) / 1 var(--dba-serif);
+    text-decoration: none;
+    transition:
+      padding 0.35s cubic-bezier(0.2, 0.7, 0.2, 1),
+      color 0.35s;
+
+    &:hover,
+    &:focus-visible {
+      padding-left: 28px;
+      color: var(--dba-bronze);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--dba-bronze);
+      outline-offset: -2px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+
+  .index {
+    color: var(--dba-bronze);
+    font: 500 0.8rem var(--dba-sans);
+    letter-spacing: 0.2em;
+  }
+
+  .arrow {
+    color: var(--dba-bronze);
+    font: 1.5rem var(--dba-sans);
+  }
+}
+
+.commission {
+  @include home.night-band;
+  padding: 110px 0;
+  text-align: center;
+
+  h2 {
+    @include home.section-title;
+    max-width: 16ch;
+    margin: 20px auto 36px;
+    font-size: clamp(2.4rem, 6vw, 4.4rem);
+
+    em {
+      @include home.gold;
+      font-weight: 500;
+    }
+  }
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 0 28px;
+  border: 1px solid var(--dba-bronze);
+  background: var(--dba-bronze);
+  color: var(--dba-on-bronze);
+  font: 500 0.8rem var(--dba-sans);
+  letter-spacing: 0.22em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition:
+    background-color 0.25s,
+    color 0.25s;
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--dba-ink);
+    background: var(--dba-ink);
+    color: var(--dba-page);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--dba-bronze);
+    outline-offset: 3px;
+  }
+}

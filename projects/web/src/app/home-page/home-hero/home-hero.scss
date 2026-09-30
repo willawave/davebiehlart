@@ -1,0 +1,158 @@
+@use '../home';
+
+@include home.keyframes;
+
+:host {
+  @include home.night-band;
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: min(92vh, 900px);
+  padding: 64px 0;
+  overflow: hidden;
+  text-align: center;
+}
+
+// The horse mark as a large, faint watermark behind the headline.
+.mark {
+  position: absolute;
+  top: 55%;
+  left: 50%;
+  width: min(1000px, 130%);
+  aspect-ratio: 700 / 595;
+  translate: -50% -50%;
+  background: radial-gradient(circle at 60% 30%, var(--dba-bronze), #7a4a1e 70%);
+  opacity: 0.16;
+  mask: url('/mark.svg') center / contain no-repeat;
+
+  @media (forced-colors: active) {
+    display: none;
+  }
+}
+
+.inner {
+  position: relative;
+  max-width: 960px;
+}
+
+.label {
+  @include home.label;
+}
+
+h1 {
+  margin: 28px 0;
+  font-size: clamp(3.25rem, 10vw, 8.5rem);
+  line-height: 0.9;
+
+  em {
+    @include home.gold;
+    font-weight: 500;
+  }
+}
+
+.sub {
+  max-width: 40ch;
+  margin: 0 auto 36px;
+  color: var(--dba-muted);
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.ctas {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 0 28px;
+  border: 1px solid var(--dba-ink);
+  color: var(--dba-ink);
+  font: 500 0.8rem var(--dba-sans);
+  letter-spacing: 0.22em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition:
+    background-color 0.25s,
+    color 0.25s;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--dba-ink);
+    color: var(--dba-page);
+  }
+
+  &.primary {
+    border-color: var(--dba-bronze);
+    background: var(--dba-bronze);
+    color: var(--dba-on-bronze);
+
+    &:hover,
+    &:focus-visible {
+      border-color: var(--dba-ink);
+      background: var(--dba-ink);
+      color: var(--dba-page);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--dba-bronze);
+    outline-offset: 3px;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .label,
+  h1,
+  .sub,
+  .ctas {
+    animation: hero-in 1.1s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+
+  h1 {
+    animation-delay: 0.1s;
+  }
+
+  .sub {
+    animation-delay: 0.3s;
+  }
+
+  .ctas {
+    animation-delay: 0.45s;
+  }
+
+  .mark {
+    animation: mark-in 2.4s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+
+    // The watermark drifts up as the page scrolls away from the hero.
+    @supports (animation-timeline: scroll()) {
+      animation: mark-drift linear both;
+      animation-timeline: scroll();
+      animation-range: 0 100vh;
+    }
+  }
+}
+
+@keyframes hero-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+
+@keyframes mark-in {
+  from {
+    opacity: 0;
+    translate: -50% -40%;
+  }
+}
+
+@keyframes mark-drift {
+  to {
+    translate: -50% -30%;
+  }
+}

@@ -1,0 +1,95 @@
+// Shared styles for the home page sections ("Monument Night"). Each section component
+// @uses this partial, since component styles are encapsulated.
+
+// The sheen's highlight and shadow stops around the dark-scheme bronze (#d9a066). Its darkest
+// stop still clears 4.5:1 on the night background.
+$sheen: linear-gradient(
+  100deg,
+  #c08448,
+  #f3d2a4 22%,
+  #d9a066 40%,
+  #b8783b 60%,
+  #f3d2a4 80%,
+  #d9a066
+);
+
+// A section heading's small uppercase kicker.
+@mixin label {
+  margin: 0;
+  color: var(--dba-bronze);
+  font: 500 0.75rem/1.4 var(--dba-sans);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+
+@mixin section-title {
+  margin: 12px 0 0;
+  font-size: clamp(2.25rem, 5vw, 3.75rem);
+  line-height: 1.05;
+}
+
+// A band that stays dark in both color schemes: color-scheme: dark makes the Foundry tokens
+// (light-dark() pairs) resolve to their dark values inside it. The border image paints the
+// background out to the window edges without widening the page; the background color is
+// the same, but contrast checkers only read that.
+@mixin night-band {
+  color-scheme: dark;
+  color: var(--dba-ink);
+  background-color: var(--dba-page);
+  border-image: conic-gradient(var(--dba-page) 0 0) fill 0 / /0 100vw;
+}
+
+// Bronze-foil text with a slow sheen. Plain bronze where background-clip text isn't
+// supported, and system text color in forced-colors mode.
+@mixin gold {
+  color: var(--dba-bronze);
+
+  @supports (background-clip: text) or (-webkit-background-clip: text) {
+    background: $sheen 0 0 / 250% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+
+    @media (prefers-reduced-motion: no-preference) {
+      // A few passes, then it rests (moving content must stop within 5 seconds or be
+      // pausable, WCAG 2.2.2).
+      animation: home-sheen 2.5s 1s ease-in-out 2 both;
+    }
+  }
+
+  @media (forced-colors: active) {
+    background: none;
+    color: CanvasText;
+  }
+}
+
+// Rises into place as it scrolls into view, where scroll-driven animations are supported.
+// Content is never hidden without them, so server-rendered HTML and crawlers see it all.
+@mixin reveal($range: entry 0% entry 80%) {
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      animation: home-rise linear both;
+      animation-timeline: view();
+      animation-range: $range;
+    }
+  }
+}
+
+// Angular scopes keyframe names to the component, so each section includes its own.
+@mixin keyframes {
+  @keyframes home-rise {
+    from {
+      opacity: 0;
+      transform: translateY(32px);
+    }
+  }
+
+  @keyframes home-sheen {
+    from {
+      background-position: 0 0;
+    }
+    to {
+      background-position: 100% 0;
+    }
+  }
+}

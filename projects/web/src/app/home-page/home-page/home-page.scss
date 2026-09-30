@@ -1,0 +1,10 @@
+:host {
+  display: block;
+  // The last band is dark; cancel the content padding below it (navigation.scss) so it
+  // meets the footer.
+  margin-bottom: -32px;
+
+  @media (min-width: 760px) {
+    margin-bottom: -48px;
+  }
+}
