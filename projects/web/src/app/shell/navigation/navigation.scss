@@ -1,5 +1,7 @@
 // Phones get the menu button and the drawer; wider screens get the link row.
 $wide: 760px;
+// Wide enough for the condensed header to hold the wordmark beside the links.
+$roomy: 1024px;
 
 // Let the window scroll, not mat-sidenav-content, so scroll restoration and anchors work.
 .container,
@@ -30,16 +32,29 @@ $wide: 760px;
 }
 
 .masthead {
+  position: sticky;
+  top: 0;
+  z-index: 2;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   padding: 12px 8px 12px 16px;
+  background: var(--dba-page);
   border-bottom: 1px solid var(--dba-rule);
 
   @media (min-width: $wide) {
-    position: relative;
     justify-content: center;
     padding: 24px 16px 0;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    &,
+    .brand,
+    .links {
+      transition:
+        padding 0.2s ease,
+        font-size 0.2s ease;
+    }
   }
 }
 
@@ -59,6 +74,65 @@ $wide: 760px;
     position: absolute;
     top: 16px;
     right: 16px;
+  }
+}
+
+// Once the page scrolls, wide screens fold the header into one slim row: brand, links, actions.
+// Phones already have a slim bar.
+.masthead.condensed {
+  @media (min-width: $wide) {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    padding: 10px 16px;
+
+    // Until the row fits the wordmark, show just the mark. The wordmark stays in the
+    // accessibility tree as the link's name.
+    @media (max-width: #{$roomy - 1px}) {
+      .dba-wordmark {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+      }
+    }
+
+    .brand {
+      font-size: 1.5rem;
+    }
+
+    .links {
+      flex-basis: auto;
+      order: 1;
+      margin-left: auto;
+      padding: 0;
+      column-gap: 20px;
+    }
+
+    .actions {
+      position: static;
+      order: 2;
+      margin-left: 12px;
+    }
+  }
+}
+
+// Shows while a clicked page loads. The delayed fade keeps fast navigations from flashing it.
+.nav-progress {
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  --mat-progress-bar-track-color: transparent;
+  --mat-progress-bar-track-height: 3px;
+  --mat-progress-bar-active-indicator-height: 3px;
+  animation: nav-progress-in 0.2s 0.15s both;
+}
+
+@keyframes nav-progress-in {
+  from {
+    opacity: 0;
   }
 }
 

@@ -2,6 +2,18 @@
 
 All notable changes to this project are documented here.
 
+## [0.11.1.0] - 2026-09-29
+
+### Added
+
+- After you click a link, a thin bronze bar runs along the bottom of the header until the next page appears, so a slow connection no longer looks like an unresponsive site. It stays hidden on fast page changes, and screen readers hear that the page is busy.
+- The header stays at the top of the screen as you scroll. On wider screens it shrinks to one slim row with the logo, links and theme toggle once you scroll down, and grows back at the top of the page. Between 760 and 1024 pixels wide, the slim row shows just the horse mark.
+- Once the first page has loaded, the site fetches the other sections' pages in the background, so later clicks wait only for their content. If one of those fetches fails, the rest still go ahead.
+
+### Changed
+
+- Keyboard focus and links to a spot on a page now stop below the pinned header instead of hiding behind it.
+
 ## [0.11.0.0] - 2026-09-29
 
 ### Added
