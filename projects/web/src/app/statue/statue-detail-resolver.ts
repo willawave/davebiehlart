@@ -2,8 +2,9 @@ import { inject } from '@angular/core';
 import { Meta } from '@angular/platform-browser';
 import { ActivatedRouteSnapshot, RedirectCommand, ResolveFn, Router } from '@angular/router';
 import { StatueDocument } from 'core';
-import { setPageMeta, toMetaDescription } from '../shared/page-meta';
+import { describeWork, setPageMeta } from '../shared/page-meta';
 import { Site } from '../shared/site.enum';
+import { artworkData } from '../shared/structured-data';
 import { StatueStore } from './statue.store';
 
 function load(route: ActivatedRouteSnapshot): Promise<StatueDocument | null> {
@@ -28,14 +29,25 @@ export const statueDetailResolver: ResolveFn<StatueDocument> = async (route, sta
     // would leave the list's URL in the address bar.
     return new RedirectCommand(router.parseUrl('/not-found'), { browserUrl: state.url });
   }
-  const { city, state: region } = item.location;
+  const { venue, street, city, state: region } = item.location;
+  const description = describeWork(
+    `${item.name}, a bronze statue by Dave Biehl in ${city}, ${region}`,
+    item.description,
+  );
   setPageMeta(meta, {
     title: `${item.name} | Statues`,
-    description:
-      toMetaDescription(item.description) ||
-      `${item.name}, a statue by Dave Biehl in ${city}, ${region}.`,
+    description,
     path: state.url,
     image: item.imageUrls[0] ? { url: item.imageUrls[0], alt: item.name } : undefined,
+    structuredData: artworkData({
+      name: item.name,
+      description,
+      path: state.url,
+      images: item.imageUrls,
+      medium: 'Bronze',
+      artform: 'Sculpture',
+      place: { venue, street, city, region },
+    }),
   });
   return item;
 };

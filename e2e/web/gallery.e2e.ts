@@ -99,7 +99,9 @@ test.describe('detail', () => {
     const html = await response.text();
     expect(html).toContain('<title>Mustang at Dawn | Bronzes | Dave Biehl Art</title>');
     expect(html).toMatch(/<h1[^>]*>Mustang at Dawn<\/h1>/);
-    expect(html).toMatch(/<meta name="description" content="Mustang at Dawn is sample data/);
+    expect(html).toMatch(
+      /<meta name="description" content="Mustang at Dawn, a bronze by Dave Biehl: Mustang at Dawn is sample data/,
+    );
     expect(html).toMatch(
       /<meta property="og:image" content="http:\/\/127\.0\.0\.1:9199\/[^"]*seed-bronze-01-key/,
     );

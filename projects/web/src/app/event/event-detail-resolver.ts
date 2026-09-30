@@ -4,6 +4,7 @@ import { ActivatedRouteSnapshot, RedirectCommand, ResolveFn, Router } from '@ang
 import { EventDocument } from 'core';
 import { setPageMeta, toMetaDescription } from '../shared/page-meta';
 import { Site } from '../shared/site.enum';
+import { eventData } from '../shared/structured-data';
 import { EventStore } from './event.store';
 
 function load(route: ActivatedRouteSnapshot): Promise<EventDocument | null> {
@@ -21,12 +22,20 @@ export const eventDetailResolver: ResolveFn<EventDocument> = async (route, state
     // would leave the list's URL in the address bar.
     return new RedirectCommand(router.parseUrl('/not-found'), { browserUrl: state.url });
   }
-  const { venue, city, state: region } = item.location;
+  const { venue, street, city, state: region } = item.location;
+  const description =
+    toMetaDescription(item.description) || `${item.name} at ${venue}, ${city}, ${region}.`;
   setPageMeta(meta, {
     title: `${item.name} | Events`,
-    description:
-      toMetaDescription(item.description) || `${item.name} at ${venue}, ${city}, ${region}.`,
+    description,
     path: state.url,
+    structuredData: eventData({
+      name: item.name,
+      description,
+      path: state.url,
+      startDate: item.date.toDate().toISOString().slice(0, 10),
+      place: { venue, street, city, region },
+    }),
   });
   return item;
 };

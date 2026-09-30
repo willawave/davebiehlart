@@ -10,7 +10,7 @@ Do these when `web` and `admin` are first hosted from this repo (davebiehlart.co
 
 - Run the first full deploy (rules and indexes) in [docs/DEPLOY.md](docs/DEPLOY.md). The one-time setup and the apps-only trial deploy are done (2026-09-30); don't run the Deploy workflow before this.
 - Before switching DNS, check `web` and `admin` against real production data on their `hosted.app` / `web.app` URLs (docs/DEPLOY.md → Cutover, step 1). In `admin`, look but don't save; it writes to production.
-- Run the pre-launch audits: SEO (meta, Open Graph, canonical, JSON-LD, `robots.txt`, `sitemap.xml`, `llms.txt`), `/cso`, `/design-review`, and unit/E2E coverage.
+- Run the pre-launch audits: `/cso`, `/design-review`, and unit/E2E coverage. (The SEO audit is done on `feat-launch-seo`.)
 - Audit accessibility on every `web` and `admin` route: axe checks plus keyboard and focus order (WCAG AA). `/design-review` doesn't cover this.
 - Set security headers in the hosting config: HSTS, a CSP that allows Firebase, `X-Content-Type-Options: nosniff`, `Referrer-Policy`.
 - Verify davebiehlart.com in Google Search Console and submit the sitemap after cutover. No analytics for now.

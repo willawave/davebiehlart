@@ -1,6 +1,9 @@
+import { DOCUMENT } from '@angular/common';
 import { Component, RESPONSE_INIT, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NAV_LINKS } from '../../shared/nav-links';
+import { setCanonical } from '../../shared/page-meta';
+import { setStructuredData } from '../../shared/structured-data';
 
 @Component({
   imports: [RouterLink],
@@ -19,5 +22,9 @@ export class NotFoundPage {
     if (responseInit) {
       responseInit.status = 404;
     }
+    // A client-side visit can arrive from a page that set these; they don't describe this one.
+    const document = inject(DOCUMENT);
+    setCanonical(document, null);
+    setStructuredData(document, 'ld-page', null);
   }
 }

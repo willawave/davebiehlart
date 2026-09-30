@@ -48,6 +48,7 @@ describe('statueDetailResolver', () => {
     ]) {
       meta.getTags(selector).forEach((tag) => meta.removeTagElement(tag));
     }
+    document.head.querySelectorAll('link[rel="canonical"], #ld-page').forEach((el) => el.remove());
   });
 
   it('should load the statue and the list for previous/next, and return the statue', async () => {
@@ -70,18 +71,38 @@ describe('statueDetailResolver', () => {
     store.loadSelected.mockResolvedValue(statueItem());
     await resolve();
 
-    expect(content("name='description'")).toBe('Twice life size, cast in bronze.');
+    expect(content("name='description'")).toBe(
+      'The Pioneer, a bronze statue by Dave Biehl in Omaha, Nebraska: Twice life size, cast in bronze.',
+    );
     expect(content("property='og:title'")).toBe('The Pioneer | Statues');
     expect(content("property='og:url'")).toBe('https://davebiehlart.com/statues/pioneer');
     expect(content("property='og:image'")).toBe('https://example.test/pioneer-1.jpg');
     expect(content("property='og:image:alt'")).toBe('The Pioneer');
   });
 
+  it('should describe the statue and where it stands for search engines', async () => {
+    const item = statueItem();
+    store.loadSelected.mockResolvedValue(item);
+    await resolve();
+
+    const data = JSON.parse(document.getElementById('ld-page')?.textContent ?? '{}');
+    expect(data).toMatchObject({
+      '@type': 'VisualArtwork',
+      name: 'The Pioneer',
+      artMedium: 'Bronze',
+      contentLocation: {
+        '@type': 'Place',
+        name: item.location.venue,
+        address: { addressLocality: 'Omaha', addressRegion: 'Nebraska' },
+      },
+    });
+  });
+
   it('should fall back to a description naming the place', async () => {
     store.loadSelected.mockResolvedValue(statueItem({ description: '  ' }));
     await resolve();
     expect(content("name='description'")).toBe(
-      'The Pioneer, a statue by Dave Biehl in Omaha, Nebraska.',
+      'The Pioneer, a bronze statue by Dave Biehl in Omaha, Nebraska.',
     );
   });
 

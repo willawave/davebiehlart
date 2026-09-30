@@ -2,8 +2,9 @@ import { inject } from '@angular/core';
 import { Meta } from '@angular/platform-browser';
 import { ActivatedRouteSnapshot, RedirectCommand, ResolveFn, Router } from '@angular/router';
 import { GalleryDocument, GalleryStyle } from 'core';
-import { setPageMeta, toMetaDescription } from '../shared/page-meta';
+import { describeWork, setPageMeta } from '../shared/page-meta';
 import { Site } from '../shared/site.enum';
+import { artworkData } from '../shared/structured-data';
 import { GalleryStore } from './gallery.store';
 
 // The section heading each style is listed under.
@@ -40,12 +41,25 @@ export const galleryDetailResolver: ResolveFn<GalleryDocument> = async (route, s
     // would leave the list's URL in the address bar.
     return new RedirectCommand(router.parseUrl('/not-found'), { browserUrl: state.url });
   }
-  const { label } = section(route);
+  const { label, style } = section(route);
+  const bronze = style === GalleryStyle.BRONZE;
+  const description = describeWork(
+    `${item.name}, ${bronze ? 'a bronze' : 'kiln glass'} by Dave Biehl`,
+    item.description,
+  );
   setPageMeta(meta, {
     title: `${item.name} | ${label}`,
-    description: toMetaDescription(item.description) || `${item.name}, by Dave Biehl.`,
+    description,
     path: state.url,
     image: item.imageUrls[0] ? { url: item.imageUrls[0], alt: item.name } : undefined,
+    structuredData: artworkData({
+      name: item.name,
+      description,
+      path: state.url,
+      images: item.imageUrls,
+      medium: bronze ? 'Bronze' : 'Glass',
+      artform: bronze ? 'Sculpture' : 'Kiln glass',
+    }),
   });
   return item;
 };
