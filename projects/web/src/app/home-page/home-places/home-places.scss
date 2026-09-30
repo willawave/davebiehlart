@@ -6,9 +6,10 @@
   display: block;
 }
 
+// A dark band between the light story and explore sections.
 section {
-  @include home.reveal;
-  padding: 110px 0 0;
+  @include home.night-band;
+  padding: 110px 0;
   text-align: center;
 }
 
@@ -20,7 +21,9 @@ h2 {
   @include home.section-title;
 }
 
+// The band stays put; its list rises in.
 ul {
+  @include home.reveal;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
