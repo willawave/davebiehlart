@@ -46,10 +46,10 @@ P=the-bronze-horse-b3aa2
 NUM=$(gcloud projects describe $P --format='value(projectNumber)')
 ```
 
-1. **App Hosting backend for `web`.** Don't connect a GitHub repo when asked. Deploys come from the Deploy workflow, not automatic rollouts.
+1. **App Hosting backend for `web`.** `--non-interactive` creates it without a GitHub connection; the interactive setup always links one. Deploys come from the Deploy workflow, not automatic rollouts.
 
    ```sh
-   pnpm exec firebase apphosting:backends:create --project $P --backend web --primary-region us-central1
+   pnpm exec firebase apphosting:backends:create --project $P --backend web --primary-region us-central1 --root-dir / --non-interactive
    ```
 
 2. **Hosting site for `admin`.** If `davebiehlart-admin` is taken, pick another ID and update `firebase.json` → `hosting.site` and the table above.
