@@ -37,7 +37,9 @@ $sheen: linear-gradient(
   color-scheme: dark;
   color: var(--dba-ink);
   background-color: var(--dba-surface);
-  border-image: conic-gradient(var(--dba-surface) 0 0) fill 0 / /0 100vw;
+  border-image-source: conic-gradient(var(--dba-surface) 0 0);
+  border-image-slice: 0 fill;
+  border-image-outset: 0 100vw;
 }
 
 // Bronze-foil text with a slow sheen. Plain bronze where background-clip text isn't
