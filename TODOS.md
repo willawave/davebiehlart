@@ -11,6 +11,7 @@ Do these when `web` and `admin` are first hosted from this repo (davebiehlart.co
 - Add `admin.davebiehlart.com` to Firebase Auth's authorized domains, or popup sign-in fails with `auth/unauthorized-domain`.
 - If hosting sets `Cross-Origin-Opener-Policy`, use `same-origin-allow-popups`; `same-origin` breaks `signInWithPopup`.
 - Re-run `/setup-deploy` so CLAUDE.md's "Deploy Configuration" records the platform, deploy trigger, status command, and health checks.
+- Fix the flaky phone-menu E2E (`e2e/web/navigation.e2e.ts`, "phone" tests): under parallel load, a tap on "Open menu" right after `goto('/')` is sometimes lost, so the drawer never opens and "Close menu" is never focused. It fails about 1 in 345 runs on v0.10 and about 1 in 115 since the Monument Night home page. Hydration isn't slower (about 25 ms), and event replay (`withEventReplay`) is on, so find out why the tap is dropped. Real visitors who tap the menu before the page finishes loading could hit it too.
 
 ## Completed
 
