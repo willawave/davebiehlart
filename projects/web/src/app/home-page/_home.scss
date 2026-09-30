@@ -29,14 +29,15 @@ $sheen: linear-gradient(
 }
 
 // A band that stays dark in both color schemes: color-scheme: dark makes the Foundry tokens
-// (light-dark() pairs) resolve to their dark values inside it. The border image paints the
-// background out to the window edges without widening the page; the background color is
-// the same, but contrast checkers only read that.
+// (light-dark() pairs) resolve to their dark values inside it. It paints the dark surface,
+// a shade lighter than the dark page, so the bands still stand apart in dark mode. The
+// border image paints the background out to the window edges without widening the page;
+// the background color is the same, but contrast checkers only read that.
 @mixin night-band {
   color-scheme: dark;
   color: var(--dba-ink);
-  background-color: var(--dba-page);
-  border-image: conic-gradient(var(--dba-page) 0 0) fill 0 / /0 100vw;
+  background-color: var(--dba-surface);
+  border-image: conic-gradient(var(--dba-surface) 0 0) fill 0 / /0 100vw;
 }
 
 // Bronze-foil text with a slow sheen. Plain bronze where background-clip text isn't
