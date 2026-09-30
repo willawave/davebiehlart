@@ -92,9 +92,25 @@ NUM=$(gcloud projects describe $P --format='value(projectNumber)')
 
    These roles are broader than needed. If a deploy fails with a permission error, the message names the missing permission; once deploys run cleanly, narrow the roles.
 
-## First deploy (local)
+## Trial deploy (apps only)
 
-The first deploy runs locally because the CLI asks, once, to let the Storage service agent read Firestore; Storage's `isAdmin()` rule needs that. It also tightens production's rules for the first time, so check the legacy clients first.
+Deploy `web` and `admin` to their default URLs without touching the rules, indexes or DNS. The legacy site keeps running unchanged, and both new apps work under production's current, looser rules. Use this to prove the hosting setup and to run audits and the real-data check against real hosting before the first full deploy.
+
+1. **Authorize the admin's sign-in domain.** Firebase console → Authentication → Settings → Authorized domains → add `davebiehlart-admin.web.app` if it isn't listed (only the project's default domains are added automatically). Without it, popup sign-in fails with `auth/unauthorized-domain`.
+2. On a clean checkout of `main`:
+   ```sh
+   pnpm install --frozen-lockfile
+   pnpm ng build admin
+   pnpm exec firebase deploy --only apphosting,hosting --project the-bronze-horse-b3aa2
+   ```
+   App Hosting builds `web` in the cloud; the first build takes several minutes.
+3. Run the post-deploy checks below, except the upload check (no rules changed). If App Hosting's build fails, its log is under Firebase console → App Hosting → `web` → Rollouts.
+
+Redeploy the apps the same way as often as needed. Don't run the Deploy workflow yet: it also deploys the rules, which is the first full deploy's job.
+
+## First full deploy (local)
+
+The first full deploy runs locally because the CLI asks, once, to let the Storage service agent read Firestore; Storage's `isAdmin()` rule needs that. It also tightens production's rules for the first time, so check the legacy clients first.
 
 1. Go through the pre-flight list in AGENTS.md → "Production data guardrails": every live client looks admins up by `getDoc(users/{uid})`, lists content only with `where('visible', '==', true)`, and uploads only jpeg/png/webp/gif/avif under 1 MB.
 2. Confirm the backups from one-time setup exist.
@@ -108,6 +124,8 @@ The first deploy runs locally because the CLI asks, once, to let the Storage ser
 4. Run the post-deploy checks below, including one upload in the legacy admin and one in the new admin.
 
 ## Routine deploys
+
+Only after the first full deploy.
 
 1. Merge the PR (the merge queue runs CI), and wait for CI on `main` to pass.
 2. Actions → **Deploy** → Run workflow on `main`. It refuses to run until CI has passed on that commit.
@@ -136,7 +154,7 @@ The first deploy runs locally because the CLI asks, once, to let the Storage ser
 
 ## Cutover from the legacy site
 
-1. **Check real data first.** Deploy (above), then walk every `web` page on its `hosted.app` URL and every `admin` screen on its `web.app` URL: long titles, real photo sizes, missing alt text. In `admin`, look but don't save; it writes to production.
+1. **Check real data first.** After the trial deploy (above), walk every `web` page on its `hosted.app` URL and every `admin` screen on its `web.app` URL: long titles, real photo sizes, missing alt text. In `admin`, look but don't save; it writes to production.
 2. **Agree the switch date with both admins.** From then on, all edits go through the new admin.
 3. **A day ahead**, lower the TTL on davebiehlart.com's DNS records to 300 seconds.
 4. **Authorize the admin domain.** Firebase console → Authentication → Settings → Authorized domains → add `admin.davebiehlart.com`.

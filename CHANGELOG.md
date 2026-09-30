@@ -9,7 +9,7 @@ All notable changes to this project are documented here.
 - A repeatable production deploy. One command ships the public site, the admin app, the Firestore and Storage security rules, and the Firestore indexes together, so the rules and indexes can't fall behind the code that needs them. A Deploy workflow, started by hand in GitHub Actions, runs it on `main` only after CI has passed on that commit, and signs in to Google Cloud without storing a key.
 - The public site is set up for Firebase App Hosting, with one server instance kept warm so visitors and search crawlers don't wait for a cold start. The admin app is set up for its own Firebase Hosting site.
 - Production's Firestore indexes are now tracked in the repo. Deploys never delete an index that's missing from the file.
-- `docs/DEPLOY.md` covers one-time setup, backups, the first deploy, routine deploys, post-deploy checks, rollback, and moving the domains over from the legacy site.
+- `docs/DEPLOY.md` covers one-time setup, backups, a trial deploy of just the apps (no rules, no DNS), the first full deploy, routine deploys, post-deploy checks, rollback, and moving the domains over from the legacy site.
 - `TODOS.md` lists everything left before launch.
 
 ### Fixed
