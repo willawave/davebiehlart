@@ -1,8 +1,9 @@
-import { Location } from '@angular/common';
+import { Location, ViewportScroller } from '@angular/common';
 import {
   afterNextRender,
   Component,
   computed,
+  DestroyRef,
   ElementRef,
   inject,
   Injector,
@@ -13,6 +14,7 @@ import { EventPhase } from '@angular/core/primitives/event-dispatch';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
+import { MatProgressBar } from '@angular/material/progress-bar';
 import { MatSidenav, MatSidenavContainer, MatSidenavContent } from '@angular/material/sidenav';
 import {
   NavigationEnd,
@@ -29,6 +31,11 @@ import { NAV_LINKS } from '../../shared/nav-links';
 import { Site } from '../../shared/site.enum';
 import { Footer } from '../footer/footer';
 
+// The page must scroll past CONDENSE_AT to condense the header and back above EXPAND_AT to
+// expand it. Condensing pulls the content up, and the gap keeps that from flipping it back.
+const CONDENSE_AT = 120;
+const EXPAND_AT = 8;
+
 @Component({
   imports: [
     Breadcrumb,
@@ -36,6 +43,7 @@ import { Footer } from '../footer/footer';
     Footer,
     MatIcon,
     MatIconButton,
+    MatProgressBar,
     MatSidenav,
     MatSidenavContainer,
     MatSidenavContent,
@@ -51,8 +59,13 @@ export class Navigation {
   protected readonly links = NAV_LINKS;
   protected readonly siteTitle = Site.TITLE;
   protected readonly menuOpen = signal(false);
+  protected readonly condensed = signal(false);
   private readonly main = viewChild.required<ElementRef<HTMLElement>>('main');
+  private readonly masthead = viewChild.required<ElementRef<HTMLElement>>('masthead');
   private readonly router = inject(Router);
+  // True while a click's page is still loading (its chunk or data), so a slow connection shows
+  // progress. The first navigation is skipped: it stays pending while the server's page hydrates.
+  protected readonly navigating = computed(() => (this.router.currentNavigation()?.id ?? 0) > 1);
   // Seeded from Location, not router.url: the shell hydrates before the router commits the
   // first URL, and until then router.url is "/".
   private readonly url = signal(inject(Location).path(true) || '/');
@@ -77,6 +90,18 @@ export class Navigation {
   });
 
   constructor() {
+    // Router anchor scrolling lands below the sticky header, not under it.
+    inject(ViewportScroller).setOffset(() => [0, this.masthead().nativeElement.offsetHeight]);
+    const destroyRef = inject(DestroyRef);
+    afterNextRender(() => {
+      const update = () =>
+        this.condensed.update((condensed) =>
+          condensed ? window.scrollY > EXPAND_AT : window.scrollY > CONDENSE_AT,
+        );
+      update();
+      window.addEventListener('scroll', update, { passive: true });
+      destroyRef.onDestroy(() => window.removeEventListener('scroll', update));
+    });
     this.router.events
       .pipe(
         filter((event) => event instanceof NavigationEnd),

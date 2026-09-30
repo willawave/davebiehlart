@@ -41,6 +41,50 @@ test.describe('desktop', () => {
     await expect(page).toHaveTitle(SITE_TITLE);
   });
 
+  test('the header stays on screen and condenses while scrolling', async ({ page }) => {
+    await page.goto('/bronzes');
+    await page.waitForFunction(() => !document.querySelector('[ngh]'));
+    const masthead = page.locator('header.masthead');
+    await expect(masthead).not.toHaveClass(/condensed/);
+    const fullHeight = (await masthead.boundingBox())!.height;
+
+    await page.mouse.wheel(0, 1500);
+    await expect(masthead).toHaveClass(/condensed/);
+    await expect(masthead).toBeInViewport();
+    expect((await masthead.boundingBox())!.y).toBe(0);
+    expect((await masthead.boundingBox())!.height).toBeLessThan(fullHeight);
+    await expect(
+      page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'Contact' }),
+    ).toBeInViewport();
+    await expectNoAxeViolations(page);
+
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await expect(masthead).not.toHaveClass(/condensed/);
+  });
+
+  test('a page that loads slowly shows progress until it renders', async ({ page }) => {
+    await page.goto('/bronzes');
+    await page.waitForFunction(() => !document.querySelector('[ngh]'));
+    // Hold Firestore, so the detail page's resolver waits like it would on a slow connection.
+    let release!: () => void;
+    const held = new Promise<void>((resolve) => (release = resolve));
+    await page.route('http://localhost:8080/**', async (route) => {
+      await held;
+      await route.continue();
+    });
+
+    await page.getByRole('link', { name: 'Mustang at Dawn' }).first().click();
+    const progress = page.getByRole('progressbar', { name: 'Loading page' });
+    await expect(progress).toBeVisible();
+    await expect(page.locator('main')).toHaveAttribute('aria-busy', 'true');
+
+    release();
+    await expect(page).toHaveURL('/bronzes/seed-bronze-01');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Mustang at Dawn');
+    await expect(progress).toHaveCount(0);
+    await expect(page.locator('main')).not.toHaveAttribute('aria-busy');
+  });
+
   test('the breadcrumb shows the path to a detail page', async ({ page }) => {
     await page.goto('/');
     await expect(page.getByRole('navigation', { name: 'Breadcrumb' })).toHaveCount(0);

@@ -12,6 +12,8 @@ class Page {}
 
 describe('Navigation', () => {
   let harness: RouterTestingHarness;
+  let hold: Promise<boolean>;
+  let release: () => void;
 
   function element(): HTMLElement {
     return harness.fixture.nativeElement;
@@ -32,6 +34,7 @@ describe('Navigation', () => {
   }
 
   beforeEach(async () => {
+    hold = new Promise((resolve) => (release = () => resolve(true)));
     TestBed.configureTestingModule({
       providers: [
         provideRouter([
@@ -42,6 +45,8 @@ describe('Navigation', () => {
               { path: '', component: Page },
               { path: 'bronzes', component: Page },
               { path: 'bronzes/:id', component: Page },
+              // Holds the navigation until the test releases it, like a slow chunk or resolver.
+              { path: 'slow', component: Page, canActivate: [() => hold] },
             ],
           },
         ]),
@@ -184,5 +189,64 @@ describe('Navigation', () => {
     await settle();
 
     expect(sidenav().opened).toBe(false);
+  });
+
+  it('should show no progress bar at rest', () => {
+    expect(element().querySelector('mat-progress-bar')).toBeNull();
+    expect(element().querySelector('main')?.hasAttribute('aria-busy')).toBe(false);
+  });
+
+  it('should show progress while a clicked page loads', async () => {
+    const navigation = TestBed.inject(Router).navigateByUrl('/slow');
+    // Not settle(): the app stays unstable until the held navigation ends.
+    await new Promise((resolve) => setTimeout(resolve));
+    harness.fixture.detectChanges();
+
+    const bar = element().querySelector('mat-progress-bar');
+    expect(bar?.getAttribute('aria-label')).toBe('Loading page');
+    expect(element().querySelector('main')?.getAttribute('aria-busy')).toBe('true');
+
+    release();
+    await navigation;
+    await settle();
+
+    expect(element().querySelector('mat-progress-bar')).toBeNull();
+    expect(element().querySelector('main')?.hasAttribute('aria-busy')).toBe(false);
+  });
+
+  describe('on scroll', () => {
+    let scrollY: number;
+
+    function scrollTo(y: number): void {
+      scrollY = y;
+      window.dispatchEvent(new Event('scroll'));
+      harness.fixture.detectChanges();
+    }
+
+    function condensed(): boolean {
+      return element().querySelector('.masthead')!.classList.contains('condensed');
+    }
+
+    beforeEach(() => {
+      scrollY = 0;
+      vi.spyOn(window, 'scrollY', 'get').mockImplementation(() => scrollY);
+    });
+
+    it('should condense the header once the page scrolls, and expand it back at the top', () => {
+      expect(condensed()).toBe(false);
+
+      scrollTo(200);
+      expect(condensed()).toBe(true);
+
+      // Between the thresholds the header keeps its state, so it can't flip back and forth.
+      scrollTo(60);
+      expect(condensed()).toBe(true);
+
+      scrollTo(0);
+      expect(condensed()).toBe(false);
+
+      scrollTo(60);
+      expect(condensed()).toBe(false);
+    });
   });
 });

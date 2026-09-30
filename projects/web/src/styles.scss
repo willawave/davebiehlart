@@ -3,6 +3,11 @@
 // Web follows the system light/dark scheme; see projects/core/src/styles/_foundry.scss.
 @include foundry.theme(auto);
 
+// Keeps anchors and keyboard focus clear of the sticky header (its slim height, plus a margin).
+html {
+  scroll-padding-top: 80px;
+}
+
 // A page's main heading.
 .page-title {
   margin: 8px 0 24px;

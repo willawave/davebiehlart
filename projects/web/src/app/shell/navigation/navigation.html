@@ -29,7 +29,7 @@
   </mat-sidenav>
 
   <mat-sidenav-content class="page">
-    <header class="masthead">
+    <header #masthead class="masthead" [class.condensed]="condensed()">
       <a class="brand dba-lockup" routerLink="/"
         ><span class="dba-mark" aria-hidden="true"></span
         ><span class="dba-wordmark">{{ siteTitle }}</span></a
@@ -58,11 +58,14 @@
           >
         }
       </nav>
+      @if (navigating()) {
+        <mat-progress-bar class="nav-progress" mode="indeterminate" aria-label="Loading page" />
+      }
     </header>
 
     <div class="content">
       <app-breadcrumb />
-      <main #main id="main" tabindex="-1">
+      <main #main id="main" tabindex="-1" [attr.aria-busy]="navigating() || null">
         <router-outlet />
       </main>
     </div>
