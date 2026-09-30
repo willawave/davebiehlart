@@ -2,6 +2,17 @@
 
 All notable changes to this project are documented here.
 
+## [0.11.0.0] - 2026-09-29
+
+### Added
+
+- A new home page tells Dave's story without relying on artwork photos. It opens on a dark, bronze-lit band with the headline "Shaped by the Nebraska plains." over a large, faint horse mark, with buttons to see the bronzes or commission a piece.
+- "From clay to bronze" walks through five chapters: growing up on the ranch near Lexington, his 1976 veterinary degree from Kansas State, Sculpture in the Park in Loveland in 2003, teaching himself from a bag of used clay, and his commission work today.
+- "Where to see it" lists the places his work is on permanent display, from Henry Doorly Zoo to downtown Hastings, and links to the Statues page.
+- An "Explore" list links to Bronzes, Statues, Kiln Glass, Events and Media, and a closing band invites visitors to talk with Dave about a commission.
+- Dark bands alternate with parchment sections down the page, in both light and dark mode. Sections rise into place as you scroll, and all motion stays off for visitors who ask their device for reduced motion.
+- The home page has its own search description and share tags.
+
 ## [0.10.0.0] - 2026-09-29
 
 ### Added
