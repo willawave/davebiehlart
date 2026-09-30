@@ -66,6 +66,10 @@ pnpm ng build web
 
 Use `core`, `web`, or `admin` as the project name. Build artifacts go to the `dist/` directory.
 
+## Deploying
+
+See [docs/DEPLOY.md](docs/DEPLOY.md): one command ships `web`, `admin`, and the security rules and indexes together.
+
 ## Running tests
 
 | Command                                         | What it runs                                                                       |
