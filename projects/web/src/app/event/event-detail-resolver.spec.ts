@@ -41,6 +41,7 @@ describe('eventDetailResolver', () => {
     ]) {
       meta.getTags(selector).forEach((tag) => meta.removeTagElement(tag));
     }
+    document.head.querySelectorAll('link[rel="canonical"], #ld-page').forEach((el) => el.remove());
   });
 
   it('should load and return the event', async () => {
@@ -58,6 +59,24 @@ describe('eventDetailResolver', () => {
     expect(content("name='description'")).toBe('Meet the artist and see new work in progress.');
     expect(content("property='og:title'")).toBe('Open Studio | Events');
     expect(content("property='og:url'")).toBe('https://davebiehlart.com/events/open-studio');
+  });
+
+  it('should describe the event, its date and its venue for search engines', async () => {
+    const item = eventItem();
+    store.loadSelected.mockResolvedValue(item);
+    await resolve();
+
+    const data = JSON.parse(document.getElementById('ld-page')?.textContent ?? '{}');
+    expect(data).toMatchObject({
+      '@type': 'Event',
+      name: 'Open Studio',
+      url: 'https://davebiehlart.com/events/open-studio',
+      startDate: item.date.toDate().toISOString().slice(0, 10),
+      location: {
+        name: 'Main Street Studios & Art Gallery',
+        address: { addressLocality: 'Elkhorn' },
+      },
+    });
   });
 
   it('should fall back to a description naming the place', async () => {

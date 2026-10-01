@@ -6,7 +6,10 @@ export * from './lib/core';
 export * from './lib/const/base-location.const';
 // The SDK tokens (FIRESTORE etc.) are exported from `core/firebase`; see firebase-api.ts.
 export {
+  assertSafeFirebaseEnvironment,
   EMULATOR_FIREBASE_ENVIRONMENT,
+  EMULATOR_HOST,
+  FIRESTORE_EMULATOR_PORT,
   type FirebaseEnvironment,
   provideFirebase,
 } from './lib/firebase/firebase.providers';

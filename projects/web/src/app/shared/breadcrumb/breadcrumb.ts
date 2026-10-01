@@ -1,7 +1,9 @@
-import { Component, computed, inject } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Component, computed, effect, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRouteSnapshot, Data, NavigationEnd, Router, RouterLink } from '@angular/router';
 import { filter } from 'rxjs';
+import { breadcrumbData, setStructuredData } from '../structured-data';
 
 export interface BreadcrumbItem {
   label: string;
@@ -62,4 +64,13 @@ export class Breadcrumb {
     this.navigationEnd();
     return buildBreadcrumbs(this.router.routerState.snapshot.root);
   });
+
+  constructor() {
+    // The trail as schema.org data, so search results can show it too.
+    const document = inject(DOCUMENT);
+    effect(() => {
+      const items = this.items();
+      setStructuredData(document, 'ld-breadcrumb', items.length ? breadcrumbData(items) : null);
+    });
+  }
 }

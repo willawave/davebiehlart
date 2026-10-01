@@ -6,6 +6,8 @@ import {
 } from '@angular/ssr/node';
 import express from 'express';
 import { join } from 'node:path';
+import { cachedSitemap, isCanonicalHost, requestHost, robotsTxt } from './crawl';
+import { environment } from './environments/environment';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
 
@@ -23,6 +25,31 @@ const angularApp = new AngularNodeAppEngine();
  * });
  * ```
  */
+
+/**
+ * Keep every host but davebiehlart.com (www, the App Hosting URL) out of search results.
+ */
+app.use((req, res, next) => {
+  if (!isCanonicalHost(requestHost(req.headers))) {
+    res.setHeader('X-Robots-Tag', 'noindex');
+  }
+  next();
+});
+
+app.get('/robots.txt', (req, res) => {
+  res.type('text/plain').set('Cache-Control', 'public, max-age=3600');
+  res.send(robotsTxt(requestHost(req.headers)));
+});
+
+app.get('/sitemap.xml', async (_req, res) => {
+  try {
+    const xml = await cachedSitemap(environment.firebase);
+    res.type('application/xml').set('Cache-Control', 'public, max-age=3600').send(xml);
+  } catch (error) {
+    console.error('sitemap.xml failed', error);
+    res.status(503).set('Retry-After', '3600').send('Sitemap temporarily unavailable');
+  }
+});
 
 /**
  * Serve static files from /browser

@@ -1,0 +1,20 @@
+# Dave Biehl Art
+
+> Bronze sculpture by Nebraska artist Dave Biehl: horses, cattle and wildlife, from miniatures to life-size public works. Commissions welcome.
+
+Dave Biehl grew up on a ranch near Lexington, Nebraska, earned his veterinary degree from Kansas State in 1976, and taught himself to sculpt. His bronzes stand in public places across Nebraska, and he also makes kiln glass.
+
+## Sections
+
+- [Bronzes](https://davebiehlart.com/bronzes): Bronze sculptures by artist Dave Biehl.
+- [Statues](https://davebiehlart.com/statues): Public bronze statues by artist Dave Biehl, and where to find them.
+- [Kiln Glass](https://davebiehlart.com/glass): Kiln glass by artist Dave Biehl.
+- [Events](https://davebiehlart.com/events): Upcoming shows, open studios and dedications with artist Dave Biehl.
+- [Media](https://davebiehlart.com/media): Videos and press coverage of sculptor Dave Biehl and his bronze work.
+- [Contact](https://davebiehlart.com/contact): Contact Dave Biehl about bronze sculptures, commissions, and gallery hours.
+
+## Optional
+
+- [Sitemap](https://davebiehlart.com/sitemap.xml): Every page, including each artwork, statue, event and media item.
+- [Privacy Policy](https://davebiehlart.com/privacy-policy)
+- [Terms of Use](https://davebiehlart.com/terms-of-use)
