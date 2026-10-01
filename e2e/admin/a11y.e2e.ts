@@ -33,8 +33,16 @@ for (const colorScheme of ['light', 'dark'] as const) {
     for (const route of ROUTES) {
       await test.step(route, async () => {
         // Not networkidle: Firestore keeps a connection open, so the network never idles.
+        // Headings render before Firestore answers, so wait for the loaded content itself.
         await page.goto(route);
         await expect(page.locator('h1')).toBeVisible();
+        await expect(page.getByText('Loading…')).toHaveCount(0);
+        if (/-(add|edit)\b|\/schedule$/.test(route)) {
+          await expect(page.locator('form')).toBeVisible();
+        } else if (route !== '/dashboard') {
+          // A header row plus at least one seeded item.
+          await expect(page.getByRole('row').nth(1)).toBeVisible();
+        }
         await expectNoAxeViolations(page);
       });
     }
