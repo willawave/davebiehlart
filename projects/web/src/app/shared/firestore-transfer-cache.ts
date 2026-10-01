@@ -1,5 +1,6 @@
 import {
   ApplicationRef,
+  InjectionToken,
   PLATFORM_ID,
   Service,
   TransferState,
@@ -7,6 +8,7 @@ import {
   makeStateKey,
 } from '@angular/core';
 import { isPlatformServer } from '@angular/common';
+import { Router } from '@angular/router';
 import { Timestamp } from 'firebase/firestore';
 
 // How a Timestamp travels through TransferState, which only carries JSON.
@@ -57,10 +59,18 @@ export function deserializeDoc(value: unknown): unknown {
 //
 // A hit returns the value synchronously, so a component that reads during construction
 // renders the same DOM the server sent.
+//
+// In the browser it also keeps a stalled read from hanging the page. iOS quietly kills the
+// SDK's long-lived connection when the phone locks, a tab goes to the background, or the
+// network changes, and the SDK then waits on the dead stream indefinitely. A read that takes
+// longer than BROWSER_READ_TIMEOUT_MS, or fails, loads the page from the server instead, which
+// always renders it. Truly offline, it fails as before so the page can say so.
 @Service()
 export class FirestoreTransferCache {
   private readonly state = inject(TransferState);
   private readonly isServer = isPlatformServer(inject(PLATFORM_ID));
+  private readonly router = inject(Router);
+  private readonly hardNavigate = inject(HARD_NAVIGATE);
   private active = !this.isServer;
 
   constructor() {
@@ -76,11 +86,46 @@ export class FirestoreTransferCache {
     if (this.active && this.state.hasKey(stateKey)) {
       return deserializeDoc(this.state.get(stateKey, null)) as T;
     }
-    return fetch().then((value) => {
-      if (this.isServer) {
+    if (this.isServer) {
+      return fetch().then((value) => {
         this.state.set(stateKey, serializeDoc(value));
-      }
-      return value;
+        return value;
+      });
+    }
+    return this.withServerFallback(fetch());
+  }
+
+  private withServerFallback<T>(read: Promise<T>): Promise<T> {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const timedOut = new Promise<never>((_, reject) => {
+      timer = setTimeout(
+        () => reject(new Error('Firestore read timed out')),
+        BROWSER_READ_TIMEOUT_MS,
+      );
     });
+    return Promise.race([read, timedOut])
+      .finally(() => clearTimeout(timer))
+      .catch((error: unknown) => {
+        if (!navigator.onLine) {
+          throw error;
+        }
+        // The page being opened if a navigation is under way, else the page on screen.
+        const navigation = this.router.currentNavigation();
+        const url = navigation
+          ? this.router.serializeUrl(navigation.finalUrl ?? navigation.extractedUrl)
+          : location.pathname + location.search;
+        this.hardNavigate(url);
+        // Never settles: the browser is leaving, so nothing should flash an error first.
+        return new Promise<T>(() => undefined);
+      });
   }
 }
+
+// Normal reads take well under a second; past this, the connection is assumed dead.
+export const BROWSER_READ_TIMEOUT_MS = 6000;
+
+// A full page load, swappable in tests.
+export const HARD_NAVIGATE = new InjectionToken<(url: string) => void>('HARD_NAVIGATE', {
+  providedIn: 'root',
+  factory: () => (url: string) => location.assign(url),
+});
