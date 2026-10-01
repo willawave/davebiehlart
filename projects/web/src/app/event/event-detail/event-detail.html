@@ -29,7 +29,7 @@
         @if (event.location.street) {
           <span>{{ event.location.street }}</span>
         }
-        <span>{{ event.location.city }}, {{ event.location.state }}</span>
+        <span>{{ event.location.city.trim() }}, {{ event.location.state.trim() }}</span>
       </address>
       <app-single-point-map
         class="map"

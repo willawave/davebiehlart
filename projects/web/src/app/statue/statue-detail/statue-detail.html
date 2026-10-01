@@ -21,7 +21,7 @@
         @if (statue.location.street) {
           <span>{{ statue.location.street }}</span>
         }
-        <span>{{ statue.location.city }}, {{ statue.location.state }}</span>
+        <span>{{ statue.location.city.trim() }}, {{ statue.location.state.trim() }}</span>
       </address>
       <app-single-point-map
         class="map"
