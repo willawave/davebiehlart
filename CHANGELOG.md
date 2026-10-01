@@ -4,6 +4,10 @@ All notable changes to this project are documented here.
 
 ## [0.12.0.1] - 2026-10-01
 
+### Fixed
+
+- The "slow page shows progress" end-to-end test failed on `main` after v0.12.0.0: it held Firestore at `localhost:8080`, but the app reaches the emulator at `127.0.0.1:8080`, so nothing was held and the test only passed when the page happened to load slowly. Faster reads (the lite SDK) made it fail most of the time. It now holds the right address (30 of 30 runs pass, from 6 of 30).
+
 ### Changed
 
 - `TODOS.md` lists the launch loose ends: a production CSP check after cutover, a content question for Dave, and an "After launch" list (photo warm-up, the rest of the security audit, a sitemap test, narrower deploy permissions, and legacy-site cleanup). Backups are marked done.

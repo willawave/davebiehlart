@@ -68,7 +68,9 @@ test.describe('desktop', () => {
     // Hold Firestore, so the detail page's resolver waits like it would on a slow connection.
     let release!: () => void;
     const held = new Promise<void>((resolve) => (release = resolve));
-    await page.route('http://localhost:8080/**', async (route) => {
+    // The app reaches the Firestore emulator at 127.0.0.1 (core's EMULATOR_HOST); match either
+    // spelling so the hold really holds.
+    await page.route(/^http:\/\/(127\.0\.0\.1|localhost):8080\//, async (route) => {
       await held;
       await route.continue();
     });
