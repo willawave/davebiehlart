@@ -33,16 +33,19 @@
     outline-offset: -3px;
   }
 
+  // The artwork is the page, so the strip is tall: a portrait fills most of a phone's width.
+  // The height is fixed so the page doesn't jump as photos load; a photo too wide for it sits
+  // on a mat, like the grid's cards.
   img {
     display: block;
     width: auto;
     max-width: 85vw;
-    height: 260px;
+    height: min(60svh, 460px);
     object-fit: contain;
     background: color-mix(in srgb, var(--dba-rule) 45%, var(--dba-page));
 
     @media (min-width: 600px) {
-      height: 340px;
+      height: min(70svh, 560px);
     }
   }
 }
