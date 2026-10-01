@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { GalleryStyle } from 'core';
-import { FIRESTORE } from 'core/firebase';
-import type { Firestore } from 'firebase/firestore';
+import { FIRESTORE_LITE } from 'core/firebase';
+import type { Firestore } from 'firebase/firestore/lite';
 import { FirestoreTransferCache } from '../shared/firestore-transfer-cache';
 import { GalleryService } from './gallery.service';
 import { galleryItem } from './gallery.testing';
@@ -16,7 +16,7 @@ describe('GalleryService', () => {
     vi.clearAllMocks();
     TestBed.configureTestingModule({
       providers: [
-        { provide: FIRESTORE, useValue: {} as Firestore },
+        { provide: FIRESTORE_LITE, useValue: {} as Firestore },
         { provide: FirestoreTransferCache, useValue: cache },
       ],
     });

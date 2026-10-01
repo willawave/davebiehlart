@@ -30,20 +30,22 @@
   }
 }
 
-// The mat: a square of slightly deeper parchment the photo sits on, uncropped.
+// The mat: a square of slightly deeper parchment the photo sits on, uncropped. The frame is
+// placed with insets, not padding plus height: 100%, because Safari sized a padded
+// aspect-ratio box and its percentage-height child differently, and tall photos spilled out.
 .mat {
+  position: relative;
   display: block;
+  box-sizing: border-box;
   aspect-ratio: 1;
-  padding: 8%;
   background: color-mix(in srgb, var(--dba-rule) 45%, var(--dba-page));
   border: 1px solid var(--dba-rule);
 }
 
 .frame {
-  position: relative;
+  position: absolute;
+  inset: 8%;
   display: block;
-  width: 100%;
-  height: 100%;
 
   img {
     object-fit: contain;

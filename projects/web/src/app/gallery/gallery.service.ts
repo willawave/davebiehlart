@@ -1,7 +1,7 @@
 import { Service, inject } from '@angular/core';
 import { GalleryDocument, GalleryStyle } from 'core';
-import { FIRESTORE } from 'core/firebase';
-import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
+import { FIRESTORE_LITE } from 'core/firebase';
+import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore/lite';
 import { FirestoreTransferCache } from '../shared/firestore-transfer-cache';
 
 const COLLECTION = 'gallery';
@@ -14,7 +14,7 @@ function newestFirst(a: GalleryDocument, b: GalleryDocument): number {
 // server rendered instead of reading Firestore again during hydration.
 @Service()
 export class GalleryService {
-  private readonly firestore = inject(FIRESTORE);
+  private readonly firestore = inject(FIRESTORE_LITE);
   private readonly cache = inject(FirestoreTransferCache);
 
   // Equality filters only, sorted here: Firestore serves them without a composite index,

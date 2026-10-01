@@ -68,6 +68,21 @@ describe('Breadcrumb', () => {
     ]);
   });
 
+  it('should publish the trail as structured data, and clear it on a page without one', async () => {
+    const trail = () => document.getElementById('ld-breadcrumb');
+
+    await harness.navigateByUrl('/bronzes');
+    const data = JSON.parse(trail()?.textContent ?? '{}');
+    expect(data['@type']).toBe('BreadcrumbList');
+    expect(data.itemListElement.map((item: { item: string }) => item.item)).toEqual([
+      'https://davebiehlart.com/',
+      'https://davebiehlart.com/bronzes',
+    ]);
+
+    await harness.navigateByUrl('/');
+    expect(trail()).toBeNull();
+  });
+
   it('should not repeat the section for its empty-path child', async () => {
     await harness.navigateByUrl('/bronzes');
     expect(crumbs().map((c) => c.text)).toEqual(['Home', 'Bronzes']);

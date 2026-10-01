@@ -1,5 +1,5 @@
 import { MediaDocument } from 'core';
-import { Timestamp } from 'firebase/firestore';
+import { Timestamp } from 'firebase/firestore/lite';
 
 // Spec-only fixtures for visible media items.
 export function videoItem(overrides: Partial<MediaDocument> = {}): MediaDocument {

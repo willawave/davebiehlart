@@ -10,4 +10,5 @@
 export * from './lib/firebase/auth.token';
 export * from './lib/firebase/firebase-app.token';
 export * from './lib/firebase/firestore.token';
+export * from './lib/firebase/firestore-lite.token';
 export * from './lib/firebase/storage.token';

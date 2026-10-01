@@ -2,6 +2,31 @@
 
 All notable changes to this project are documented here.
 
+## [0.12.0.0] - 2026-10-01
+
+### Added
+
+- Search engines get what they need: every page names its official address on davebiehlart.com, and bronzes, glass, statues, events, the home page and breadcrumbs carry structured data, so search results can show them richly. There's now a `robots.txt`, a `sitemap.xml` listing every visible page, and an `llms.txt` summarizing the site for AI assistants.
+- Copies of the site at other addresses (the hosting provider's URL, www) ask search engines not to index them, so only davebiehlart.com shows up in results.
+- Photos come resized: the site serves each photo at the size it's shown, so scrolling Bronzes on a phone downloads about 2 MB instead of about 17 MB. Detail pages show the artwork much larger.
+- Security headers on both the public site and the admin: HTTPS-only, a content security policy that lets only the site's own scripts run, and protection against being framed by other sites.
+- Every page of the public site and the admin is checked for accessibility (WCAG 2.2 AA) in light and dark mode, on desktop and phone, by the automated tests.
+
+### Changed
+
+- Search descriptions for an artwork lead with what it is and who made it, e.g. "Captain Jack, a bronze by Dave Biehl: …".
+- The public site reads its content with one quick request per page, instead of a long-lived connection.
+
+### Fixed
+
+- On iPhones, opening a bronze, statue or other page could hang for 30 seconds or more, or never finish, after the phone had been locked or another app used. Pages now open promptly; if a read ever stalls, the page loads from the server instead.
+- A page that couldn't load its data no longer shows "Page not found" for an artwork that exists.
+- On iPhones, tall photos no longer spill out of their frames on the Statues and gallery lists.
+- The favicons and the mare-and-foal mark were missing on the hosted site; they load again.
+- On a phone, tapping the menu while the page was still loading could open and immediately close it.
+- Locations no longer show a stray space before the comma ("Grand Island , Nebraska").
+- `robots.txt` can no longer be tricked into telling search engines to skip the site.
+
 ## [0.11.2.0] - 2026-09-30
 
 ### Added

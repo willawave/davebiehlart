@@ -1,7 +1,7 @@
 import { DatePipe, NgOptimizedImage } from '@angular/common';
 import { Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import type { Timestamp } from 'firebase/firestore';
+import type { Timestamp } from 'firebase/firestore/lite';
 
 // One card: the item's cover, name, and the year from `date` (created, dedicated, ...).
 export interface ImageGridItem {

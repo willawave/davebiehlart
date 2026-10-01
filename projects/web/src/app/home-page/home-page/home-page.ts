@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { Meta } from '@angular/platform-browser';
 import { setPageMeta } from '../../shared/page-meta';
 import { Site } from '../../shared/site.enum';
+import { websiteData } from '../../shared/structured-data';
 import { HomeExplore } from '../home-explore/home-explore';
 import { HomeHero } from '../home-hero/home-hero';
 import { HomePlaces } from '../home-places/home-places';
@@ -22,6 +23,7 @@ export class HomePage {
       description:
         'Bronze sculpture by Nebraska artist Dave Biehl: horses, cattle and wildlife, from miniatures to life-size public works. Commissions welcome.',
       path: '/',
+      structuredData: websiteData(),
     });
   }
 }

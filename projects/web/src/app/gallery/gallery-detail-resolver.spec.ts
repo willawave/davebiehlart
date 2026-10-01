@@ -54,6 +54,7 @@ describe('galleryDetailResolver', () => {
     ]) {
       meta.getTags(selector).forEach((tag) => meta.removeTagElement(tag));
     }
+    document.head.querySelectorAll('link[rel="canonical"], #ld-page').forEach((el) => el.remove());
   });
 
   it('should load the item for the section style and return it', async () => {
@@ -81,17 +82,40 @@ describe('galleryDetailResolver', () => {
     store.loadSelected.mockResolvedValue(galleryItem());
     await resolve();
 
-    expect(content("name='description'")).toBe('Cast bronze on a walnut base.');
+    expect(content("name='description'")).toBe(
+      'Mustang at Dawn, a bronze by Dave Biehl: Cast bronze on a walnut base.',
+    );
     expect(content("property='og:title'")).toBe('Mustang at Dawn | Bronzes');
     expect(content("property='og:url'")).toBe('https://davebiehlart.com/bronzes/mustang');
     expect(content("property='og:image'")).toBe('https://example.test/mustang-1.jpg');
     expect(content("property='og:image:alt'")).toBe('Mustang at Dawn');
   });
 
+  it('should describe the page as a bronze artwork by Dave Biehl for search engines', async () => {
+    store.loadSelected.mockResolvedValue(galleryItem());
+    await resolve();
+
+    const data = JSON.parse(document.getElementById('ld-page')?.textContent ?? '{}');
+    expect(data).toMatchObject({
+      '@type': 'VisualArtwork',
+      name: 'Mustang at Dawn',
+      url: 'https://davebiehlart.com/bronzes/mustang',
+      artMedium: 'Bronze',
+      creator: { '@type': 'Person', name: 'Dave Biehl' },
+    });
+    expect(data.image[0]).toBe('https://example.test/mustang-1.jpg');
+  });
+
+  it('should call a glass item kiln glass', async () => {
+    store.loadSelected.mockResolvedValue(galleryItem({ style: GalleryStyle.GLASS }));
+    await resolve('bowl', GalleryStyle.GLASS);
+    expect(content("name='description'")).toMatch(/^Mustang at Dawn, kiln glass by Dave Biehl: /);
+  });
+
   it('should fall back to a generated description', async () => {
     store.loadSelected.mockResolvedValue(galleryItem({ description: '  ' }));
     await resolve();
-    expect(content("name='description'")).toBe('Mustang at Dawn, by Dave Biehl.');
+    expect(content("name='description'")).toBe('Mustang at Dawn, a bronze by Dave Biehl.');
   });
 
   it('should render not found, keeping the URL, when there is no item', async () => {

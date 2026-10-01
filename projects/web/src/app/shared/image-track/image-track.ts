@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ImageDialog, ImageDialogData } from '../image-dialog/image-dialog';
+import { resizedSrcset, resizedUrl } from '../image-loader';
 
 // A horizontal strip of one item's photos. Prev/next scroll it by most of a screen; each
 // photo opens full size in ImageDialog. Photos keep their own proportions at a fixed height.
@@ -33,6 +34,15 @@ export class ImageTrack {
   // Photos that can be in view when the page opens (three fit at the desktop strip height).
   // The widest of them is often the page's largest paint, so none of them may be lazy.
   protected readonly eagerCount = 3;
+
+  // Resized copies for the strip (the full-size dialog keeps the originals): the strip shows
+  // a photo at most ~900px wide, so a phone takes the 960 and a desktop retina the 1920.
+  protected readonly resized = computed(() =>
+    this.images().map((src) => ({
+      src: resizedUrl(src, 960),
+      srcset: resizedSrcset(src, [480, 960, 1280, 1920]),
+    })),
+  );
 
   protected readonly altTexts = computed(() => {
     const count = this.images().length;

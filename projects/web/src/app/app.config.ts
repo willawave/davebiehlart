@@ -20,6 +20,7 @@ import { provideClientHydration, withEventReplay } from '@angular/platform-brows
 import { provideFirebase } from 'core';
 import { catchError, EMPTY, from, Observable, switchMap } from 'rxjs';
 import { environment } from '../environments/environment';
+import { providePhotoLoader } from './shared/image-loader';
 
 // Fetches every section's chunk once the first page has hydrated, so a later click on a slow
 // connection waits only for its data. Preloading any sooner holds up hydration and the taps it
@@ -58,5 +59,7 @@ export const appConfig: ApplicationConfig = {
     // Only /media loads YouTube stills, so they get no site-wide preconnect. NgOptimizedImage
     // reads this list at the root, so it can't be scoped to that page.
     { provide: PRECONNECT_CHECK_BLOCKLIST, useValue: 'https://i.ytimg.com' },
+    // Storage photos come resized through the server's /img endpoint.
+    providePhotoLoader(),
   ],
 };

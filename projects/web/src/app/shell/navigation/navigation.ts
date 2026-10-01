@@ -110,7 +110,11 @@ export class Navigation {
       .subscribe((event) => {
         const previousPath = this.path();
         this.url.set(this.router.url);
-        this.menuOpen.set(false);
+        // The first load can end after the page is interactive (its chunk loads lazily), so a
+        // tap may already have opened the menu. Only a later navigation closes it.
+        if (event.id > 1) {
+          this.menuOpen.set(false);
+        }
         // After moving to another page (not the first load, not a fragment or query change),
         // start keyboard and screen reader users at the new content. It waits for the next
         // render: an open drawer keeps <main> inert until that render closes it, and closing

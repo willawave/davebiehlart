@@ -21,7 +21,8 @@
               }
             </span>
             <span class="meta">
-              {{ event.location.venue }} · {{ event.location.city }}, {{ event.location.state }}
+              {{ event.location.venue.trim() }} · {{ event.location.city.trim() }},
+              {{ event.location.state.trim() }}
             </span>
           </span>
         </a>
