@@ -57,7 +57,7 @@
             { "key": "Cross-Origin-Opener-Policy", "value": "same-origin-allow-popups" },
             {
               "key": "Content-Security-Policy",
-              "value": "default-src 'self'; script-src 'self' https://apis.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://firebasestorage.googleapis.com https://lh3.googleusercontent.com; connect-src 'self' https://firestore.googleapis.com https://firebasestorage.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://apis.google.com; frame-src https://the-bronze-horse-b3aa2.firebaseapp.com https://apis.google.com https://accounts.google.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+              "value": "default-src 'self'; script-src 'self' https://apis.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://firebasestorage.googleapis.com https://lh3.googleusercontent.com https://tile.openstreetmap.org https://i.ytimg.com; connect-src 'self' https://firestore.googleapis.com https://firebasestorage.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://apis.google.com; frame-src https://the-bronze-horse-b3aa2.firebaseapp.com https://apis.google.com https://accounts.google.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
             },
             { "key": "Strict-Transport-Security", "value": "max-age=31536000; includeSubDomains" },
             { "key": "X-Content-Type-Options", "value": "nosniff" },
