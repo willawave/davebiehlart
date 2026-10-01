@@ -47,8 +47,10 @@ app.use((req, res, next) => {
   next();
 });
 
+// Never cached by the CDN: the answer depends on the request's host headers, which a client can
+// forge, and a shared copy would let one forged request serve "Disallow" to every crawler.
 app.get('/robots.txt', (req, res) => {
-  res.type('text/plain').set('Cache-Control', 'public, max-age=3600');
+  res.type('text/plain').set('Cache-Control', 'no-store');
   res.send(robotsTxt(requestHost(req.headers)));
 });
 

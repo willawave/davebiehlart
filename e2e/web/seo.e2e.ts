@@ -9,6 +9,16 @@ test('robots.txt keeps crawlers off hosts other than davebiehlart.com', async ({
   expect(await response.text()).toBe('User-agent: *\nDisallow: /\n');
 });
 
+test('robots.txt is never shared from a cache, so a forged host header cannot poison it', async ({
+  request,
+}) => {
+  const forged = await request.get('/robots.txt', {
+    headers: { 'X-Forwarded-Host': 'davebiehlart.com' },
+  });
+  expect(forged.headers()['cache-control']).toBe('no-store');
+  expect((await request.get('/robots.txt')).headers()['cache-control']).toBe('no-store');
+});
+
 test('pages on a non-canonical host tell search engines not to index them', async ({ request }) => {
   const response = await request.get('/bronzes');
   expect(response.headers()['x-robots-tag']).toBe('noindex');
