@@ -1,7 +1,7 @@
 import { Service, inject } from '@angular/core';
 import { EventDocument, byEventStart, isUpcoming } from 'core';
-import { FIRESTORE } from 'core/firebase';
-import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
+import { FIRESTORE_LITE } from 'core/firebase';
+import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore/lite';
 import { FirestoreTransferCache } from '../shared/firestore-transfer-cache';
 
 // Singular, as in production.
@@ -16,7 +16,7 @@ export function upcomingOnly(items: EventDocument[], now: number): EventDocument
 // server rendered instead of reading Firestore again during hydration.
 @Service()
 export class EventService {
-  private readonly firestore = inject(FIRESTORE);
+  private readonly firestore = inject(FIRESTORE_LITE);
   private readonly cache = inject(FirestoreTransferCache);
 
   // An equality filter only, with past events dropped and the rest sorted here: Firestore

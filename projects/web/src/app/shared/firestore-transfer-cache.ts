@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { isPlatformServer } from '@angular/common';
 import { Router } from '@angular/router';
-import { Timestamp } from 'firebase/firestore';
+import { Timestamp } from 'firebase/firestore/lite';
 
 // How a Timestamp travels through TransferState, which only carries JSON.
 interface EncodedTimestamp {

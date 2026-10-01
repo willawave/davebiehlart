@@ -14,7 +14,7 @@ import {
   getFirestore,
   query,
   where,
-} from 'firebase/firestore';
+} from 'firebase/firestore/lite';
 import { NAV_LINKS } from './app/shared/nav-links';
 import { RouterLinks } from './app/shared/router-links.enum';
 import { Site } from './app/shared/site.enum';

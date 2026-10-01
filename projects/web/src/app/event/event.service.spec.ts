@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
-import { FIRESTORE } from 'core/firebase';
-import { Timestamp, type Firestore } from 'firebase/firestore';
+import { FIRESTORE_LITE } from 'core/firebase';
+import { Timestamp, type Firestore } from 'firebase/firestore/lite';
 import { FirestoreTransferCache } from '../shared/firestore-transfer-cache';
 import { EventService, upcomingOnly } from './event.service';
 import { eventItem } from './event.testing';
@@ -15,7 +15,7 @@ describe('EventService', () => {
     vi.clearAllMocks();
     TestBed.configureTestingModule({
       providers: [
-        { provide: FIRESTORE, useValue: {} as Firestore },
+        { provide: FIRESTORE_LITE, useValue: {} as Firestore },
         { provide: FirestoreTransferCache, useValue: cache },
       ],
     });

@@ -1,10 +1,9 @@
 import { Page, expect, test } from '@playwright/test';
 
-// On iPhones, iOS quietly kills Firestore's long-lived connection when the phone locks, a tab
-// goes to the background, or the network changes. The SDK then waits on the dead stream
-// forever. These tests silence that stream mid-session: the page must still arrive, rendered
-// by the server, instead of hanging.
-const FIRESTORE = '**/google.firestore.v1.Firestore/**';
+// On iPhones, iOS quietly kills long-lived connections when the phone locks, a tab goes to the
+// background, or the network changes. web therefore reads Firestore with one-off requests (the
+// lite SDK), and if a read still stalls, loads the page from the server instead of hanging.
+const FIRESTORE = '**/v1/projects/*/databases/**';
 
 async function silenceFirestore(page: Page): Promise<void> {
   // Never answered: requests just hang, like a connection iOS dropped without telling anyone.
@@ -12,6 +11,26 @@ async function silenceFirestore(page: Page): Promise<void> {
 }
 
 test.use({ viewport: { width: 390, height: 844 } });
+
+test('taps read Firestore with one-off requests, never a long-lived listen connection', async ({
+  page,
+}) => {
+  const firestore: string[] = [];
+  page.on('request', (request) => {
+    if (/googleapis\.com|127\.0\.0\.1:8080|localhost:8080/.test(request.url())) {
+      firestore.push(request.url());
+    }
+  });
+  await page.goto('/bronzes');
+  await page.getByRole('link', { name: /Mustang at Dawn/ }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Mustang at Dawn' })).toBeVisible();
+  await page.goBack();
+  await page.getByRole('link', { name: /Saddle Bronc Rider/ }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Saddle Bronc Rider' })).toBeVisible();
+
+  expect(firestore.length).toBeGreaterThan(0);
+  expect(firestore.filter((url) => url.includes('/Listen/channel'))).toEqual([]);
+});
 
 test('a detail page still opens when Firestore stops answering', async ({ page }) => {
   test.setTimeout(60_000);

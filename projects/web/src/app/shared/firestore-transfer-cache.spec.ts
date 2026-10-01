@@ -1,7 +1,7 @@
 import { ApplicationRef, PLATFORM_ID, TransferState, makeStateKey } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Router, UrlTree } from '@angular/router';
-import { Timestamp } from 'firebase/firestore';
+import { Timestamp } from 'firebase/firestore/lite';
 import {
   BROWSER_READ_TIMEOUT_MS,
   FirestoreTransferCache,

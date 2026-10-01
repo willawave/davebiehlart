@@ -1,5 +1,5 @@
 import { EventDocument } from 'core';
-import { Timestamp } from 'firebase/firestore';
+import { Timestamp } from 'firebase/firestore/lite';
 
 // Spec-only fixture for a visible event.
 export function eventItem(overrides: Partial<EventDocument> = {}): EventDocument {

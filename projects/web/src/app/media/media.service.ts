@@ -1,7 +1,7 @@
 import { Service, inject } from '@angular/core';
 import { MediaDocument, parseMediaLink } from 'core';
-import { FIRESTORE } from 'core/firebase';
-import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
+import { FIRESTORE_LITE } from 'core/firebase';
+import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore/lite';
 import { FirestoreTransferCache } from '../shared/firestore-transfer-cache';
 
 const COLLECTION = 'media';
@@ -18,7 +18,7 @@ export function showable(items: MediaDocument[]): MediaDocument[] {
 // server rendered instead of reading Firestore again during hydration.
 @Service()
 export class MediaService {
-  private readonly firestore = inject(FIRESTORE);
+  private readonly firestore = inject(FIRESTORE_LITE);
   private readonly cache = inject(FirestoreTransferCache);
 
   // An equality filter only, sorted here: Firestore serves it without a composite index,

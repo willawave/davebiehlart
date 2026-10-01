@@ -1,7 +1,7 @@
 import { Service, inject } from '@angular/core';
 import { ScheduleDocument } from 'core';
-import { FIRESTORE } from 'core/firebase';
-import { collection, getDocs, limit, query } from 'firebase/firestore';
+import { FIRESTORE_LITE } from 'core/firebase';
+import { collection, getDocs, limit, query } from 'firebase/firestore/lite';
 import { FirestoreTransferCache } from '../shared/firestore-transfer-cache';
 
 const COLLECTION = 'schedule';
@@ -10,7 +10,7 @@ const COLLECTION = 'schedule';
 // server rendered instead of reading Firestore again during hydration.
 @Service()
 export class ScheduleService {
-  private readonly firestore = inject(FIRESTORE);
+  private readonly firestore = inject(FIRESTORE_LITE);
   private readonly cache = inject(FirestoreTransferCache);
 
   // The gallery's weekly hours: the collection's only document (the first by ID, as the

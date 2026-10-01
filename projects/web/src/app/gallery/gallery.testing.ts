@@ -1,5 +1,5 @@
 import { GalleryDocument, GalleryStyle } from 'core';
-import { Timestamp } from 'firebase/firestore';
+import { Timestamp } from 'firebase/firestore/lite';
 
 // Spec-only fixture for a visible gallery item.
 export function galleryItem(overrides: Partial<GalleryDocument> = {}): GalleryDocument {
