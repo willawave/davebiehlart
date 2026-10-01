@@ -36,6 +36,14 @@ test('/img refuses other hosts and unlisted widths', async ({ request }) => {
   expect((await request.get(`/img?src=${encodeURIComponent(photo)}&w=333`)).status()).toBe(400);
 });
 
+test('/img answers 404, uncached, for a photo that is gone', async ({ request }) => {
+  const photo = new URL(await firstPhoto(request));
+  photo.pathname = photo.pathname.replace(/[^/]+$/, 'no-such-photo.jpg');
+  const response = await request.get(`/img?src=${encodeURIComponent(photo.href)}&w=320`);
+  expect(response.status()).toBe(404);
+  expect(response.headers()['cache-control']).toBe('no-store');
+});
+
 test('on a phone, the grid loads resized copies, never the full uploads', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   const originals: string[] = [];
