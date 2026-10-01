@@ -103,11 +103,14 @@ export class FirestoreTransferCache {
     const url = navigation
       ? this.router.serializeUrl(navigation.finalUrl ?? navigation.extractedUrl)
       : onScreen;
+    // Still wanted while its navigation is under way, or once it has landed on that page (a
+    // list starts reading during the navigation, which then completes without waiting).
     const stillWanted = () => {
       const current = this.router.currentNavigation();
-      return navigation
-        ? current?.id === navigation.id
-        : !current && location.pathname + location.search === onScreen;
+      if (current) {
+        return current.id === navigation?.id;
+      }
+      return location.pathname + location.search === url;
     };
 
     let timer: ReturnType<typeof setTimeout> | undefined;

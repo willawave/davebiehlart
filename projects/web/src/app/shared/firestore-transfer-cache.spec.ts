@@ -180,6 +180,28 @@ describe('FirestoreTransferCache', () => {
       expect(hardNavigate).not.toHaveBeenCalled();
     });
 
+    it('should still reload when the navigation has landed on the page that asked', async () => {
+      const { cache, router } = setupBrowser();
+      // A list reads during its navigation; the navigation then completes on that page.
+      const onScreen = location.pathname + location.search;
+      navigation = { id: 1, extractedUrl: router.parseUrl(onScreen) };
+      void cache.read('k', never);
+      navigation = null;
+      await vi.advanceTimersByTimeAsync(BROWSER_READ_TIMEOUT_MS);
+      expect(hardNavigate).toHaveBeenCalledWith(onScreen);
+    });
+
+    it('should not reload once a completed navigation has left the page that asked', async () => {
+      const { cache, router } = setupBrowser();
+      navigation = { id: 1, extractedUrl: router.parseUrl('/somewhere-else') };
+      const read = cache.read('k', never) as Promise<number>;
+      const rejected = expect(read).rejects.toThrow('timed out');
+      navigation = null;
+      await vi.advanceTimersByTimeAsync(BROWSER_READ_TIMEOUT_MS);
+      await rejected;
+      expect(hardNavigate).not.toHaveBeenCalled();
+    });
+
     it("should not reload a page's read once a navigation away is under way", async () => {
       const { cache, router } = setupBrowser();
       const read = cache.read('k', never) as Promise<number>;
