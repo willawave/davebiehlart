@@ -10,6 +10,7 @@ import {
   STORAGE_EMULATOR_PORT,
   provideFirebase,
 } from './firebase.providers';
+import { FIRESTORE_LITE } from './firestore-lite.token';
 import { FIRESTORE } from './firestore.token';
 import { FIREBASE_STORAGE } from './storage.token';
 
@@ -46,6 +47,8 @@ describe('Firebase tokens across injectors', () => {
     expect(firestore.settings?.host).toBe(`${EMULATOR_HOST}:${FIRESTORE_EMULATOR_PORT}`);
     const storage = TestBed.inject(FIREBASE_STORAGE) as unknown as { _host?: string };
     expect(storage._host).toBe(`${EMULATOR_HOST}:${STORAGE_EMULATOR_PORT}`);
+    const lite = TestBed.inject(FIRESTORE_LITE).toJSON() as { settings?: { host?: string } };
+    expect(lite.settings?.host).toBe(`${EMULATOR_HOST}:${FIRESTORE_EMULATOR_PORT}`);
   });
 
   it('should initialize the default app even when only a named app exists', () => {

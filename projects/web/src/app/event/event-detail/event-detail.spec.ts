@@ -2,7 +2,7 @@ import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { EventDocument } from 'core';
-import { Timestamp } from 'firebase/firestore';
+import { Timestamp } from 'firebase/firestore/lite';
 import { SINGLE_POINT_MAP } from '../../shared/single-point-map/single-point-map';
 import { EventStore } from '../event.store';
 import { eventItem } from '../event.testing';

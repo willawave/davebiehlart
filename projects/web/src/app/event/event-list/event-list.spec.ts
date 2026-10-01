@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { Meta } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
 import { EventDocument } from 'core';
-import { Timestamp } from 'firebase/firestore';
+import { Timestamp } from 'firebase/firestore/lite';
 import { EventStore } from '../event.store';
 import { eventItem } from '../event.testing';
 import { EventList } from './event-list';
