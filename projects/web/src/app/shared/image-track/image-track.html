@@ -10,7 +10,9 @@
           (click)="open(i)"
         >
           <img
-            [src]="src"
+            [src]="resized()[i].src"
+            [attr.srcset]="resized()[i].srcset"
+            sizes="(min-width: 600px) 900px, 85vw"
             [alt]="altTexts()[i]"
             [attr.loading]="i < eagerCount ? null : 'lazy'"
             [attr.fetchpriority]="i === 0 ? 'high' : null"

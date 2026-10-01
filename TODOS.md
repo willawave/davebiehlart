@@ -20,6 +20,7 @@ Do these when `web` and `admin` are first hosted from this repo (davebiehlart.co
 
 ## Completed
 
+- **Photo thumbnails** (P1): grids and detail strips downloaded every full upload (200 KB–1 MB each, ~17 MB scrolling Bronzes on a phone). web's server now resizes Storage photos on request (`/img`, sharp, WebP, CDN-cached for a year), limited to this project's bucket and a fixed set of widths. Completed on branch `feat-launch-thumbnails`.
 - **iPhone pages hanging** (P1): on iOS, taps sometimes hung forever because iOS kills Firestore's long-lived browser connection and the SDK waits on it. web now reads Firestore with the lite SDK's one-off requests, so there's no long-lived connection to die; as a safety net, a browser read that takes over 6 seconds, or fails, loads the page from the server instead, and a failed detail read no longer shows "Page not found". Completed on branch `feat-launch-mobile-nav`.
 - **Security headers** (P1): `web` (server.ts) and `admin` (firebase.json) send HSTS, a Content-Security-Policy, `nosniff`, `Referrer-Policy`, `X-Frame-Options`, COOP and `Permissions-Policy`. web's CSP uses a fresh nonce per page. Completed on branch `feat-launch-headers`.
 - **Accessibility audit** (P1): axe at WCAG 2.2 AA on every `web` and `admin` route, light and dark, desktop and phone, plus keyboard focus checks, found no violations. New E2E sweeps (`e2e/web/a11y.e2e.ts`, `e2e/admin/a11y.e2e.ts`) keep it that way. Completed on branch `feat-launch-a11y`.

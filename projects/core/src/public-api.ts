@@ -10,6 +10,7 @@ export {
   EMULATOR_FIREBASE_ENVIRONMENT,
   EMULATOR_HOST,
   FIRESTORE_EMULATOR_PORT,
+  STORAGE_EMULATOR_PORT,
   type FirebaseEnvironment,
   provideFirebase,
 } from './lib/firebase/firebase.providers';
