@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here.
 
+## [0.12.0.1] - 2026-10-01
+
+### Changed
+
+- `TODOS.md` lists the launch loose ends: a production CSP check after cutover, a content question for Dave, and an "After launch" list (photo warm-up, the rest of the security audit, a sitemap test, narrower deploy permissions, and legacy-site cleanup). Backups are marked done.
+
 ## [0.12.0.0] - 2026-10-01
 
 ### Added
