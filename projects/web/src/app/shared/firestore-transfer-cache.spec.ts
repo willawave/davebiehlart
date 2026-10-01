@@ -78,7 +78,7 @@ describe('FirestoreTransferCache', () => {
   // A Firestore stream iOS killed never answers; the page must come from the server instead.
   describe('when a browser read stalls or fails', () => {
     const hardNavigate = vi.fn<(url: string) => void>();
-    let navigation: { finalUrl?: UrlTree; extractedUrl: UrlTree } | null;
+    let navigation: { id: number; finalUrl?: UrlTree; extractedUrl: UrlTree } | null;
     const never = () => new Promise<number>(() => undefined);
 
     function setupBrowser() {
@@ -103,6 +103,7 @@ describe('FirestoreTransferCache', () => {
       vi.useFakeTimers();
       hardNavigate.mockClear();
       navigation = null;
+      sessionStorage.clear();
       vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(true);
     });
 
@@ -113,7 +114,7 @@ describe('FirestoreTransferCache', () => {
 
     it('should load the page being opened from the server when a read times out', async () => {
       const { cache, router } = setupBrowser();
-      navigation = { extractedUrl: router.parseUrl('/statues/pioneer?x=1') };
+      navigation = { id: 1, extractedUrl: router.parseUrl('/statues/pioneer?x=1') };
       const settled = vi.fn();
       void (cache.read('k', never) as Promise<number>).then(settled, settled);
 
@@ -127,7 +128,7 @@ describe('FirestoreTransferCache', () => {
 
     it('should prefer the URL the navigation was redirected to', async () => {
       const { cache, router } = setupBrowser();
-      navigation = { extractedUrl: router.parseUrl('/a'), finalUrl: router.parseUrl('/b') };
+      navigation = { id: 1, extractedUrl: router.parseUrl('/a'), finalUrl: router.parseUrl('/b') };
       void cache.read('k', never);
       await vi.advanceTimersByTimeAsync(BROWSER_READ_TIMEOUT_MS);
       expect(hardNavigate).toHaveBeenCalledWith('/b');
@@ -142,7 +143,7 @@ describe('FirestoreTransferCache', () => {
 
     it('should fall back to the server when a read fails, rather than surface the error', async () => {
       const { cache, router } = setupBrowser();
-      navigation = { extractedUrl: router.parseUrl('/bronzes/a') };
+      navigation = { id: 1, extractedUrl: router.parseUrl('/bronzes/a') };
       const settled = vi.fn();
       void (
         cache.read('k', () => Promise.reject(new Error('unavailable'))) as Promise<number>
@@ -166,6 +167,60 @@ describe('FirestoreTransferCache', () => {
       const { cache } = setupBrowser();
       await expect(cache.read('k', () => Promise.resolve(7))).resolves.toBe(7);
       expect(vi.getTimerCount()).toBe(0);
+    });
+
+    it('should not reload once the visitor has moved on to another navigation', async () => {
+      const { cache, router } = setupBrowser();
+      navigation = { id: 1, extractedUrl: router.parseUrl('/statues/a') };
+      const read = cache.read('k', never) as Promise<number>;
+      const rejected = expect(read).rejects.toThrow('timed out');
+      navigation = { id: 2, extractedUrl: router.parseUrl('/events') };
+      await vi.advanceTimersByTimeAsync(BROWSER_READ_TIMEOUT_MS);
+      await rejected;
+      expect(hardNavigate).not.toHaveBeenCalled();
+    });
+
+    it("should not reload a page's read once a navigation away is under way", async () => {
+      const { cache, router } = setupBrowser();
+      const read = cache.read('k', never) as Promise<number>;
+      const rejected = expect(read).rejects.toThrow('timed out');
+      navigation = { id: 3, extractedUrl: router.parseUrl('/media') };
+      await vi.advanceTimersByTimeAsync(BROWSER_READ_TIMEOUT_MS);
+      await rejected;
+      expect(hardNavigate).not.toHaveBeenCalled();
+    });
+
+    it('should reload a page only once a minute, so a server that also fails shows its error', async () => {
+      const { cache, router } = setupBrowser();
+      navigation = { id: 1, extractedUrl: router.parseUrl('/glass') };
+      void cache.read('k', never);
+      await vi.advanceTimersByTimeAsync(BROWSER_READ_TIMEOUT_MS);
+      expect(hardNavigate).toHaveBeenCalledOnce();
+
+      // After that reload, the same page's read fails again: it fails as before.
+      const again = cache.read('k', never) as Promise<number>;
+      const rejected = expect(again).rejects.toThrow('timed out');
+      await vi.advanceTimersByTimeAsync(BROWSER_READ_TIMEOUT_MS);
+      await rejected;
+      expect(hardNavigate).toHaveBeenCalledOnce();
+
+      // A minute later it may fall back again.
+      await vi.advanceTimersByTimeAsync(60_000);
+      void cache.read('k', never);
+      await vi.advanceTimersByTimeAsync(BROWSER_READ_TIMEOUT_MS);
+      expect(hardNavigate).toHaveBeenCalledTimes(2);
+    });
+
+    it('should not reload when storage is blocked, since a loop could not be ruled out', async () => {
+      vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+        throw new Error('blocked');
+      });
+      const { cache } = setupBrowser();
+      const read = cache.read('k', never) as Promise<number>;
+      const rejected = expect(read).rejects.toThrow('timed out');
+      await vi.advanceTimersByTimeAsync(BROWSER_READ_TIMEOUT_MS);
+      await rejected;
+      expect(hardNavigate).not.toHaveBeenCalled();
     });
 
     it('should never time out on the server', async () => {

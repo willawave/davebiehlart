@@ -96,6 +96,20 @@ export class FirestoreTransferCache {
   }
 
   private withServerFallback<T>(read: Promise<T>): Promise<T> {
+    // Who asked: the navigation under way (a resolver's read) or the page on screen (a list
+    // loaded after the page appeared). Only that one is reloaded, and only while it's current.
+    const navigation = this.router.currentNavigation();
+    const onScreen = location.pathname + location.search;
+    const url = navigation
+      ? this.router.serializeUrl(navigation.finalUrl ?? navigation.extractedUrl)
+      : onScreen;
+    const stillWanted = () => {
+      const current = this.router.currentNavigation();
+      return navigation
+        ? current?.id === navigation.id
+        : !current && location.pathname + location.search === onScreen;
+    };
+
     let timer: ReturnType<typeof setTimeout> | undefined;
     const timedOut = new Promise<never>((_, reject) => {
       timer = setTimeout(
@@ -106,18 +120,37 @@ export class FirestoreTransferCache {
     return Promise.race([read, timedOut])
       .finally(() => clearTimeout(timer))
       .catch((error: unknown) => {
-        if (!navigator.onLine) {
+        // Offline, abandoned (the visitor moved on), or already reloaded once for this page
+        // (the server couldn't read Firestore either): fail as before, so the page's own error
+        // message shows instead of a reload loop.
+        if (!navigator.onLine || !stillWanted() || !claimFallback(url)) {
           throw error;
         }
-        // The page being opened if a navigation is under way, else the page on screen.
-        const navigation = this.router.currentNavigation();
-        const url = navigation
-          ? this.router.serializeUrl(navigation.finalUrl ?? navigation.extractedUrl)
-          : location.pathname + location.search;
         this.hardNavigate(url);
         // Never settles: the browser is leaving, so nothing should flash an error first.
         return new Promise<T>(() => undefined);
       });
+  }
+}
+
+// Allows one server fallback per page per minute, remembered across the reload it causes.
+const FALLBACK_KEY = 'firestore-fallback';
+const FALLBACK_WINDOW_MS = 60_000;
+
+function claimFallback(url: string): boolean {
+  try {
+    const last = JSON.parse(sessionStorage.getItem(FALLBACK_KEY) ?? 'null') as {
+      url: string;
+      at: number;
+    } | null;
+    if (last?.url === url && Date.now() - last.at < FALLBACK_WINDOW_MS) {
+      return false;
+    }
+    sessionStorage.setItem(FALLBACK_KEY, JSON.stringify({ url, at: Date.now() }));
+    return true;
+  } catch {
+    // Storage blocked (some private modes): a reload loop can't be ruled out, so don't reload.
+    return false;
   }
 }
 
