@@ -11,7 +11,6 @@ Do these when `web` and `admin` are first hosted from this repo (davebiehlart.co
 - Run the first full deploy (rules and indexes) in [docs/DEPLOY.md](docs/DEPLOY.md). The one-time setup and the apps-only trial deploy are done (2026-09-30); don't run the Deploy workflow before this.
 - Before switching DNS, check `web` and `admin` against real production data on their `hosted.app` / `web.app` URLs (docs/DEPLOY.md → Cutover, step 1). In `admin`, look but don't save; it writes to production.
 - Run the pre-launch audits: `/cso`, `/design-review`, and unit/E2E coverage. (The SEO audit is done on `feat-launch-seo`.)
-- Audit accessibility on every `web` and `admin` route: axe checks plus keyboard and focus order (WCAG AA). `/design-review` doesn't cover this.
 - Set security headers in the hosting config: HSTS, a CSP that allows Firebase, `X-Content-Type-Options: nosniff`, `Referrer-Policy`.
 - Verify davebiehlart.com in Google Search Console and submit the sitemap after cutover. No analytics for now.
 - Turn on backups before the first rules deploy (docs/DEPLOY.md → One-time setup, step 3). The rollback steps are in docs/DEPLOY.md → Rollback.
@@ -22,6 +21,7 @@ Do these when `web` and `admin` are first hosted from this repo (davebiehlart.co
 
 ## Completed
 
+- **Accessibility audit** (P1): axe at WCAG 2.2 AA on every `web` and `admin` route, light and dark, desktop and phone, plus keyboard focus checks, found no violations. New E2E sweeps (`e2e/web/a11y.e2e.ts`, `e2e/admin/a11y.e2e.ts`) keep it that way. Completed on branch `feat-launch-a11y`.
 - **Fix the flaky phone-menu E2E** (P1): the tap wasn't lost. The first navigation can end after the page is interactive, because the home page's chunk loads lazily, and its `NavigationEnd` closed a menu the tap had just opened. The menu now closes only on later navigations. Completed on branch `feat-launch-e2e-flake`.
 
 - **Implement the admin authGuard** (P1): `authGuard` now requires a signed-in account with a `users/{uid}` doc, looked up by UID. Completed on branch `feat-auth`. **Completed:** v0.2.0.0 (2026-09-24)
