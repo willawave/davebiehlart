@@ -9,6 +9,8 @@ import express from 'express';
 import { join } from 'node:path';
 import { cachedSitemap, isCanonicalHost, requestHost, robotsTxt } from './crawl';
 import { environment } from './environments/environment';
+import { parseImageRequest } from './image-request';
+import { ImageFetchError, resizePhoto } from './image-resize';
 import { contentSecurityPolicy, newNonce, SECURITY_HEADERS, withNonce } from './security-headers';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
@@ -61,6 +63,29 @@ app.get('/sitemap.xml', async (_req, res) => {
   } catch (error) {
     console.error('sitemap.xml failed', error);
     res.status(503).set('Retry-After', '3600').send('Sitemap temporarily unavailable');
+  }
+});
+
+// A Storage photo at a smaller width (image-resize.ts). Each URL is a fixed photo and width,
+// and Storage URLs change when a photo is replaced, so the CDN may keep it for a year.
+app.get('/img', async (req, res) => {
+  const request = parseImageRequest(req.query, environment.firebase);
+  if ('error' in request) {
+    res.status(400).set('Cache-Control', 'no-store').type('text/plain').send(request.error);
+    return;
+  }
+  try {
+    const image = await resizePhoto(request.source, request.width);
+    res.type('image/webp').set('Cache-Control', 'public, max-age=31536000, immutable').send(image);
+  } catch (error) {
+    const status = error instanceof ImageFetchError ? error.status : 502;
+    // The path only: the query holds the photo's access token.
+    console.error(`/img failed for ${request.source.pathname}:`, (error as Error).message);
+    res
+      .status(status)
+      .set('Cache-Control', 'no-store')
+      .type('text/plain')
+      .send('Photo unavailable');
   }
 });
 

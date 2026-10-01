@@ -40,6 +40,7 @@
             },
             "server": "projects/web/src/main.server.ts",
             "outputMode": "server",
+            "externalDependencies": ["sharp"],
             "security": {
               "allowedHosts": [
                 "davebiehlart.com",
