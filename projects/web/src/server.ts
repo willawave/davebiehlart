@@ -4,15 +4,26 @@ import {
   isMainModule,
   writeResponseToNodeResponse,
 } from '@angular/ssr/node';
+import { isDevMode } from '@angular/core';
 import express from 'express';
 import { join } from 'node:path';
 import { cachedSitemap, isCanonicalHost, requestHost, robotsTxt } from './crawl';
 import { environment } from './environments/environment';
+import { contentSecurityPolicy, newNonce, SECURITY_HEADERS, withNonce } from './security-headers';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
 
 const app = express();
 const angularApp = new AngularNodeAppEngine();
+app.disable('x-powered-by');
+
+/**
+ * Security headers on every response. The Content-Security-Policy is added per page below.
+ */
+app.use((_req, res, next) => {
+  res.set(SECURITY_HEADERS);
+  next();
+});
 
 /**
  * Example Express Rest API endpoints can be defined here.
@@ -63,12 +74,32 @@ app.use(
 );
 
 /**
- * Handle all other requests by rendering the Angular application.
+ * Handle all other requests by rendering the Angular application. Each page gets a fresh
+ * nonce: it replaces index.html's placeholder and is the only way an inline script runs.
+ * Development skips the policy, since the dev server injects inline scripts of its own.
  */
 app.use((req, res, next) => {
   angularApp
     .handle(req)
-    .then((response) => (response ? writeResponseToNodeResponse(response, res) : next()))
+    .then(async (response) => {
+      if (!response) {
+        return next();
+      }
+      if (!response.headers.get('content-type')?.startsWith('text/html')) {
+        return writeResponseToNodeResponse(response, res);
+      }
+      const nonce = newNonce();
+      const headers = new Headers(response.headers);
+      headers.delete('content-length');
+      if (!isDevMode()) {
+        headers.set('Content-Security-Policy', contentSecurityPolicy(nonce));
+      }
+      const html = withNonce(await response.text(), nonce);
+      return writeResponseToNodeResponse(
+        new Response(html, { status: response.status, statusText: response.statusText, headers }),
+        res,
+      );
+    })
     .catch(next);
 });
 

@@ -32,7 +32,8 @@
       content="Dave Biehl Art: a bronze mare-and-foal mark beside the name"
     />
     <meta name="twitter:card" content="summary_large_image" />
-    <script>
+    <!-- The nonce placeholder is swapped for each response's nonce (see security-headers.ts). -->
+    <script nonce="CSP_NONCE">
       // Apply a saved light/dark choice before first paint (ColorSchemeService writes it).
       try {
         var scheme = localStorage.getItem('color-scheme');
@@ -43,6 +44,6 @@
     </script>
   </head>
   <body>
-    <app-root></app-root>
+    <app-root ngCspNonce="CSP_NONCE"></app-root>
   </body>
 </html>
