@@ -33,9 +33,9 @@ export async function signInWithGoogle(page: Page, email: string): Promise<void>
   });
 }
 
-// WCAG 2.1 A/AA. The SDK's hidden relay iframe belongs to the Auth emulator, not the app.
-// Waits for finite animations first: a form field's hint fades in as its error clears, and
-// axe would measure its contrast mid-fade.
+// WCAG 2.2 A/AA. Two iframes are skipped as third-party: the Auth emulator's hidden relay and
+// YouTube's embedded player on media pages. Waits for finite animations first: a form field's
+// hint fades in as its error clears, and axe would measure its contrast mid-fade.
 export async function expectNoAxeViolations(page: Page): Promise<void> {
   await page.evaluate(() =>
     Promise.all(
@@ -46,8 +46,9 @@ export async function expectNoAxeViolations(page: Page): Promise<void> {
     ),
   );
   const results = await new AxeBuilder({ page })
-    .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+    .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
     .exclude('iframe[aria-hidden="true"]')
+    .exclude('iframe[src*="youtube"]')
     .analyze();
   expect(results.violations).toEqual([]);
 }
