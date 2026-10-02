@@ -2,6 +2,13 @@
 
 All notable changes to this project are documented here.
 
+## [1.0.0.1] - 2026-10-02
+
+### Changed
+
+- `CLAUDE.md` now describes how the site really deploys: merging to `main` doesn't deploy, the Deploy workflow is run by hand on `main` and only after a yes, and both sites should answer afterwards. It used to say nothing deploys.
+- `TODOS.md` records the finished launch follow-ups (admin upload test, Search Console, a clean content-security-policy crawl of all 110 pages, the legacy repo archived, a production performance baseline) and adds one new item the baseline found: the public site sends its scripts and pages uncompressed.
+
 ## [1.0.0.0] - 2026-10-02
 
 **Launch.** davebiehlart.com, www.davebiehlart.com and admin.davebiehlart.com now serve from this repo. The domains moved on 2026-10-01, the production security rules and indexes went live with them, and the post-launch checks passed, including an admin photo upload, reorder and delete.
