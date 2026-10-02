@@ -16,6 +16,16 @@ test('pages and files send the security headers and hide the server', async ({ r
   }
 });
 
+test('pages and the sitemap are compressed for browsers that ask', async ({ request }) => {
+  for (const path of ['/', '/bronzes/seed-bronze-01', '/sitemap.xml']) {
+    const compressed = await request.get(path, { headers: { 'Accept-Encoding': 'br, gzip' } });
+    expect(compressed.headers()['content-encoding'], path).toMatch(/^(br|gzip)$/);
+    expect(compressed.headers()['vary'], path).toContain('Accept-Encoding');
+    const plain = await request.get(path, { headers: { 'Accept-Encoding': 'identity' } });
+    expect(plain.headers()['content-encoding'], path).toBeUndefined();
+  }
+});
+
 test("each page's inline scripts carry a fresh nonce", async ({ request }) => {
   const nonces = async () => {
     const html = await (await request.get('/')).text();

@@ -5,6 +5,7 @@ import {
   writeResponseToNodeResponse,
 } from '@angular/ssr/node';
 import { isDevMode } from '@angular/core';
+import compression from 'compression';
 import express from 'express';
 import { join } from 'node:path';
 import { cachedSitemap, isCanonicalHost, requestHost, robotsTxt } from './crawl';
@@ -26,6 +27,13 @@ app.use((_req, res, next) => {
   res.set(SECURITY_HEADERS);
   next();
 });
+
+/**
+ * Brotli or gzip for text (pages, scripts, styles, the sitemap). App Hosting doesn't compress
+ * for us, and the main script alone is four times smaller compressed. Photos from /img are
+ * already WebP and pass through untouched.
+ */
+app.use(compression());
 
 /**
  * Example Express Rest API endpoints can be defined here.

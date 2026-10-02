@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here.
 
+## [1.0.0.2] - 2026-10-02
+
+### Fixed
+
+- The public site now compresses its pages, scripts, styles and sitemap (Brotli or gzip, whichever the browser asks for). Hosting wasn't doing it, so every visitor downloaded the main script at its full 512 KB; it is now about 152 KB. Pages on a slow phone connection become usable sooner. Photos are untouched: they are already WebP.
+
 ## [1.0.0.1] - 2026-10-02
 
 ### Changed
