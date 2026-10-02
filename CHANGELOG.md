@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here.
 
+## [1.0.0.3] - 2026-10-02
+
+### Changed
+
+- `TODOS.md` now says what the performance baselines really cover. The earlier entry claimed a production baseline only, and that one was taken before compression went live. Both an optimized emulator build and production were measured again at v1.0.0.2, three passes each.
+
 ## [1.0.0.2] - 2026-10-02
 
 ### Fixed
