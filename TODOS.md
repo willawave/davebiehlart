@@ -8,7 +8,6 @@ Only items that break real use, risk production data, or block launch belong her
 
 `web` and `admin` went live from this repo on 2026-10-01 (see Completed → Cutover, and → Launch follow-ups for what was done right after).
 
-- `web` serves its scripts and pages uncompressed: `main-*.js` is 512 KB on the wire with or without `Accept-Encoding: br, gzip`, and so is the HTML (found by the 2026-10-02 benchmark). Phones on slow connections download about four times more than they need to. Compress responses in `projects/web/src/server.ts` or at App Hosting.
 - After any deploy that adds an outside service (a script, font, image host or API), crawl davebiehlart.com for Content-Security-Policy violations again. The CSP runs only in production builds, so local E2E can't catch a blocked source.
 
 ## After launch
