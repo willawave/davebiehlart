@@ -154,10 +154,10 @@ writeFileSync(
 );
 // The full mark in currentColor; the apps use it as a CSS mask for the lockup.
 writeFileSync(`${iconsDir}/mark.svg`, markSvg() + '\n');
-writeFileSync(
-  `${iconsDir}/apple-touch-icon.png`,
-  await square(180, { background: light.page, inset: 18 }),
-);
+const appleTouchIcon = await square(180, { background: light.page, inset: 18 });
+writeFileSync(`${iconsDir}/apple-touch-icon.png`, appleTouchIcon);
+// Older iOS and some crawlers ask for this name whatever the page links, so serve the same icon.
+writeFileSync(`${iconsDir}/apple-touch-icon-precomposed.png`, appleTouchIcon);
 writeFileSync(`${iconsDir}/icon-192.png`, await square(192, { background: light.page, inset: 16 }));
 writeFileSync(`${iconsDir}/icon-512.png`, await square(512, { background: light.page, inset: 40 }));
 // Maskable icons get cropped to as little as the central 80% circle, so keep the mark well inside.

@@ -6,7 +6,13 @@ test('the sign-in page renders', async ({ page }) => {
 });
 
 test('the admin app serves the shared favicon set and its own manifest', async ({ request }) => {
-  for (const path of ['/favicon.ico', '/icon.svg', '/mark.svg', '/apple-touch-icon.png']) {
+  for (const path of [
+    '/favicon.ico',
+    '/icon.svg',
+    '/mark.svg',
+    '/apple-touch-icon.png',
+    '/apple-touch-icon-precomposed.png',
+  ]) {
     expect((await request.get(path)).status(), path).toBe(200);
   }
   const manifest = await request.get('/manifest.webmanifest');

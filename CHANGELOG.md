@@ -2,6 +2,18 @@
 
 All notable changes to this project are documented here.
 
+## [1.0.0.0] - 2026-10-02
+
+**Launch.** davebiehlart.com, www.davebiehlart.com and admin.davebiehlart.com now serve from this repo. The domains moved on 2026-10-01, the production security rules and indexes went live with them, and the post-launch checks passed, including an admin photo upload, reorder and delete.
+
+### Added
+
+- Both sites answer `/apple-touch-icon-precomposed.png` with the home-screen icon. Older iPhones and some crawlers ask for that name no matter what the page links, and it returned "not found" on launch day.
+
+### Changed
+
+- `TODOS.md` records the cutover as done and lists what's left from the launch: archiving the legacy repo, Search Console, a production benchmark, the deploy configuration, and a content-security-policy crawl. Retiring the legacy backends now includes removing the sign-in domains only the legacy admin used.
+
 ## [0.12.0.2] - 2026-10-01
 
 ### Changed
