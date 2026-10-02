@@ -8,12 +8,11 @@ Only items that break real use, risk production data, or block launch belong her
 
 Do these when `web` and `admin` are first hosted from this repo (davebiehlart.com and admin.davebiehlart.com serve the legacy site today, from its own App Hosting backends), alongside the rules deploy described in AGENTS.md.
 
-- Run the first full deploy (rules and indexes) in [docs/DEPLOY.md](docs/DEPLOY.md). The one-time setup and the apps-only trial deploy are done (2026-09-30); don't run the Deploy workflow before this.
-- Before switching DNS, check `web` and `admin` against real production data on their `hosted.app` / `web.app` URLs (docs/DEPLOY.md → Cutover, step 1). In `admin`, look but don't save; it writes to production.
-- Verify davebiehlart.com in Google Search Console and submit the sitemap after cutover. No analytics for now.
-- Retire the legacy admin and stop the legacy repo from deploying: agree with both admins when they switch to admin.davebiehlart.com so edits don't split between the two apps, then turn off the legacy backends' automatic rollouts and archive `bbiehl/the-bronze-horse-angular`, whose rules deploy would bring back the old rules (docs/DEPLOY.md → Cutover).
-- Record a `/benchmark` baseline. It needs an optimized (production-mode) build pointed at the emulators, which doesn't exist yet; after launch, benchmark production.
+- Run the cutover in [docs/DEPLOY.md](docs/DEPLOY.md) → "Cutover from the legacy site", which now includes the first full deploy (rules and indexes). The rules can't go live before the domains move: the legacy home page and legacy admin sign-in fail under them (docs/DEPLOY.md → "Why the rules wait for the cutover"). Already done: one-time setup and the apps-only trial deploy (2026-09-30); both admins' `users` document IDs match their Auth UIDs, and the legacy backends' automatic rollouts are off (2026-10-01). Don't run the Deploy workflow before the cutover.
 - Add `admin.davebiehlart.com` to Firebase Auth's authorized domains, or popup sign-in fails with `auth/unauthorized-domain`.
+- After cutover: archive `bbiehl/the-bronze-horse-angular`, whose `firebase deploy` would bring back the old rules.
+- After cutover: verify davebiehlart.com in Google Search Console and submit the sitemap. No analytics for now.
+- Record a `/benchmark` baseline. It needs an optimized (production-mode) build pointed at the emulators, which doesn't exist yet; after launch, benchmark production.
 - Re-run `/setup-deploy` so CLAUDE.md's "Deploy Configuration" records the platform, deploy trigger, status command, and health checks.
 - Right after cutover, crawl davebiehlart.com for Content-Security-Policy violations (as done on the trial URL). The CSP runs only in production builds, so local E2E can't catch a blocked source; repeat the crawl after any deploy that adds an outside service.
 - Ask Dave about the "May 2026" event: it's a monthly round-up stored as one event dated April 12, so its page reads "Sunday, April 12" under a May title.
@@ -29,6 +28,8 @@ Do these when `web` and `admin` are first hosted from this repo (davebiehlart.co
 - After the legacy site is retired and stable: delete its App Hosting backends (`davebiehlart`, `the-bronze-horse`), prune Firestore indexes nothing queries anymore (docs/DEPLOY.md → Indexes), and remove the extra Firebase web app registration `web` and its browser API key that `apphosting:backends:create` added.
 
 ## Completed
+
+- **Real-data check** (P1): `web` on its `hosted.app` URL, walked on an iPhone and swept by script (all 101 sitemap pages return 200 with a server-rendered heading; detail photos have alt text; grid photos are decorative, labeled by the card name), and `admin` on `davebiehlart-admin.web.app`, looked at without saving. Completed 2026-10-01.
 
 - **Backups** (P1): Firestore point-in-time recovery and a daily backup kept 14 days are on (2026-10-01); Storage soft delete keeps deleted files 7 days.
 - **Pre-launch audits** (P1): SEO, accessibility, security headers, `/design-review`, `/cso` (partial: dependencies, secrets history, `ci.yml` and admin client code not assessed, by choice) and unit/E2E coverage, each on its own `feat-launch-*` branch. Completed on branch `feat-launch-readiness`.

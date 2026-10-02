@@ -94,7 +94,7 @@ NUM=$(gcloud projects describe $P --format='value(projectNumber)')
 
 ## Trial deploy (apps only)
 
-Deploy `web` and `admin` to their default URLs without touching the rules, indexes or DNS. The legacy site keeps running unchanged, and both new apps work under production's current, looser rules. Use this to prove the hosting setup and to run audits and the real-data check against real hosting before the first full deploy.
+Deploy `web` and `admin` to their default URLs without touching the rules, indexes or DNS. The legacy site keeps running unchanged, and both new apps work under production's current, looser rules. Use this to prove the hosting setup and to run audits and the real-data check against real hosting before the cutover.
 
 1. **Authorize the admin's sign-in domain.** Firebase console → Authentication → Settings → Authorized domains → add `davebiehlart-admin.web.app` if it isn't listed (only the project's default domains are added automatically). Without it, popup sign-in fails with `auth/unauthorized-domain`.
 2. On a clean checkout of `main`:
@@ -106,26 +106,20 @@ Deploy `web` and `admin` to their default URLs without touching the rules, index
    App Hosting builds `web` in the cloud; the first build takes several minutes.
 3. Run the post-deploy checks below, except the upload check (no rules changed). If App Hosting's build fails, its log is under Firebase console → App Hosting → `web` → Rollouts.
 
-Redeploy the apps the same way as often as needed. Don't run the Deploy workflow yet: it also deploys the rules, which is the first full deploy's job.
+Redeploy the apps the same way as often as needed. Don't run the Deploy workflow yet: it also deploys the rules, which go live only at the cutover.
 
-## First full deploy (local)
+## Why the rules wait for the cutover
 
-The first full deploy runs locally because the CLI asks, once, to let the Storage service agent read Firestore; Storage's `isAdmin()` rule needs that. It also tightens production's rules for the first time, so check the legacy clients first.
+The legacy site fails the pre-flight list in AGENTS.md → "Production data guardrails" (checked 2026-10-01 against `bbiehl/the-bronze-horse-angular` at `e8b0594`):
 
-1. Go through the pre-flight list in AGENTS.md → "Production data guardrails": every live client looks admins up by `getDoc(users/{uid})`, lists content only with `where('visible', '==', true)`, and uploads only jpeg/png/webp/gif/avif under 1 MB.
-2. Confirm the backups from one-time setup exist.
-3. On a clean checkout of `main`:
-   ```sh
-   pnpm install --frozen-lockfile
-   pnpm ng build admin
-   pnpm exec firebase deploy --only firestore,storage,apphosting,hosting --project the-bronze-horse-b3aa2
-   ```
-   Answer yes to the Storage → Firestore access prompt.
-4. Run the post-deploy checks below, including one upload in the legacy admin and one in the new admin.
+- Its home page loads upcoming events with no `visible == true` filter (`event.api.service.ts`, `getAllUpcomingEvents`). The new rules deny that query to visitors, and it runs in the home route's resolver, so the home page fails to load.
+- Its admin finds admins by querying `users` by email (`auth.service.ts`). The new rules allow only `getDoc(users/{uid})`, so legacy sign-in fails.
+
+Its list pages, detail pages and uploads pass. So the first full deploy (rules and indexes) is a step of the cutover, run once the legacy site no longer serves the domains. It runs locally because the CLI asks, once, to let the Storage service agent read Firestore; Storage's `isAdmin()` rule needs that.
 
 ## Routine deploys
 
-Only after the first full deploy.
+Only after the cutover.
 
 1. Merge the PR (the merge queue runs CI), and wait for CI on `main` to pass.
 2. Actions → **Deploy** → Run workflow on `main`. It refuses to run until CI has passed on that commit.
@@ -139,7 +133,7 @@ Only after the first full deploy.
   ```
   (After the cutover, use https://davebiehlart.com/.) No output means SSR fell back to client-side rendering. Check `angular.json` → web → `security.allowedHosts` covers the host.
 - `admin` loads and signs in.
-- After any rules change: upload one photo in each live admin (both while the legacy admin is still in use).
+- After any rules change: upload one photo in `admin`.
 
 ## Rollback
 
@@ -155,13 +149,22 @@ Only after the first full deploy.
 ## Cutover from the legacy site
 
 1. **Check real data first.** After the trial deploy (above), walk every `web` page on its `hosted.app` URL and every `admin` screen on its `web.app` URL: long titles, real photo sizes, missing alt text. In `admin`, look but don't save; it writes to production.
-2. **Agree the switch date with both admins.** From then on, all edits go through the new admin.
-3. **A day ahead**, lower the TTL on davebiehlart.com's DNS records to 300 seconds.
-4. **Authorize the admin domain.** Firebase console → Authentication → Settings → Authorized domains → add `admin.davebiehlart.com`.
-5. **Move the domains.** A custom domain can belong to only one backend or site, so remove it from the legacy backend, then add it to the new one. HTTPS takes a few minutes, occasionally longer, to come up, so do this at a quiet time.
+2. **Agree the switch date with both admins.** From then on, all edits go through the new admin; the legacy admin stops working at step 8.
+3. **Confirm each admin's `users` document ID is their Auth UID** (Firebase console → Authentication → Users). The new rules and the new admin recognize admins only that way.
+4. **Stop the legacy repo from deploying.** Turn off automatic rollouts on both legacy backends. Nobody may run `firebase deploy` from `bbiehl/the-bronze-horse-angular` from here on: it would bring back the old, looser rules.
+5. **If there's time, a day ahead**, lower the TTL on davebiehlart.com's DNS records to 300 seconds.
+6. **Authorize the admin domain.** Firebase console → Authentication → Settings → Authorized domains → add `admin.davebiehlart.com`.
+7. **Move the domains.** A custom domain can belong to only one backend or site, so remove it from the legacy backend, then add it to the new one. HTTPS takes a few minutes, occasionally longer, to come up, so do this at a quiet time.
    - `davebiehlart.com` and `www.davebiehlart.com`: legacy App Hosting backend → Settings → Domains → remove; backend `web` → add both, with `www` redirecting to `davebiehlart.com`. Update DNS records if the console asks.
    - `admin.davebiehlart.com`: remove it from its legacy backend; Hosting → `davebiehlart-admin` → Add custom domain.
-6. **Verify**: the post-deploy checks, on the real domains.
-7. **Stop the legacy repo from deploying.** Turn off automatic rollouts on both legacy backends, and archive `bbiehl/the-bronze-horse-angular`. A rules deploy from it would bring back the old, looser rules.
-8. **Keep the legacy backends** until the new site has been stable for a few weeks, then delete them and prune unused indexes (see Indexes).
-9. Re-run `/setup-deploy` so CLAUDE.md's Deploy Configuration records the live setup.
+8. **Deploy the rules and indexes** once davebiehlart.com serves the new site (its responses carry a `Content-Security-Policy` header; the legacy site's don't). If the console had you change DNS records, also wait out their old TTL, since visitors still reaching the legacy site would get a broken home page. Confirm the backups from one-time setup exist, then on a clean checkout of `main`:
+   ```sh
+   pnpm install --frozen-lockfile
+   pnpm ng build admin
+   pnpm exec firebase deploy --only firestore,storage,apphosting,hosting --project the-bronze-horse-b3aa2
+   ```
+   Answer yes to the Storage → Firestore access prompt.
+9. **Verify**: the post-deploy checks, on the real domains, including one upload in the new admin.
+10. **Archive `bbiehl/the-bronze-horse-angular`.**
+11. **Keep the legacy backends** until the new site has been stable for a few weeks, then delete them and prune unused indexes (see Indexes).
+12. Re-run `/setup-deploy` so CLAUDE.md's Deploy Configuration records the live setup.

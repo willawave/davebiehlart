@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here.
 
+## [0.12.0.2] - 2026-10-01
+
+### Changed
+
+- The production security rules now go live during the cutover, not before it. A pre-flight check of the legacy site found that under the new rules its home page would fail to load (it lists upcoming events without filtering out hidden ones) and its admin sign-in would fail (it looks admins up by email). `docs/DEPLOY.md` moves the rules deploy into the cutover, after the domains move, and adds steps to confirm each admin's account ID and stop the legacy site from deploying. `TODOS.md` follows the new order and marks the real-data check done.
+
 ## [0.12.0.1] - 2026-10-01
 
 ### Fixed
