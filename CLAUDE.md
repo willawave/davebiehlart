@@ -37,19 +37,19 @@ Key routing rules:
 
 ## Deploy Configuration (configured by /setup-deploy)
 
-Nothing deploys from `main` yet: no hosting target in `firebase.json`, no deploy workflow. davebiehlart.com currently serves the legacy site, so health-checking it proves nothing about this repo. Re-run `/setup-deploy` when hosting goes live (see TODOS.md → "Launch follow-ups").
+Merging to `main` does not deploy. Production deploys only through the Deploy workflow, run by hand on `main` (docs/DEPLOY.md → "Routine deploys"). Every run deploys the Firestore/Storage rules and indexes along with both apps, so it is a production write: start it only after the user says yes in that session.
 
-- Platform: none (not deployed yet)
-- Production URL: none (planned: https://davebiehlart.com for web, https://admin.davebiehlart.com for admin)
-- Deploy workflow: none
-- Deploy status command: none
-- Merge method: squash, through the GitHub merge queue (the "Protect main" ruleset requires it; `gh pr merge --squash` enqueues the PR)
+- Platform: Firebase, deployed by GitHub Actions. `web` is the App Hosting backend `web` (SSR); `admin` is the Hosting site `davebiehlart-admin`
+- Production URL: https://davebiehlart.com (web), https://admin.davebiehlart.com (admin)
+- Deploy workflow: `.github/workflows/deploy.yml` (`workflow_dispatch`, `main` only; it refuses a commit whose CI run on `main` hasn't passed)
+- Deploy status command: `gh run list --workflow deploy.yml --branch main --limit 1 --json databaseId,headSha,status,conclusion`
+- Merge method: squash, through the GitHub merge queue (the "Protect main" ruleset requires it; `gh pr merge --squash` enqueues the PR, and `--delete-branch` is rejected, so delete the branch after the merge)
 - Project type: web app (SSR `web` + `admin` SPA)
-- Post-deploy health check: none (skip deploy verification)
+- Post-deploy health check: both production URLs return 200. After a deploy, an admin also tests one photo upload (AGENTS.md → "Production data guardrails"); a session never does that itself
 
 ### Custom deploy hooks
 
 - Pre-merge: none (the merge queue runs `.github/workflows/ci.yml` on each PR on top of `main` before merging)
-- Deploy trigger: none
-- Deploy status: none
-- Health check: none
+- Deploy trigger: `gh workflow run deploy.yml --ref main`, only after the user says yes in that session; skip it for changes that don't alter what's served (docs, tests, CI)
+- Deploy status: `gh run watch <run-id> --exit-status`, and confirm the run's `headSha` is the merge commit
+- Health check: `curl -s -o /dev/null -w '%{http_code}' https://davebiehlart.com/` and the same for https://admin.davebiehlart.com/, expecting 200

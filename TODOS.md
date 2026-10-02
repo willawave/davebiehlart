@@ -6,14 +6,10 @@ Only items that break real use, risk production data, or block launch belong her
 
 **Priority:** P1
 
-`web` and `admin` went live from this repo on 2026-10-01 (see Completed → Cutover). These are what's left from the launch.
+`web` and `admin` went live from this repo on 2026-10-01 (see Completed → Cutover, and → Launch follow-ups for what was done right after).
 
-- Archive `bbiehl/the-bronze-horse-angular`, whose `firebase deploy` would bring back the old rules.
-- Verify davebiehlart.com in Google Search Console and submit the sitemap. No analytics for now.
-- Record a `/benchmark` baseline against production.
-- Re-run `/setup-deploy` so CLAUDE.md's "Deploy Configuration" records the platform, deploy trigger, status command, and health checks.
-- Crawl davebiehlart.com for Content-Security-Policy violations (as done on the trial URL). The CSP runs only in production builds, so local E2E can't catch a blocked source; repeat the crawl after any deploy that adds an outside service.
-- Ask Dave about the "May 2026" event: it's a monthly round-up stored as one event dated April 12, so its page reads "Sunday, April 12" under a May title.
+- `web` serves its scripts and pages uncompressed: `main-*.js` is 512 KB on the wire with or without `Accept-Encoding: br, gzip`, and so is the HTML (found by the 2026-10-02 benchmark). Phones on slow connections download about four times more than they need to. Compress responses in `projects/web/src/server.ts` or at App Hosting.
+- After any deploy that adds an outside service (a script, font, image host or API), crawl davebiehlart.com for Content-Security-Policy violations again. The CSP runs only in production builds, so local E2E can't catch a blocked source.
 
 ## After launch
 
@@ -26,6 +22,8 @@ Only items that break real use, risk production data, or block launch belong her
 - After the legacy site is retired and stable: delete its App Hosting backends (`davebiehlart`, `the-bronze-horse`), prune Firestore indexes nothing queries anymore (docs/DEPLOY.md → Indexes), and remove the extra Firebase web app registration `web` and its browser API key that `apphosting:backends:create` added. At the same time, remove the Firebase Auth authorized domains only the legacy admin signed in from: `davebiehlart.com` and `the-bronze-horse--the-bronze-horse-b3aa2.us-central1.hosted.app` (this repo's admin signs in on `admin.davebiehlart.com`). The backends stay idle, rollouts off, as rollback until then.
 
 ## Completed
+
+- **Launch follow-ups** (P1): an admin photo upload passed after the v1.0.0.0 deploy; davebiehlart.com is verified in Google Search Console with the sitemap submitted; a browser crawl of all 109 sitemap pages plus the admin sign-in page found no Content-Security-Policy violations and no failed requests; `bbiehl/the-bronze-horse-angular` is archived, so its `firebase deploy` can't bring back the old rules; CLAUDE.md's "Deploy Configuration" describes the real deploy; and a production `/benchmark` baseline is recorded (first paint under half a second on a fast connection). The "May 2026" event question was dropped: nobody will see that page. Completed 2026-10-02.
 
 - **Cutover** (P1): davebiehlart.com, www and admin.davebiehlart.com serve from this repo. The domains moved with App Hosting's "Migrate domain" flow, `admin.davebiehlart.com` is an authorized Auth domain, and the production rules and indexes were deployed from `main` at v0.12.0.2. Post-deploy checks passed, including an admin photo upload, reorder and delete. Completed 2026-10-01.
 
