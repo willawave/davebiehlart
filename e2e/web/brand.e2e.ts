@@ -5,6 +5,7 @@ const ICONS = [
   '/icon.svg',
   '/mark.svg',
   '/apple-touch-icon.png',
+  '/apple-touch-icon-precomposed.png',
   '/icon-192.png',
   '/icon-512.png',
   '/icon-maskable-512.png',

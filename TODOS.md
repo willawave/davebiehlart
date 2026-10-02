@@ -2,19 +2,17 @@
 
 Only items that break real use, risk production data, or block launch belong here (see AGENTS.md → Workflow).
 
-## Before going live
+## Launch follow-ups
 
 **Priority:** P1
 
-Do these when `web` and `admin` are first hosted from this repo (davebiehlart.com and admin.davebiehlart.com serve the legacy site today, from its own App Hosting backends), alongside the rules deploy described in AGENTS.md.
+`web` and `admin` went live from this repo on 2026-10-01 (see Completed → Cutover). These are what's left from the launch.
 
-- Run the cutover in [docs/DEPLOY.md](docs/DEPLOY.md) → "Cutover from the legacy site", which now includes the first full deploy (rules and indexes). The rules can't go live before the domains move: the legacy home page and legacy admin sign-in fail under them (docs/DEPLOY.md → "Why the rules wait for the cutover"). Already done: one-time setup and the apps-only trial deploy (2026-09-30); both admins' `users` document IDs match their Auth UIDs, and the legacy backends' automatic rollouts are off (2026-10-01). Don't run the Deploy workflow before the cutover.
-- Add `admin.davebiehlart.com` to Firebase Auth's authorized domains, or popup sign-in fails with `auth/unauthorized-domain`.
-- After cutover: archive `bbiehl/the-bronze-horse-angular`, whose `firebase deploy` would bring back the old rules.
-- After cutover: verify davebiehlart.com in Google Search Console and submit the sitemap. No analytics for now.
-- Record a `/benchmark` baseline. It needs an optimized (production-mode) build pointed at the emulators, which doesn't exist yet; after launch, benchmark production.
+- Archive `bbiehl/the-bronze-horse-angular`, whose `firebase deploy` would bring back the old rules.
+- Verify davebiehlart.com in Google Search Console and submit the sitemap. No analytics for now.
+- Record a `/benchmark` baseline against production.
 - Re-run `/setup-deploy` so CLAUDE.md's "Deploy Configuration" records the platform, deploy trigger, status command, and health checks.
-- Right after cutover, crawl davebiehlart.com for Content-Security-Policy violations (as done on the trial URL). The CSP runs only in production builds, so local E2E can't catch a blocked source; repeat the crawl after any deploy that adds an outside service.
+- Crawl davebiehlart.com for Content-Security-Policy violations (as done on the trial URL). The CSP runs only in production builds, so local E2E can't catch a blocked source; repeat the crawl after any deploy that adds an outside service.
 - Ask Dave about the "May 2026" event: it's a monthly round-up stored as one event dated April 12, so its page reads "Sunday, April 12" under a May title.
 
 ## After launch
@@ -25,9 +23,11 @@ Do these when `web` and `admin` are first hosted from this repo (davebiehlart.co
 - Finish the `/cso` audit's unassessed areas: dependencies (known vulnerabilities), secrets in git history, `.github/workflows/ci.yml`, and admin's client code. Skipped before launch by choice.
 - Cover `sitemap.xml`'s 503 path (Firestore unreachable from the server); it has no test.
 - Narrow the `github-deploy` service account's roles (Firebase Admin, App Hosting Admin, Storage Admin, Service Account User) to what the Deploy workflow actually uses, once deploys run cleanly.
-- After the legacy site is retired and stable: delete its App Hosting backends (`davebiehlart`, `the-bronze-horse`), prune Firestore indexes nothing queries anymore (docs/DEPLOY.md → Indexes), and remove the extra Firebase web app registration `web` and its browser API key that `apphosting:backends:create` added.
+- After the legacy site is retired and stable: delete its App Hosting backends (`davebiehlart`, `the-bronze-horse`), prune Firestore indexes nothing queries anymore (docs/DEPLOY.md → Indexes), and remove the extra Firebase web app registration `web` and its browser API key that `apphosting:backends:create` added. At the same time, remove the Firebase Auth authorized domains only the legacy admin signed in from: `davebiehlart.com` and `the-bronze-horse--the-bronze-horse-b3aa2.us-central1.hosted.app` (this repo's admin signs in on `admin.davebiehlart.com`). The backends stay idle, rollouts off, as rollback until then.
 
 ## Completed
+
+- **Cutover** (P1): davebiehlart.com, www and admin.davebiehlart.com serve from this repo. The domains moved with App Hosting's "Migrate domain" flow, `admin.davebiehlart.com` is an authorized Auth domain, and the production rules and indexes were deployed from `main` at v0.12.0.2. Post-deploy checks passed, including an admin photo upload, reorder and delete. Completed 2026-10-01.
 
 - **Real-data check** (P1): `web` on its `hosted.app` URL, walked on an iPhone and swept by script (all 101 sitemap pages return 200 with a server-rendered heading; detail photos have alt text; grid photos are decorative, labeled by the card name), and `admin` on `davebiehlart-admin.web.app`, looked at without saving. Completed 2026-10-01.
 

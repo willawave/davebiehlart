@@ -5,19 +5,20 @@ serve `dist/icons/` at their site root (see the `assets` entries in `angular.jso
 
 ## Files
 
-| Path                                      | What it is                                                                    |
-| ----------------------------------------- | ----------------------------------------------------------------------------- |
-| `source/mark.svg`                         | The master mark (700×595, `currentColor`). Every output is rendered from it.  |
-| `generate.mjs`                            | `pnpm brand` renders everything below. Commit the output.                     |
-| `dist/icons/favicon.ico`                  | 16/32/48px, cropped to the mare's head (viewBox `250 0 450 595`).             |
-| `dist/icons/icon.svg`                     | Head crop; bronze, or light bronze in a dark browser theme.                   |
-| `dist/icons/mark.svg`                     | Full mark in `currentColor`. The apps use it as the lockup's CSS mask.        |
-| `dist/icons/apple-touch-icon.png`         | 180px, mark on parchment.                                                     |
-| `dist/icons/icon-{192,512}.png`           | Web-app manifest icons.                                                       |
-| `dist/icons/icon-maskable-512.png`        | Manifest icon with the mark inside the maskable safe zone.                    |
-| `dist/og-image.png`                       | 1200×630 social preview; also copied to `projects/web/public/`.               |
-| `dist/lockup/lockup-*-{light,dark}.png`   | Horizontal and stacked lockups at 2×, transparent, for light or dark grounds. |
-| `dist/lockup/mark-{bronze,ink,white}.svg` | Single-color marks for print, embroidery, social avatars.                     |
+| Path                                          | What it is                                                                    |
+| --------------------------------------------- | ----------------------------------------------------------------------------- |
+| `source/mark.svg`                             | The master mark (700×595, `currentColor`). Every output is rendered from it.  |
+| `generate.mjs`                                | `pnpm brand` renders everything below. Commit the output.                     |
+| `dist/icons/favicon.ico`                      | 16/32/48px, cropped to the mare's head (viewBox `250 0 450 595`).             |
+| `dist/icons/icon.svg`                         | Head crop; bronze, or light bronze in a dark browser theme.                   |
+| `dist/icons/mark.svg`                         | Full mark in `currentColor`. The apps use it as the lockup's CSS mask.        |
+| `dist/icons/apple-touch-icon.png`             | 180px, mark on parchment.                                                     |
+| `dist/icons/apple-touch-icon-precomposed.png` | The same icon, under the name older iOS and some crawlers request unasked.    |
+| `dist/icons/icon-{192,512}.png`               | Web-app manifest icons.                                                       |
+| `dist/icons/icon-maskable-512.png`            | Manifest icon with the mark inside the maskable safe zone.                    |
+| `dist/og-image.png`                           | 1200×630 social preview; also copied to `projects/web/public/`.               |
+| `dist/lockup/lockup-*-{light,dark}.png`       | Horizontal and stacked lockups at 2×, transparent, for light or dark grounds. |
+| `dist/lockup/mark-{bronze,ink,white}.svg`     | Single-color marks for print, embroidery, social avatars.                     |
 
 ## Palette
 
