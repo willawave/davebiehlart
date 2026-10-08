@@ -16,11 +16,12 @@ Only items that break real use, risk production data, or block launch belong her
 
 - Optionally warm resized photos after each deploy: the first request for each photo size waits while `/img` fetches and resizes the original; a pass over every photo at the grid and detail widths would spare visitors that wait.
 - Finish the `/cso` audit's unassessed areas: dependencies (known vulnerabilities), secrets in git history, `.github/workflows/ci.yml`, and admin's client code. Skipped before launch by choice.
-- Cover `sitemap.xml`'s 503 path (Firestore unreachable from the server); it has no test.
 - Narrow the `github-deploy` service account's roles (Firebase Admin, App Hosting Admin, Storage Admin, Service Account User) to what the Deploy workflow actually uses, once deploys run cleanly.
 - After the legacy site is retired and stable: delete its App Hosting backends (`davebiehlart`, `the-bronze-horse`), prune Firestore indexes nothing queries anymore (docs/DEPLOY.md → Indexes), and remove the extra Firebase web app registration `web` and its browser API key that `apphosting:backends:create` added. At the same time, remove the Firebase Auth authorized domains only the legacy admin signed in from: `davebiehlart.com` and `the-bronze-horse--the-bronze-horse-b3aa2.us-central1.hosted.app` (this repo's admin signs in on `admin.davebiehlart.com`). The backends stay idle, rollouts off, as rollback until then.
 
 ## Completed
+
+- **Sitemap 503 test** (P2): `sitemap.xml`'s answer when Firestore can't be read (503 with `Retry-After`, a failure never cached, an expired copy never served) is covered by unit tests in `projects/web/src/crawl.spec.ts`. Completed on branch `feat-sitemap-503-test`.
 
 - **Launch follow-ups** (P1): an admin photo upload passed after the v1.0.0.0 deploy; davebiehlart.com is verified in Google Search Console with the sitemap submitted; a browser crawl of all 109 sitemap pages plus the admin sign-in page found no Content-Security-Policy violations and no failed requests; `bbiehl/the-bronze-horse-angular` is archived, so its `firebase deploy` can't bring back the old rules; CLAUDE.md's "Deploy Configuration" describes the real deploy; and `/benchmark` baselines are recorded for both an optimized build against the emulators and production, each the median of three passes at v1.0.0.2, after compression went live (production: first paint under half a second on a fast connection, 232 KB of script on the wire). The reports and the recipe for the emulator build are in `.gstack/benchmark-reports/`, which git ignores, so they exist only on the machine that ran them. The "May 2026" event question was dropped: nobody will see that page. Completed 2026-10-02.
 
