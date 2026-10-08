@@ -111,13 +111,40 @@ const SITEMAP_TTL_MS = 60 * 60 * 1000;
 let cached: { xml: string; expires: number } | undefined;
 
 // Built at most once an hour. A Firestore error propagates, so the caller can answer 503 and
-// crawlers retry instead of dropping pages.
+// crawlers retry instead of dropping pages. A failure is never cached, and an expired copy is
+// never served. `load` is a parameter so specs can stand in for Firestore.
 export async function cachedSitemap(
   environment: FirebaseEnvironment,
   now = Date.now(),
+  load = detailPaths,
 ): Promise<string> {
   if (!cached || cached.expires <= now) {
-    cached = { xml: sitemapXml(await detailPaths(environment)), expires: now + SITEMAP_TTL_MS };
+    cached = { xml: sitemapXml(await load(environment)), expires: now + SITEMAP_TTL_MS };
   }
   return cached.xml;
+}
+
+export interface SitemapReply {
+  status: number;
+  headers: Record<string, string>;
+  body: string;
+}
+
+// What /sitemap.xml answers: the sitemap, or 503 with Retry-After when it can't be built, so
+// crawlers come back later instead of reading a missing sitemap as "no pages".
+export async function sitemapReply(build: () => Promise<string>): Promise<SitemapReply> {
+  try {
+    return {
+      status: 200,
+      headers: { 'Content-Type': 'application/xml', 'Cache-Control': 'public, max-age=3600' },
+      body: await build(),
+    };
+  } catch (error) {
+    console.error('sitemap.xml failed', error);
+    return {
+      status: 503,
+      headers: { 'Retry-After': '3600' },
+      body: 'Sitemap temporarily unavailable',
+    };
+  }
 }

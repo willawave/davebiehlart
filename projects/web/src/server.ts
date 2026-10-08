@@ -8,7 +8,7 @@ import { isDevMode } from '@angular/core';
 import compression from 'compression';
 import express from 'express';
 import { join } from 'node:path';
-import { cachedSitemap, isCanonicalHost, requestHost, robotsTxt } from './crawl';
+import { cachedSitemap, isCanonicalHost, requestHost, robotsTxt, sitemapReply } from './crawl';
 import { environment } from './environments/environment';
 import { parseImageRequest } from './image-request';
 import { ImageFetchError, resizePhoto } from './image-resize';
@@ -65,13 +65,8 @@ app.get('/robots.txt', (req, res) => {
 });
 
 app.get('/sitemap.xml', async (_req, res) => {
-  try {
-    const xml = await cachedSitemap(environment.firebase);
-    res.type('application/xml').set('Cache-Control', 'public, max-age=3600').send(xml);
-  } catch (error) {
-    console.error('sitemap.xml failed', error);
-    res.status(503).set('Retry-After', '3600').send('Sitemap temporarily unavailable');
-  }
+  const reply = await sitemapReply(() => cachedSitemap(environment.firebase));
+  res.status(reply.status).set(reply.headers).send(reply.body);
 });
 
 // A Storage photo at a smaller width (image-resize.ts). Each URL is a fixed photo and width,
