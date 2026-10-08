@@ -2,6 +2,16 @@
 
 All notable changes to this project are documented here.
 
+## [1.0.0.4] - 2026-10-08
+
+### Added
+
+- Tests for what `sitemap.xml` answers when the server can't read Firestore: 503 with `Retry-After`, so search engines come back later instead of dropping pages. A failed read is never remembered, and an out-of-date sitemap is never served in its place. The sitemap itself behaves as before.
+
+### Changed
+
+- `TODOS.md` moves the sitemap test to Completed.
+
 ## [1.0.0.3] - 2026-10-02
 
 ### Changed
