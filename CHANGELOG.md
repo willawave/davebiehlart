@@ -2,6 +2,13 @@
 
 All notable changes to this project are documented here.
 
+## [1.0.1.1] - 2026-10-08
+
+### Changed
+
+- `TODOS.md` says what the security audit covered on 2026-10-08 and what is still open: a scanner pass, a secrets check of the commits GitHub keeps for old pull requests, and seven advisories that have no fix inside the current version ranges.
+- Correction to the 1.0.1.0 entry below: Firebase 13 does not fix the `@grpc/grpc-js` advisory. Its Firestore package still requires the affected 1.9 line.
+
 ## [1.0.1.0] - 2026-10-08
 
 ### Security
