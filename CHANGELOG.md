@@ -2,6 +2,18 @@
 
 All notable changes to this project are documented here.
 
+## [1.0.1.0] - 2026-10-08
+
+### Security
+
+- Angular is updated to 22.2. The earlier version had a flaw that let a crafted web address tie up the server that renders the public site's pages (GHSA-ff3f-86qr-9cv3).
+- The build tools are updated past two more advisories (`piscina`, `source-map-js`). Those never ran on the live site, only while building it.
+
+### Changed
+
+- Routine updates to the Firebase command-line tools, the map library (`ol`), ESLint and Prettier.
+- Still open, by choice: `@grpc/grpc-js` inside the Firebase SDK needs Firebase 13, a major upgrade, and four advisories inside the Firebase command-line tools have no fix within its current major version. None of them is in code a visitor's request reaches.
+
 ## [1.0.0.4] - 2026-10-08
 
 ### Added
