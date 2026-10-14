@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here.
 
+## [1.0.1.2] - 2026-10-14
+
+### Changed
+
+- `PROJECT.md` now describes what was built and how it was done. It names the legacy app and what was carried over from it, maps the legacy URLs to the new ones, and records the architecture decisions, the definition of done for each feature, the accessibility, security and performance targets, the phases (only retiring the legacy app is left), the cutover and rollback steps, and the review process as it actually runs. It also corrects "role/claim checks": an admin is anyone with a `users/{uid}` document, with no roles or custom claims. The working rules it used to repeat now live only in `AGENTS.md`.
+
 ## [1.0.1.1] - 2026-10-08
 
 ### Changed
